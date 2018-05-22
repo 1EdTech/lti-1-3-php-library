@@ -145,6 +145,6 @@ var frame = function() {
     if (!pause) {
         requestAnimationFrame(frame);
     }
-    pause = true;
+    pause = false;
 }
 frame();
