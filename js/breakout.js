@@ -23,6 +23,9 @@ var ball = {
         }
         if (this.oob(window.c.height, this.pos.y, this.r)) {
             if (this.pos.y > window.c.height - this.r) {
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("GET", "score.php?client_id=" + window.client_id + "&auth_url=" + encodeURIComponent(window.auth_url) + "&grade=" + window.score, true);
+                xhttp.send();
                 window.pause = true;
             }
             this.vel.y = -this.vel.y;
@@ -135,6 +138,8 @@ function brick() {
         y: 40,
     },
     this.hit = 0,
+    this.last_hitx = false,
+    this.last_hity = false,
     this.width = 40,
     this.height = 20,
     this.render = function() {
@@ -152,18 +157,28 @@ function brick() {
         var hitx = this.test_hit_x();
         var hity = this.test_hit_y();
         if (!hitx || !hity) {
+            this.last_hitx = hitx;
+            this.last_hity = hity;
             return 0;
         }
-        if (hity) {
+        if (this.last_hity) {
             window.ball.vel.y = -window.ball.vel.y;
             window.ball.pos.y += window.ball.vel.y;
             window.ball.pos.x -= window.ball.vel.x;
         }
-        if (hitx) {
+        if (this.last_hitx) {
             window.ball.vel.x = -window.ball.vel.x;
             window.ball.pos.x += window.ball.vel.x;
             window.ball.pos.y -= window.ball.vel.y;
         }
+        if (!this.last_hity && this.last_hitx) {
+            window.ball.vel.x = -window.ball.vel.x;
+            window.ball.pos.x += window.ball.vel.x;
+            window.ball.vel.y = -window.ball.vel.y;
+            window.ball.pos.y += window.ball.vel.y;
+        }
+        this.last_hitx = hitx;
+        this.last_hity = hity;
         this.hit = 1;
         window.score++;
         return 1;
@@ -229,7 +244,6 @@ var bricks = [];
 for (var h = 0; h < 6; h++) {
     for (var w = 0; w < 18; w++) {
         var brickid = (18*h)+w;
-        console.log(brickid);
         bricks[brickid] = new brick();
         bricks[brickid].pos.x = 40+(w*40);
         bricks[brickid].pos.y = 40+(h*20);

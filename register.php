@@ -12,6 +12,7 @@ session_start();
 if ($_POST['registration']) {
 
     $_SESSION['public_keys'][$_POST['iss'].':'.$_POST['aud']] = $_POST['pub_key'];
+    $_SESSION['auth_token_urls'][$_POST['iss'].':'.$_POST['aud']] = $_POST['auth_token_url'];
     echo "public key added for " .$_POST['iss'].':'.$_POST['aud'];
 
     $_SESSION['deployments'][$_POST['deployment_id']] = $_POST['account'];
@@ -35,6 +36,10 @@ if ($_POST['registration']) {
         </li>
         <li>
             Platform Public Key URL: <input type="text" name="pub_key" value="http://lti-ri.imsglobal.org/platforms/7/platform_keys/6.json" />
+        </li>
+        </li>
+        <li>
+            Auth Token URL: <input type="text" name="auth_token_url" value="http://lti-ri.imsglobal.org/platforms/7/access_tokens" />
         </li>
         <li>
             Deployment Id: <?= $jwt_body['http://imsglobal.org/lti/deployment_id'] ?>

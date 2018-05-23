@@ -70,6 +70,7 @@ try {
     $decoded = JWT::decode($raw_jwt, $public_key['key'], array('RS256'));
 } catch(Exception $e) {
     var_dump($e);
+    die;
 }
 
 $decoded_array = json_decode(json_encode($decoded), true);
@@ -82,5 +83,10 @@ $decoded_array = json_decode(json_encode($decoded), true);
 
 <canvas id="breakout" width="800" height="500" style="border:1px solid #000000;">
 </canvas>
+
+<script>
+    client_id = "<?= $aud; ?>";
+    auth_url = "<?= $_SESSION['auth_token_urls'][$decoded_array['iss'].':'.$aud]; ?>";
+</script>
 
 <script type="text/javascript" src="js/breakout.js" charset="utf-8"></script>
