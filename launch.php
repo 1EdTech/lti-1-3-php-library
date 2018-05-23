@@ -5,8 +5,10 @@ require_once 'jwt/src/BeforeValidException.php';
 require_once 'jwt/src/ExpiredException.php';
 require_once 'jwt/src/SignatureInvalidException.php';
 require_once 'jwt/src/JWT.php';
+require_once 'jwt/src/JWK.php';
 
 use \Firebase\JWT\JWT;
+use \Firebase\JWT\JWK;
 
 session_start();
 
@@ -21,9 +23,10 @@ if (empty($raw_jwt)) {
 }
 
 $jwt_parts = explode('.', $raw_jwt);
-    //echo json_encode(json_decode(base64_decode($part), true), JSON_PRETTY_PRINT);
+    //echo json_encode(json_decode(base64_decode($jwt_parts[0]), true), JSON_PRETTY_PRINT);
 
 $jwt_body = json_decode(base64_decode($jwt_parts[1]), true);
+$jwt_head = json_decode(base64_decode($jwt_parts[0]), true);
 //echo json_encode($jwt_body, JSON_PRETTY_PRINT);
 
 //$jwt = JWT::encode($jwt_body, $privateKey, 'RS256');
@@ -35,17 +38,36 @@ $jwt_body = json_decode(base64_decode($jwt_parts[1]), true);
 $aud = is_array($jwt_body['aud']) ? $jwt_body['aud'][0] : $jwt_body['aud'];
 
 // find key to check signature
-$public_key = $_SESSION['public_keys'][$jwt_body['iss'].':'.$aud];
+$public_key_url = $_SESSION['public_keys'][$jwt_body['iss'].':'.$aud];
 
-if (empty($public_key)) {
+if (empty($public_key_url)) {
     // Not yet encountered this auth
     include('register.php');
     die;
 }
 
 
+$public_key_set_json = file_get_contents($public_key_url);
+
+$public_key_set = json_decode($public_key_set_json, true);
+
+
+$public_key;
+foreach ($public_key_set['keys'] as $key) {
+    if ($key['kid'] == $jwt_head['kid']) {
+        $public_key = openssl_pkey_get_details(JWK::parseKey($key));
+        break;
+    }
+}
+
+if (empty($public_key)) {
+    echo "Failed to find KID: " . $jwt_head['kid'] . " in keyset from " . $public_key_url;
+    die;
+}
+
+
 try {
-    $decoded = JWT::decode($raw_jwt, $public_key, array('RS256'));
+    $decoded = JWT::decode($raw_jwt, $public_key['key'], array('RS256'));
 } catch(Exception $e) {
     var_dump($e);
 }

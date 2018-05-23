@@ -1,10 +1,17 @@
 <?php
+require_once 'jwt/src/BeforeValidException.php';
+require_once 'jwt/src/ExpiredException.php';
+require_once 'jwt/src/SignatureInvalidException.php';
+require_once 'jwt/src/JWT.php';
+require_once 'jwt/src/JWK.php';
+
+use \Firebase\JWT\JWK;
+
 session_start();
 
 if ($_POST['registration']) {
-    $public_key = file_get_contents($_POST['pub_key']);
 
-    $_SESSION['public_keys'][$_POST['iss'].':'.$_POST['aud']] = $public_key;
+    $_SESSION['public_keys'][$_POST['iss'].':'.$_POST['aud']] = $_POST['pub_key'];
     echo "public key added for " .$_POST['iss'].':'.$_POST['aud'];
 
     $_SESSION['deployments'][$_POST['deployment_id']] = $_POST['account'];
@@ -23,11 +30,11 @@ if ($_POST['registration']) {
             <input type="hidden" name="iss" value="<?= $jwt_body['iss'] ?>" />
         </li>
         <li>
-            Client Id: <?= $jwt_body['aud'][0] ?>
-            <input type="hidden" name="aud" value="<?= $jwt_body['aud'][0] ?>" />
+            Client Id: <?= $aud ?>
+            <input type="hidden" name="aud" value="<?= $aud ?>" />
         </li>
         <li>
-            Platform Public Key URL: <input type="text" name="pub_key" value="http://localhost/lti13/pubkey.php" />
+            Platform Public Key URL: <input type="text" name="pub_key" value="http://lti-ri.imsglobal.org/platforms/7/platform_keys/6.json" />
         </li>
         <li>
             Deployment Id: <?= $jwt_body['http://imsglobal.org/lti/deployment_id'] ?>
