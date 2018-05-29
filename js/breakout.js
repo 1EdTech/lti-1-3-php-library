@@ -24,7 +24,7 @@ var ball = {
         if (this.oob(window.c.height, this.pos.y, this.r)) {
             if (this.pos.y > window.c.height - this.r) {
                 var xhttp = new XMLHttpRequest();
-                xhttp.open("GET", "score.php?client_id=" + window.client_id + "&auth_url=" + encodeURIComponent(window.auth_url) + "&grade=" + window.score, true);
+                xhttp.open("GET", "score.php?grade=" + window.score, true);
                 xhttp.send();
                 window.pause = true;
             }
