@@ -11,7 +11,6 @@ bgctx.fillStyle = bggrad;
 bgctx.rect(0, 0, c.width, c.height);
 bgctx.fill();
 
-
 var score = 0;
 
 var ball = {
@@ -356,7 +355,7 @@ for (var h = 0; h < 6; h++) {
 }
 var fires = [];
 
-for (var i = 0; i < 100; i++) {
+for (var i = 0; i < 80; i++) {
     fires[i] = new fire();
 }
 startFireCount = 1;
@@ -392,12 +391,18 @@ var frame = function() {
     }
     pause = false;
 }
+
+start_time = Math.floor(Date.now() / 1000);
 frame();
 
 var endGame = function() {
     window.pause = true;
     var xhttp = new XMLHttpRequest();
     xhttp.open("GET", "score.php?grade=" + window.score, true);
+    xhttp.send();
+    var xhttp = new XMLHttpRequest();
+    var time_taken = Math.floor(Date.now() / 1000) - start_time;
+    xhttp.open("GET", "time.php?time=" + time_taken, true);
     xhttp.send();
     window.getScoreBoard();
 }
