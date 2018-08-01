@@ -9,7 +9,8 @@ session_start();
 $access_token = get_access_token([
     "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem",
     "https://purl.imsglobal.org/spec/lti-ags/scope/score",
-    "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly"
+    "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly",
+    "https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly"
 ]);
 
 // Memberships call
