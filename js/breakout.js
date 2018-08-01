@@ -398,11 +398,11 @@ frame();
 var endGame = function() {
     window.pause = true;
     var xhttp = new XMLHttpRequest();
-    xhttp.open("GET", "score.php?grade=" + window.score, true);
+    xhttp.open("GET", "score.php?grade=" + window.score, false);
     xhttp.send();
     var xhttp = new XMLHttpRequest();
     var time_taken = Math.floor(Date.now() / 1000) - start_time;
-    xhttp.open("GET", "time.php?time=" + time_taken, true);
+    xhttp.open("GET", "time.php?time=" + time_taken, false);
     xhttp.send();
     window.getScoreBoard();
 }
@@ -417,9 +417,9 @@ var getScoreBoard = function() {
 var resultsListner = function() {
     var scores = JSON.parse(this.responseText);
     console.log(scores);
-    var output = '';
+    var output = '<tr><th>Score</th><th>Time</th><th>Name</th></tr>';
     for (var i = 0; i < scores.length; i++) {
-        output += '<tr><td>' + scores[i].score + '</td><td>' + scores[i].name + '</td></tr>';
+        output += '<tr><td>' + scores[i].score + '</td><td>' + scores[i].time + 's</td><td>' + scores[i].name + '</td></tr>';
     }
     document.getElementById("leadertable").innerHTML = output;
 }
