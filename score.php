@@ -1,5 +1,6 @@
 <?php
 require_once('serviceauth.php');
+require_once('lineitem.php');
 
 session_start();
 
@@ -22,8 +23,15 @@ $grade_call = [
 ];
 
 // Call grade book line item endpoint to send back a grade
+$line_item_url;
+if (empty($_SESSION['current_request']['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint']['lineitem'])) {
+    $line_item = get_line_item('score', 108);
+    $line_item_url = $line_item['id'];
+} else {
+    $line_item_url =$_SESSION['current_request']['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint']['lineitem'];
+}
 $ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $_SESSION['current_request']['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint']['lineitem']. '/scores');
+curl_setopt($ch, CURLOPT_URL, $line_item_url . '/scores');
 curl_setopt($ch, CURLOPT_POST, 1);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($grade_call));
@@ -31,10 +39,10 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Authorization: Bearer '. $access_token,
     'Content-Type: application/vnd.ims.lis.v1.score+json'
 ]);
-$line_item = curl_exec($ch);
+$score = curl_exec($ch);
 curl_close ($ch);
 
 echo $access_token;
-echo $line_item;
+echo $score;
 
 ?>

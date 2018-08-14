@@ -11,7 +11,7 @@ $access_token = get_access_token([
     "https://purl.imsglobal.org/spec/lti-ags/scope/score"
 ]);
 
-$time_line_item = getLineItem('timescore');
+$time_line_item = get_line_item('timescore');
 
 // Build grade book request
 $grade_call = [

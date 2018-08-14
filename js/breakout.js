@@ -13,14 +13,26 @@ bgctx.fill();
 
 var score = 0;
 
+var difficulty = {
+    hard: {
+        speed_multiplier:1.5
+    },
+    normal: {
+        speed_multiplier:1
+    },
+    easy: {
+        speed_multiplier:0.8
+    },
+}
+
 var ball = {
     pos : {
         x: window.c.width/2-200,
         y : window.c.height/2-2,
     },
     vel : {
-        x : 6,
-        y : 6,
+        x : 6 * difficulty[curr_diff]['speed_multiplier'],
+        y : 6 * difficulty[curr_diff]['speed_multiplier'],
     },
     r: 10,
     rot: 0,
@@ -99,8 +111,8 @@ var paddle = {
         gradient.addColorStop(1,"#999999");
         ctx.fillStyle = gradient;
         var hh = this.height/2;
-        window.ctx.rect(this.pos.x + hh, this.pos.y, this.width - this.height, this.height);
         window.ctx.arc(this.pos.x + hh, this.pos.y + hh, hh, 0.5 * Math.PI, 1.5 * Math.PI);
+        window.ctx.rect(this.pos.x + hh, this.pos.y, this.width - this.height, this.height);
         window.ctx.arc(this.pos.x + this.width - hh, this.pos.y + hh, hh, 1.5 * Math.PI, 0.5 * Math.PI);
         window.ctx.fill();
         window.ctx.stroke();
@@ -130,7 +142,7 @@ var paddle = {
         }
         if (hitx) {
             var xdiff = window.ball.pos.x - (this.pos.x + (this.width/2));
-            window.ball.vel.x = Math.ceil(xdiff / 5);
+            window.ball.vel.x = (xdiff > 0 ? Math.ceil(xdiff / 5) : Math.floor(xdiff / 5)) * difficulty[curr_diff]['speed_multiplier'];
             window.ball.pos.x += window.ball.vel.x;
         }
         return 1;

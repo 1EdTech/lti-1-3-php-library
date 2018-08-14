@@ -14,7 +14,8 @@ function get_access_token($scopes) {
     // Start auth fetching
 
     // Build up JWT to exchange for an auth token
-    $auth_url = $_SESSION['auth_token_urls'][$_SESSION['current_request']['iss'].':'.$_SESSION['current_request']['aud']];
+    //$auth_url = $_SESSION['auth_token_urls'][$_SESSION['current_request']['iss'].':'.$_SESSION['current_request']['aud']];
+    $auth_url = $_SESSION['issuers'][$_SESSION['current_request']['iss']]['clients'][$_SESSION['current_request']['aud']]['auth_token_url'];
     $jwt_claim = [
             "iss" => "http://martinscooltools.example.com",
             "sub" => $_SESSION['current_request']['aud'],

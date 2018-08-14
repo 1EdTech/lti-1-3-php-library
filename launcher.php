@@ -10,81 +10,171 @@ use \Firebase\JWT\JWT;
 
 $jwt = <<<EOD
 {
-    "iss": "https:\/\/platform.example.edu",
-    "sub": "a6d5c443-1f51-4783-ba1a-7686ffe3b54a",
-    "aud": [
-        "962fa4d8-bcbf-49a0-94b2-2de05ad274af"
+    "https:\/\/purl.imsglobal.org\/spec\/lti\/claim\/message_type": "LtiResourceLinkRequest",
+    "given_name": "Novella",
+    "family_name": "Krajcik",
+    "middle_name": "Jayde",
+    "picture": "http:\/\/example.org\/Novella.jpg",
+    "email": "Novella.Krajcik@example.org",
+    "name": "Novella Jayde Krajcik",
+    "https:\/\/purl.imsglobal.org\/spec\/lti\/claim\/roles": [
+        "http:\/\/purl.imsglobal.org\/vocab\/lis\/v2\/institution\/person#Instructor"
     ],
-    "exp": 1527823048544,
-    "iat": 1510185228,
-    "azp": "962fa4d8-bcbf-49a0-94b2-2de05ad274af",
-    "nonce": "8f424063-1b82-4344-ae1c-8fe1090be62b",
-    "name": "Ms Jane Marie Doe",
-    "given_name": "Jane",
-    "family_name": "Doe",
-    "middle_name": "Marie",
-    "picture": "https:\/\/platform.example.edu\/jane.jpg",
-    "email": "jane@platform.example.edu",
-    "locale": "en-US",
-    "http:\/\/imsglobal.org\/lti\/deployment_id": "07940580-b309-415e-a37c-914d387c1150",
-    "http:\/\/imsglobal.org\/lti\/message_type": "LtiResourceLinkRequest",
-    "http:\/\/imsglobal.org\/lti\/version": "3.0.0",
-    "http:\/\/imsglobal.org\/lti\/roles": [
-        "http:\/\/purl.imsglobal.org\/vocab\/lis\/v2\/institution\/person#Student",
-        "http:\/\/purl.imsglobal.org\/vocab\/lis\/v2\/membership#Learner",
-        "http:\/\/purl.imsglobal.org\/vocab\/lis\/v2\/membership#Mentor"
-    ],
-    "http:\/\/imsglobal.org\/lti\/role_scope_mentor": [
+    "https:\/\/purl.imsglobal.org\/spec\/lti\/claim\/role_scope_mentor": [
         "http:\/\/purl.imsglobal.org\/vocab\/lis\/v2\/institution\/person#Administrator"
     ],
-    "http:\/\/imsglobal.org\/lti\/tokenendpoint": "https:\/\/platform.example.edu\/tokenrequest",
-    "http:\/\/imsglobal.org\/lti\/context": {
-        "id": "c1d887f0-a1a3-4bca-ae25-c375edcc131a",
-        "label": "ECON 1010",
-        "title": "Economics as a Social Science",
+    "https:\/\/purl.imsglobal.org\/spec\/lti\/claim\/resource_link": {
+        "id": "5",
+        "title": "poiuytrewq",
+        "description": ""
+    },
+    "https:\/\/purl.imsglobal.org\/spec\/lti\/claim\/context": {
+        "id": "6",
+        "label": "12345",
+        "title": "qwertyuio",
         "type": [
-            "http:\/\/purl.imsglobal.org\/vocab\/lis\/v2\/course#CourseOffering"
+            "0987654321"
         ]
     },
-    "http:\/\/imsglobal.org\/lti\/resource_link": {
-        "id": "200d101f-2c14-434a-a0f3-57c2a42369fd",
-        "description": "Assignment to introduce who you are",
-        "title": "Introduction Assignment"
-    },
-    "http:\/\/imsglobal.org\/lti\/tool_platform": {
-        "guid": "https:\/\/platform.example.edu",
-        "contact_email": "support@platform.example.edu",
-        "description": "An Example Tool Platform",
-        "name": "Example Tool Platform",
-        "url": "https:\/\/platform.example.edu",
-        "product_family_code": "ExamplePlatformVendor-Product",
+    "https:\/\/purl.imsglobal.org\/spec\/lti\/claim\/tool_platform": {
+        "name": "LILI Hackathon game thing",
+        "contact_email": "",
+        "description": "",
+        "url": "",
+        "product_family_code": "",
         "version": "1.0"
     },
-    "http:\/\/imsglobal.org\/lti\/launch_presentation": {
+    "https:\/\/purl.imsglobal.org\/spec\/lti-ags\/claim\/endpoint": {
+        "scope": [
+            "https:\/\/purl.imsglobal.org\/spec\/lti-ags\/scope\/lineitem",
+            "https:\/\/purl.imsglobal.org\/spec\/lti-ags\/scope\/result.readonly",
+            "https:\/\/purl.imsglobal.org\/spec\/lti-ags\/scope\/score"
+        ],
+        "lineitems": "https:\/\/lti-ri.imsglobal.org\/platforms\/7\/contexts\/6\/line_items",
+        "lineitem": "https:\/\/lti-ri.imsglobal.org\/platforms\/7\/contexts\/6\/line_items\/9"
+    },
+    "https:\/\/purl.imsglobal.org\/spec\/lti-nrps\/claim\/namesroleservice": {
+        "context_memberships_url": "https:\/\/lti-ri.imsglobal.org\/platforms\/7\/contexts\/6\/memberships.json",
+        "service_version": "2.0"
+    },
+    "iss": "http:\/\/imsglobal.org",
+    "aud": "testing12345",
+    "iat": 1533744151,
+    "exp": 1533744451,
+    "sub": "42b5c037e5155b7bef54",
+    "nonce": "0a84ebbe58ad32a8c69f",
+    "https:\/\/purl.imsglobal.org\/spec\/lti\/claim\/version": "1.3.0",
+    "locale": "en-US",
+    "https:\/\/purl.imsglobal.org\/spec\/lti\/claim\/launch_presentation": {
         "document_target": "iframe",
         "height": 320,
         "width": 240,
-        "return_url": "https:\/\/platform.example.edu\/terms\/201601\/courses\/7\/sections\/1\/resources\/2"
+        "return_url": "https:\/\/lti-ri.imsglobal.org\/platforms\/7\/returns"
     },
-    "http:\/\/imsglobal.org\/lti\/custom": {
-        "xstart": "2017-04-21T01:00:00Z"
+    "https:\/\/www.example.com\/extension": {
+        "color": "violet"
     },
-    "http:\/\/imsglobal.org\/lti\/lis": {
-        "person_sourcedid": "example.edu:71ee7e42-f6d2-414a-80db-b69ac2defd4",
-        "course_offering_sourcedid": "example.edu:SI182-F16",
-        "course_section_sourcedid": "example.edu:SI182-001-F16"
+    "https:\/\/purl.imsglobal.org\/spec\/lti\/claim\/custom": {
+        "myCustomValue": 123
     },
-    "http:\/\/www.ExamplePlatformVendor.com\/session": {
-        "id": "89023sj890dju080"
-    }
+    "https:\/\/purl.imsglobal.org\/spec\/lti\/claim\/deployment_id": "1234"
 }
 EOD;
 
-$jwt = JWT::encode(json_decode($jwt, true), $privateKey, 'RS256');
+$jwt_body = json_decode($jwt, true);
+$jwt_body['iat'] = time();
+$jwt_body['exp'] = time()+60;
+$jwt = JWT::encode($jwt_body, $privateKey, 'RS256');
+
+
+$dl_jwt = <<<EOD
+{
+    "https:\/\/purl.imsglobal.org\/spec\/lti\/claim\/message_type": "LtiDeepLinkingRequest",
+    "given_name": "Novella",
+    "family_name": "Krajcik",
+    "middle_name": "Jayde",
+    "picture": "http:\/\/example.org\/Novella.jpg",
+    "email": "Novella.Krajcik@example.org",
+    "name": "Novella Jayde Krajcik",
+    "https:\/\/purl.imsglobal.org\/spec\/lti\/claim\/roles": [
+        "http:\/\/purl.imsglobal.org\/vocab\/lis\/v2\/institution\/person#Instructor"
+    ],
+    "https:\/\/purl.imsglobal.org\/spec\/lti\/claim\/context": {
+        "id": "6",
+        "label": "12345",
+        "title": "qwertyuio",
+        "type": [
+            "0987654321"
+        ]
+    },
+    "https:\/\/purl.imsglobal.org\/spec\/lti\/claim\/tool_platform": {
+        "name": "LILI Hackathon game thing",
+        "contact_email": "",
+        "description": "",
+        "url": "",
+        "product_family_code": "",
+        "version": "1.0"
+    },
+    "https:\/\/purl.imsglobal.org\/spec\/lti-ags\/claim\/endpoint": {
+        "scope": [
+            "https:\/\/purl.imsglobal.org\/spec\/lti-ags\/scope\/lineitem",
+            "https:\/\/purl.imsglobal.org\/spec\/lti-ags\/scope\/result.readonly",
+            "https:\/\/purl.imsglobal.org\/spec\/lti-ags\/scope\/score"
+        ],
+        "lineitems": "https:\/\/lti-ri.imsglobal.org\/platforms\/7\/contexts\/6\/line_items",
+        "lineitem": "https:\/\/lti-ri.imsglobal.org\/platforms\/7\/contexts\/6\/line_items\/9"
+    },
+    "https:\/\/purl.imsglobal.org\/spec\/lti-nrps\/claim\/namesroleservice": {
+        "context_memberships_url": "https:\/\/lti-ri.imsglobal.org\/platforms\/7\/contexts\/6\/memberships.json",
+        "service_version": "2.0"
+    },
+    "iss": "http:\/\/imsglobal.org",
+    "aud": "testing12345",
+    "iat": 1533744151,
+    "exp": 1533744451,
+    "sub": "42b5c037e5155b7bef54",
+    "nonce": "0a84ebbe58ad32a8c69f",
+    "https:\/\/purl.imsglobal.org\/spec\/lti\/claim\/version": "1.3.0",
+    "locale": "en-US",
+    "https:\/\/purl.imsglobal.org\/spec\/lti\/claim\/launch_presentation": {
+        "document_target": "iframe",
+        "height": 320,
+        "width": 240,
+        "return_url": "https:\/\/lti-ri.imsglobal.org\/platforms\/7\/returns"
+    },
+    "https:\/\/www.example.com\/extension": {
+        "color": "violet"
+    },
+    "https:\/\/purl.imsglobal.org\/spec\/lti\/claim\/custom": {
+        "myCustomValue": 123
+    },
+    "https:\/\/purl.imsglobal.org\/spec\/lti\/claim\/deployment_id": "1234",
+    "https:\/\/purl.imsglobal.org\/spec\/lti-dl\/claim\/deep_linking_settings": {
+        "deep_link_return_url": "https:\/\/platform.example\/deep_links",
+        "accept_types": ["link", "file", "html", "ltiLink", "image"],
+        "accept_media_types": "image\/*,text\/html",
+        "accept_presentation_document_targets": ["iframe", "window", "embed"],
+        "accept_multiple": true,
+        "auto_create": true,
+        "title": "This is the default title",
+        "text": "This is the default text",
+        "data": "csrftoken:c7fbba78-7b75-46e3-9201-11e6d5f36f53"
+      }
+}
+EOD;
+
+$dl_jwt_body = json_decode($dl_jwt, true);
+$dl_jwt_body['iat'] = time();
+$dl_jwt_body['exp'] = time()+60;
+$dl_jwt = JWT::encode($dl_jwt_body, $privateKey, 'RS256');
 
 ?>
 
 <form action="launch.php" method="POST">
     <input type="hidden" name="id_token" value="<?= $jwt ?>" />
     <input type="submit" value="Go!" />
+</form>
+<form action="launch.php" method="POST">
+    <input type="hidden" name="id_token" value="<?= $dl_jwt ?>" />
+    <input type="submit" value="Go Deep!" />
 </form>

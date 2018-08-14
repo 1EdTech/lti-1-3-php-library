@@ -25,9 +25,19 @@ $members = json_decode(curl_exec($ch), true);
 curl_close ($ch);
 //echo json_encode($members, JSON_PRETTY_PRINT);
 
+// Find the Score line item
+$line_item_url;
+if (empty($_SESSION['current_request']['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint']['lineitem'])) {
+    // We were't given a line item, so we will find or create it.
+    $score_line_item = get_line_item('score', 108);
+    $line_item_url = $score_line_item['id'];
+} else {
+    // We were given the line item url in the launch, use that
+    $line_item_url = $_SESSION['current_request']['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint']['lineitem'];
+}
 // Results call
 $ch = curl_init();
-$results_url = $_SESSION['current_request']['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint']['lineitem']. '/results';
+$results_url = $line_item_url. '/results';
 curl_setopt($ch, CURLOPT_URL, $results_url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
@@ -41,7 +51,7 @@ curl_close ($ch);
 
 
 // Line items GET
-$time_line_item = getLineItem('timescore');
+$time_line_item = get_line_item('timescore');
 // Results call for time score
 $ch = curl_init();
 $time_results_url = $time_line_item['id'] . '/results';

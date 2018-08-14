@@ -3,7 +3,7 @@ require_once('serviceauth.php');
 
 session_start();
 
-function getLineItem($tag) {
+function get_line_item($tag, $max_score = 9999) {
 
     // Getting access token with the scopes for the service calls we want to make
     // so they are all authenticated (see serviceauth.php)

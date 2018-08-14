@@ -34,12 +34,12 @@ if (empty($client_id)) {
 }
 
 // Find key set URL to fetch the JWKS
-$key_set_url = $_SESSION['key_set_urls'][$jwt_body['iss'].':'.$client_id];
-if (empty($key_set_url)) {
+if (empty($_SESSION['issuers'][$jwt_body['iss']]['clients'][$client_id]['deployments'][$jwt_body['https://purl.imsglobal.org/spec/lti/claim/deployment_id']])) {
     // If there is no key set url, go to registration
     include('registerform.php');
     die;
 }
+$key_set_url = $_SESSION['issuers'][$jwt_body['iss']]['clients'][$client_id]['key_set_url'];
 
 // Download key set
 $public_key_set = json_decode(file_get_contents($key_set_url), true);
@@ -61,9 +61,19 @@ if (empty($public_key)) {
 // Validate JWT signature
 try {
     JWT::decode($raw_jwt, $public_key['key'], array('RS256'));
-    $_SESSION['current_request'] = $jwt_body;
 } catch(Exception $e) {
     die_with($e->getMessage());
+}
+
+// Store a copy of the launch so we can refer back to it
+$_SESSION['current_request_url'] = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . ':' . $_SERVER['SERVER_PORT'] . $_SERVER['SCRIPT_NAME'];
+$_SESSION['current_request'] = $jwt_body;
+
+// Are we a deep linking request?
+if ($jwt_body['https://purl.imsglobal.org/spec/lti/claim/message_type'] == 'LtiDeepLinkingRequest') {
+    // Go to deep linking setup form
+    include('setupform.php');
+    die;
 }
 
 // Success! Everything is signed correctly, now load the game
@@ -92,4 +102,8 @@ try {
         padding-bottom: 12px;
     }
 </style>
+<script>
+    // Set game difficulty if it has been set in deep linking
+    var curr_diff = '<?= $jwt_body['https://purl.imsglobal.org/spec/lti/claim/custom']['difficulty'] ?: 'normal'; ?>';
+</script>
 <script type="text/javascript" src="js/breakout.js" charset="utf-8"></script>
