@@ -1,4 +1,5 @@
 <?php
+require_once 'keys.php';
 require_once 'jwt/src/BeforeValidException.php';
 require_once 'jwt/src/ExpiredException.php';
 require_once 'jwt/src/SignatureInvalidException.php';
@@ -15,6 +16,12 @@ if (!$_REQUEST['registration']) {
 
 $_SESSION['issuers'][$_REQUEST['iss']]['clients'][$_REQUEST['client_id']]['key_set_url'] = $_REQUEST['key_set_url'];
 $_SESSION['issuers'][$_REQUEST['iss']]['clients'][$_REQUEST['client_id']]['auth_token_url'] = $_REQUEST['auth_token_url'];
+
+$key = [
+    'private' => empty($_REQUEST['private_key']) ? $GLOBALS['privateKey'] : $_REQUEST['private_key']
+];
+$_SESSION['issuers'][$_REQUEST['iss']]['clients'][$_REQUEST['client_id']]['key'] = $key;
+var_dump($_SESSION);
 
 //$_SESSION['key_set_urls'][$_REQUEST['iss'].':'.$_REQUEST['client_id']] = $_REQUEST['key_set_url'];
 //$_SESSION['auth_token_urls'][$_REQUEST['iss'].':'.$_REQUEST['client_id']] = $_REQUEST['auth_token_url'];

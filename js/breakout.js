@@ -21,7 +21,7 @@ var difficulty = {
         speed_multiplier:1
     },
     easy: {
-        speed_multiplier:0.8
+        speed_multiplier:0.7
     },
 }
 

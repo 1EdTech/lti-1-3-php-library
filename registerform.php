@@ -12,6 +12,10 @@
             <input id="auth-token" type="text" name="auth_token_url" value="https://lti-ri.imsglobal.org/platforms/7/access_tokens" />
         </li>
         <li>
+            <lable>Private Key</lable>
+            <textarea id="priv-key" type="text" name="private_key" placeholder="Use Tool Key" ></textarea>
+        </li>
+        <li>
             <input type="submit" value="Go!" onclick="register();" />
         </li>
     </ul>
@@ -31,9 +35,13 @@
 </div>
 
 <div class="box" id="donebox">
-    <form method="GET" action="<?= $jwt_body['https://purl.imsglobal.org/spec/lti/claim/launch_presentation']['return_url'] ?>">
-        <input type="submit" value="Done" />
-    </form>
+    <?php if (empty($jwt_body['https://purl.imsglobal.org/spec/lti/claim/launch_presentation']['return_url'])) { ?>
+        <srtrong>Deployment complete, please relaunch.</strong>
+    <?php } else { ?>
+        <form method="GET" action="<?= $jwt_body['https://purl.imsglobal.org/spec/lti/claim/launch_presentation']['return_url'] ?>">
+            <input type="submit" value="Done" />
+        </form>
+    <?php } ?>
 </div>
 
 <div class="box" id="messagebox">
@@ -63,6 +71,7 @@ function register() {
     query += '&client_id=<?= $client_id ?>';
     query += '&key_set_url=' + encodeURIComponent(document.getElementById('key-set').value);
     query += '&auth_token_url=' + encodeURIComponent(document.getElementById('auth-token').value);
+    query += '&private_key=' + encodeURIComponent(document.getElementById('priv-key').value);
     query += '&registration=true';
     xhttp.open("POST", "register.php?" + query, false);
     xhttp.send();

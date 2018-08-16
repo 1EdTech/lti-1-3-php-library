@@ -30,6 +30,10 @@ $jwt_body = json_decode(base64_decode($jwt_parts[1]), true);
 // Find client_id from the aud field in the JWT (could be an array)
 $client_id = is_array($jwt_body['aud']) ? $jwt_body['aud'][0] : $jwt_body['aud'];
 if (empty($client_id)) {
+    header('Content-Type: text/plain');
+    var_dump($jwt_body);
+    echo "\n\nClient id:$client_id\n\n";
+    echo is_array($jwt_body['aud']);
     die_with("Client id missing");
 }
 
@@ -66,7 +70,7 @@ try {
 }
 
 // Store a copy of the launch so we can refer back to it
-$_SESSION['current_request_url'] = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . ':' . $_SERVER['SERVER_PORT'] . $_SERVER['SCRIPT_NAME'];
+$_SESSION['current_request_url'] = ($_SERVER['HTTP_X-Forwarded-Proto'] ?: $_SERVER['REQUEST_SCHEME']) . '://' . $_SERVER['HTTP_HOST'] . ':' . $_SERVER['SERVER_PORT'] . $_SERVER['SCRIPT_NAME'];
 $_SESSION['current_request'] = $jwt_body;
 
 // Are we a deep linking request?

@@ -15,7 +15,8 @@ function get_access_token($scopes) {
 
     // Build up JWT to exchange for an auth token
     //$auth_url = $_SESSION['auth_token_urls'][$_SESSION['current_request']['iss'].':'.$_SESSION['current_request']['aud']];
-    $auth_url = $_SESSION['issuers'][$_SESSION['current_request']['iss']]['clients'][$_SESSION['current_request']['aud']]['auth_token_url'];
+    $client_id = is_array($_SESSION['current_request']['aud']) ? $_SESSION['current_request']['aud'][0] : $_SESSION['current_request']['aud'];
+    $auth_url = $_SESSION['issuers'][$_SESSION['current_request']['iss']]['clients'][$client_id]['auth_token_url'];
     $jwt_claim = [
             "iss" => "http://martinscooltools.example.com",
             "sub" => $_SESSION['current_request']['aud'],
@@ -26,7 +27,7 @@ function get_access_token($scopes) {
     ];
 
     // Sign the JWT with our private key (given by the platform on registration)
-    $jwt = JWT::encode($jwt_claim, $GLOBALS['privateKey'], 'RS256');
+    $jwt = JWT::encode($jwt_claim, $_SESSION['issuers'][$_SESSION['current_request']['iss']]['clients'][$client_id]['key']['private'], 'RS256');
 
     // Build auth token request headers
     $auth_request = [

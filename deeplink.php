@@ -15,7 +15,7 @@ session_start();
 
 $message_jwt = [
     "iss" => "https://platform.example.org",
-    "aud" => ["962fa4d8-bcbf-49a0-94b2-2de05ad274af"],
+    "aud" => [$_SESSION['current_request']['iss']],
     "exp" => time() + 60,
     "iat" => time(),
     "nonce" => uniqid("testing"),
@@ -51,10 +51,10 @@ $message_jwt = [
             ]
         ]
     ],
-    "https://purl.imsglobal.org/spec/lti-dl/data" => $_SESSION['current_request']['https://purl.imsglobal.org/spec/lti-dl/data']
+    "https://purl.imsglobal.org/spec/lti-dl/claim/data" => $_SESSION['current_request']['https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings']['data']
 ];
-
-$jwt = JWT::encode($message_jwt, $privateKey, 'RS256');
+$client_id = is_array($_SESSION['current_request']['aud']) ? $_SESSION['current_request']['aud'][0] : $_SESSION['current_request']['aud'];
+$jwt = JWT::encode($message_jwt, $_SESSION['issuers'][$_SESSION['current_request']['iss']]['clients'][$client_id]['key']['private'], 'RS256');
 
 ?>
 
