@@ -107,6 +107,9 @@ if ($jwt_body['https://purl.imsglobal.org/spec/lti/claim/message_type'] == 'LtiD
         background: black;
         color: white;
     }
+    th, td {
+        color: white;
+    }
 </style>
 <script>
     // Set game difficulty if it has been set in deep linking

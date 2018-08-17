@@ -9,6 +9,10 @@ bggrad.addColorStop(1,"rgb(0, 0, 50)");
 bgctx.fillStyle = bggrad;
 bgctx.rect(0, 0, c.width, c.height);
 bgctx.fill();
+bgctx.font = "10px Gugi";
+bgctx.fillStyle = '#FFFFFF';
+bgctx.textAlign = "left";
+bgctx.fillText("Powered By Turnitin", 6, c.height-6);
 
 var score = 0;
 
@@ -210,8 +214,8 @@ function fire() {
             x : (Math.random() * 4) - 2,
             y : (Math.random() * 4) - 2,
         };
-        this.r = (Math.random() * 8) + 1;
-        this.a = 0.8;
+        this.r = (Math.random() * 5) + 1;
+        this.a = 0.9;
         this.green = 62;
     }
 }
