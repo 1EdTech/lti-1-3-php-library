@@ -70,7 +70,7 @@ try {
 }
 
 // Store a copy of the launch so we can refer back to it
-$_SESSION['current_request_url'] = ($_SERVER['HTTP_X-Forwarded-Proto'] ?: $_SERVER['REQUEST_SCHEME']) . '://' . $_SERVER['HTTP_HOST'] . ':' . $_SERVER['SERVER_PORT'] . $_SERVER['SCRIPT_NAME'];
+$_SESSION['current_request_url'] = ($_SERVER['HTTP_X-Forwarded-Proto'] ?: $_SERVER['REQUEST_SCHEME']) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'];
 $_SESSION['current_request'] = $jwt_body;
 
 // Are we a deep linking request?
