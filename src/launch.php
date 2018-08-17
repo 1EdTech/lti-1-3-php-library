@@ -104,6 +104,8 @@ if ($jwt_body['https://purl.imsglobal.org/spec/lti/claim/message_type'] == 'LtiD
         border-top-right-radius: 20px;
         border-bottom-right-radius: 20px;
         padding-bottom: 12px;
+        background: black;
+        color: white;
     }
 </style>
 <script>

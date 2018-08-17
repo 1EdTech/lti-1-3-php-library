@@ -4,9 +4,8 @@ var ctx = window.c.getContext("2d");
 var bgctx = document.getElementById("breakoutbg").getContext("2d");
 bgctx.beginPath();
 var bggrad = ctx.createLinearGradient(0,0,0,c.height);
-bggrad.addColorStop(0,"rgb(157, 208, 239)");
-bggrad.addColorStop(0.8,"rgb(0, 116, 188)");
-bggrad.addColorStop(1,"rgb(0, 46, 112)");
+bggrad.addColorStop(0,"rgb(0, 0, 0)");
+bggrad.addColorStop(1,"rgb(0, 0, 50)");
 bgctx.fillStyle = bggrad;
 bgctx.rect(0, 0, c.width, c.height);
 bgctx.fill();
@@ -57,9 +56,9 @@ var ball = {
         window.ctx.save();
         window.ctx.beginPath();
         var gradient = ctx.createRadialGradient(this.pos.x, this.pos.y, 2, this.pos.x, this.pos.y, 10);
-        window.ctx.fillStyle = "rgb(110, 32, 22)";
-        window.ctx.strokeStyle = "rgb(110, 32, 22)";
-        window.ctx.setLineDash([5,2,4,6,1]);
+        window.ctx.fillStyle = "rgb(255, 232, 102)";
+        window.ctx.strokeStyle = "rgb(255, 232, 102)";
+        window.ctx.setLineDash([5,5]);
         window.ctx.lineWidth = 4;
         window.ctx.translate(this.pos.x, this.pos.y);
         window.ctx.rotate(this.rot * Math.PI);
@@ -194,7 +193,7 @@ function fire() {
         this.a *= 0.95;
 
         window.ctx.beginPath();
-        window.ctx.fillStyle = 'rgba(239, ' + this.green + ', 66,'+ this.a +')';
+        window.ctx.fillStyle = 'rgba(' + (239 - this.green) +', ' + this.green + ', 66,'+ this.a +')';
         window.ctx.arc(this.pos.x, this.pos.y, this.r, 0, 2 * Math.PI);
         window.ctx.fill();
 
@@ -409,10 +408,12 @@ var frame = function() {
     window.ball.render();
 
     if (pause) {
-        ctx.font = "60px Arial";
-        ctx.fillStyle = '#FFFFFF';
-        ctx.textAlign = "center";
-        ctx.fillText("Press Space to Start", c.width/2, c.height/2);
+        if (!gameover) {
+            ctx.font = "60px Gugi";
+            ctx.fillStyle = '#FFFFFF';
+            ctx.textAlign = "center";
+            ctx.fillText("Press Space to Start", c.width/2, c.height/2);
+        }
     } else {
         requestAnimationFrame(frame);
     }
