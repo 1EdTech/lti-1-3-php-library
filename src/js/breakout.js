@@ -353,7 +353,16 @@ document.addEventListener('keyup', (event) => {
     if (keyName == "ArrowRight") {
         press_right = false;
     }
+    if (keyName == " ") {
+        if (pause && !gameover) {
+            pause = false;
+            frame();
+        } else {
+            pause = true;
+        }
+    }
 });
+
 var bricks = [];
 
 for (var h = 0; h < 6; h++) {
@@ -372,7 +381,8 @@ for (var i = 0; i < 80; i++) {
 }
 startFireCount = 1;
 
-pause = false;
+pause = true;
+gameover = false;
 
 var frame = function() {
     if (window.score >= window.bricks.length) {
@@ -398,10 +408,14 @@ var frame = function() {
     window.paddle.test_hit();
     window.ball.render();
 
-    if (!pause) {
+    if (pause) {
+        ctx.font = "60px Arial";
+        ctx.fillStyle = '#FFFFFF';
+        ctx.textAlign = "center";
+        ctx.fillText("Press Space to Start", c.width/2, c.height/2);
+    } else {
         requestAnimationFrame(frame);
     }
-    pause = false;
 }
 
 start_time = Math.floor(Date.now() / 1000);
@@ -409,6 +423,7 @@ frame();
 
 var endGame = function() {
     window.pause = true;
+    window.gameover = true;
     var xhttp = new XMLHttpRequest();
     xhttp.open("GET", "score.php?grade=" + window.score, false);
     xhttp.send();
