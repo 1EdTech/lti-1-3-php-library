@@ -16,7 +16,7 @@ session_start();
 $message_jwt = [
     "iss" => "https://platform.example.org",
     "aud" => [$_SESSION['current_request']['iss']],
-    "exp" => time() + 60,
+    "exp" => time() + 600,
     "iat" => time(),
     "nonce" => uniqid("testing"),
     "https://purl.imsglobal.org/spec/lti/claim/deployment_id" => $_SESSION['current_request']['https://purl.imsglobal.org/spec/lti/claim/deployment_id'],

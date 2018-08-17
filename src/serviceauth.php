@@ -22,7 +22,7 @@ function get_access_token($scopes) {
             "sub" => $_SESSION['current_request']['aud'],
             "aud" => $auth_url,
             "iat" => time(),
-            "exp" => time()+60,
+            "exp" => time()+600,
             "jti" => uniqid("testing")
     ];
 
