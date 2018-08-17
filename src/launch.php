@@ -24,8 +24,8 @@ if (empty($raw_jwt)) {
 
 // Decode JWT Head and Body
 $jwt_parts = explode('.', $raw_jwt);
-$jwt_head = json_decode(base64_decode($jwt_parts[0]), true);
-$jwt_body = json_decode(base64_decode($jwt_parts[1]), true);
+$jwt_head = json_decode(JWT::urlsafeB64Decode($jwt_parts[0]), true);
+$jwt_body = json_decode(JWT::urlsafeB64Decode($jwt_parts[1]), true);
 
 // Find client_id from the aud field in the JWT (could be an array)
 $client_id = is_array($jwt_body['aud']) ? $jwt_body['aud'][0] : $jwt_body['aud'];
