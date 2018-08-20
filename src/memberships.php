@@ -79,7 +79,7 @@ foreach ($members['members'] as $member) {
         }
         if ($member['user_id'] == $result['userId']) {
             $final_members[$member['user_id']] = [
-                'name' => $member['name'],
+                'name' => $member['given_name'],
                 'id' => $member['user_id'],
                 'score' => $result['resultScore']
             ];

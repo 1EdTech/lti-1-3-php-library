@@ -358,6 +358,9 @@ document.addEventListener('keyup', (event) => {
     }
     if (keyName == " ") {
         if (pause && !gameover) {
+            if (!start_time) {
+                start_time = Math.floor(Date.now() / 1000);
+            }
             pause = false;
             frame();
         } else {
@@ -423,8 +426,8 @@ var frame = function() {
     }
 }
 
-start_time = Math.floor(Date.now() / 1000);
-frame();
+start_time = false;
+document.fonts.load('60px Gugi').then(frame);
 
 var endGame = function() {
     window.pause = true;

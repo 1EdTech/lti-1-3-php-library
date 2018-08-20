@@ -88,7 +88,7 @@ if ($jwt_body['https://purl.imsglobal.org/spec/lti/claim/message_type'] == 'LtiD
         <table id="leadertable" style="margin-left:12px;">
         </table>
     </div>
-    <canvas id="breakoutbg" width="800" height="500" style="position:absolute;left:0;border:1px solid #000000;">
+    <canvas id="breakoutbg" width="800" height="500" style="position:absolute;left:0;border:0;">
     </canvas>
     <canvas id="breakout" width="800" height="500" style="position:absolute;left:0;">
     </canvas>
@@ -104,7 +104,7 @@ if ($jwt_body['https://purl.imsglobal.org/spec/lti/claim/message_type'] == 'LtiD
         border-top-right-radius: 20px;
         border-bottom-right-radius: 20px;
         padding-bottom: 12px;
-        background: black;
+        background: linear-gradient(to bottom, rgb(0, 0, 0), rgb(0, 0, 50) 500px);
         color: white;
     }
     th, td {
