@@ -36,10 +36,10 @@ function get_line_item($tag, $max_score = 9999) {
     if (empty($found_line_item)) {
         // Build line item book request
         $new_line_item = [
-            "label" => "Time Taken",
+            "label" => $tag,
             "tag" => $tag,
             "resourceId" => "" . $_SESSION['current_request']['https://purl.imsglobal.org/spec/lti/claim/resource_link']['id'],
-            "scoreMaximum" => 9999,
+            "scoreMaximum" => $max_score,
         ];
 
         // Call grade book line item endpoint to send back a grade

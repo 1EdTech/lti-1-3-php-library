@@ -114,5 +114,6 @@ if ($jwt_body['https://purl.imsglobal.org/spec/lti/claim/message_type'] == 'LtiD
 <script>
     // Set game difficulty if it has been set in deep linking
     var curr_diff = '<?= $jwt_body['https://purl.imsglobal.org/spec/lti/claim/custom']['difficulty'] ?: 'normal'; ?>';
+    var curr_user_name = '<?= $jwt_body['name']; ?>';
 </script>
 <script type="text/javascript" src="js/breakout.js" charset="utf-8"></script>

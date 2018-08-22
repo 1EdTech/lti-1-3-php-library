@@ -416,10 +416,11 @@ var frame = function() {
 
     if (pause) {
         if (!gameover) {
-            ctx.font = "60px Gugi";
+            ctx.font = "50px Gugi";
             ctx.fillStyle = '#FFFFFF';
             ctx.textAlign = "center";
-            ctx.fillText("Press Space to Start", c.width/2, c.height/2);
+            ctx.fillText("Ready " + curr_user_name, c.width/2, c.height/2);
+            ctx.fillText("Press Space to Start", c.width/2, c.height/2 + 60);
         }
     } else {
         requestAnimationFrame(frame);
