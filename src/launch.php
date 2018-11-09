@@ -51,7 +51,7 @@ $public_key_set = json_decode(file_get_contents($key_set_url), true);
 // Find key used to sign the JWT (matches the KID in the header)
 $public_key;
 foreach ($public_key_set['keys'] as $key) {
-    if ($key['kid'] == $jwt_head['kid']) {
+    if ($key['kid'] == $jwt_head['kid'] && $key['alg'] == $jwt_head['alg']) {
         $public_key = openssl_pkey_get_details(JWK::parseKey($key));
         break;
     }
