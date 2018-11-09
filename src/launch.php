@@ -46,12 +46,13 @@ if (empty($_SESSION['issuers'][$jwt_body['iss']]['clients'][$client_id]['deploym
 $key_set_url = $_SESSION['issuers'][$jwt_body['iss']]['clients'][$client_id]['key_set_url'];
 
 // Download key set
-$public_key_set = json_decode(file_get_contents($key_set_url), true);
+
+$public_key_set = json_decode(get_url_content($key_set_url), true);
 
 // Find key used to sign the JWT (matches the KID in the header)
 $public_key;
 foreach ($public_key_set['keys'] as $key) {
-    if ($key['kid'] == $jwt_head['kid']) {
+    if ($key['kid'] == $jwt_head['kid'] && $key['alg'] == $jwt_head['alg']) {
         $public_key = openssl_pkey_get_details(JWK::parseKey($key));
         break;
     }
@@ -59,7 +60,7 @@ foreach ($public_key_set['keys'] as $key) {
 
 // Make sure we found the correct key
 if (empty($public_key)) {
-    die_with("Failed to find KID: " . $jwt_head['kid'] . " in keyset from " . $public_key_url);
+    die_with("Failed to find KID: " . $jwt_head['kid'] . " using alg ". $jwt_head['alg'] ." in keyset from " . $key_set_url);
 }
 
 // Validate JWT signature
