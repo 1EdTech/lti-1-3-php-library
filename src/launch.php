@@ -46,7 +46,8 @@ if (empty($_SESSION['issuers'][$jwt_body['iss']]['clients'][$client_id]['deploym
 $key_set_url = $_SESSION['issuers'][$jwt_body['iss']]['clients'][$client_id]['key_set_url'];
 
 // Download key set
-$public_key_set = json_decode(file_get_contents($key_set_url), true);
+
+$public_key_set = json_decode(get_url_content($key_set_url), true);
 
 // Find key used to sign the JWT (matches the KID in the header)
 $public_key;
