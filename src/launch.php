@@ -59,7 +59,7 @@ foreach ($public_key_set['keys'] as $key) {
 
 // Make sure we found the correct key
 if (empty($public_key)) {
-    die_with("Failed to find KID: " . $jwt_head['kid'] . " in keyset from " . $public_key_url);
+    die_with("Failed to find KID: " . $jwt_head['kid'] . " using alg ". $jwt_head['alg'] ." in keyset from " . $key_set_url);
 }
 
 // Validate JWT signature
