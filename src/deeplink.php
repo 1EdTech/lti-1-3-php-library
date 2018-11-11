@@ -1,4 +1,5 @@
 <?php
+include('util.php');
 if (empty($_POST)) {
     die;
 }
@@ -13,20 +14,22 @@ use \Firebase\JWT\JWT;
 
 session_start();
 
+$session = $_SESSION[$_COOKIE['be_session_id']];
+
 $message_jwt = [
     "iss" => "https://platform.example.org",
-    "aud" => [$_SESSION['current_request']['iss']],
+    "aud" => [$session['iss']],
     "exp" => time() + 600,
     "iat" => time(),
     "nonce" => uniqid("testing"),
-    "https://purl.imsglobal.org/spec/lti/claim/deployment_id" => $_SESSION['current_request']['https://purl.imsglobal.org/spec/lti/claim/deployment_id'],
+    "https://purl.imsglobal.org/spec/lti/claim/deployment_id" => $session['https://purl.imsglobal.org/spec/lti/claim/deployment_id'],
     "https://purl.imsglobal.org/spec/lti/claim/message_type" => "LTIDeepLinkingResponse",
     "https://purl.imsglobal.org/spec/lti/claim/version" => "1.3.0",
     "https://purl.imsglobal.org/spec/lti-dl/claim/content_items" => [
         [
             "type" => "ltiLink",
             "title" => "Breakout ".$_POST['difficulty']." mode",
-            "url" => $_SESSION['current_request_url'],
+            "url" => $session['current_request_url'],
             "presentation" => [
                 "documentTarget" => "iframe",
                 "width" => 500,
@@ -51,14 +54,14 @@ $message_jwt = [
             ]
         ]
     ],
-    "https://purl.imsglobal.org/spec/lti-dl/claim/data" => $_SESSION['current_request']['https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings']['data']
+    "https://purl.imsglobal.org/spec/lti-dl/claim/data" => $session['https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings']['data']
 ];
-$client_id = is_array($_SESSION['current_request']['aud']) ? $_SESSION['current_request']['aud'][0] : $_SESSION['current_request']['aud'];
-$jwt = JWT::encode($message_jwt, $_SESSION['issuers'][$_SESSION['current_request']['iss']]['clients'][$client_id]['key']['private'], 'RS256');
+$registration = db()->get_registration($session['iss'], $session['client_id']);
+$jwt = JWT::encode($message_jwt, $registration['key']['private'], 'RS256');
 
 ?>
 
-<form id="autosubmit" action="<?= $_SESSION['current_request']['https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings']['deep_link_return_url']; ?>" method="POST">
+<form id="autosubmit" action="<?= $session['https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings']['deep_link_return_url']; ?>" method="POST">
     <input type="hidden" name="id_token" value="<?= $jwt ?>" />
 </form>
 <script>

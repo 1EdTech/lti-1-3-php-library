@@ -11,6 +11,25 @@ use \Firebase\JWT\JWK;
 
 session_start();
 
+// Check if this is an OIDC launch.
+if (!empty($_REQUEST) && !empty($_REQUEST['iss']) && !empty($_REQUEST['login_hint'])) {
+    // Check if the requested issuer has been registered.
+    if (empty($_SESSION['issuers'][$_REQUEST['iss']])) {
+        // If there is no key set url, go to registration
+        $register_details = [
+            'iss' => $_REQUEST['iss'],
+            'client_id' => 'testing12345',    // What are the implications of this? We can only have one authorization url per issuer?
+                                    // Would we not want a url per deployment?
+        ];
+        include('registerform.php');
+        die;
+    }
+
+    // Return redirect page.
+    include('authorize.php');
+    die;
+}
+
 // Make sure request is a post
 if (empty($_POST)) {
     die_with("Launch must be a POST");
@@ -40,6 +59,10 @@ if (empty($client_id)) {
 // Find key set URL to fetch the JWKS
 if (empty($_SESSION['issuers'][$jwt_body['iss']]['clients'][$client_id]['deployments'][$jwt_body['https://purl.imsglobal.org/spec/lti/claim/deployment_id']])) {
     // If there is no key set url, go to registration
+    $register_details = [
+        'iss' => $jwt_body['iss'],
+        'client_id' => $client_id,
+    ];
     include('registerform.php');
     die;
 }
@@ -70,51 +93,30 @@ try {
     die_with($e->getMessage());
 }
 
-// Store a copy of the launch so we can refer back to it
-$_SESSION['current_request_url'] = ($_SERVER['HTTP_X-Forwarded-Proto'] ?: $_SERVER['REQUEST_SCHEME']) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'];
-$_SESSION['current_request'] = $jwt_body;
 
 // Are we a deep linking request?
-if ($jwt_body['https://purl.imsglobal.org/spec/lti/claim/message_type'] == 'LtiDeepLinkingRequest') {
-    // Go to deep linking setup form
-    include('setupform.php');
-    die;
-}
+// if ($jwt_body['https://purl.imsglobal.org/spec/lti/claim/message_type'] == 'LtiDeepLinkingRequest') {
+    //     // Go to deep linking setup form
+    //     include('setupform.php');
+//     die;
+// }
 
-// Success! Everything is signed correctly, now load the game
+$fe_session_data = [
+    'be_session_id' => uniqid('session-', true),
+    'state'         => $_REQUEST['state'],
+    'message_type'  => $jwt_body['https://purl.imsglobal.org/spec/lti/claim/message_type'],
+    'iss'           => $jwt_body['iss'],
+    'client_id'     => $client_id,
+    'deployment_id' => $jwt_body['https://purl.imsglobal.org/spec/lti/claim/deployment_id'],
+    'name'          => $jwt_body['name'],
+    'difficulty'    => $jwt_body['https://purl.imsglobal.org/spec/lti/claim/custom']['difficulty'] ?: 'normal',
+];
+// Store a copy of the launch so we can refer back to it
+$_SESSION[$fe_session_data['be_session_id']] = $jwt_body;
+$_SESSION[$fe_session_data['be_session_id']]['current_request_url'] = ($_SERVER['HTTP_X-Forwarded-Proto'] ?: $_SERVER['REQUEST_SCHEME']) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'];
+
+
+
+include('launchredirect.php');
+
 ?>
-<div style="position:absolute;width:1000px;margin-left:-500px;left:50%; display:block">
-    <div id="scoreboard" style="position:absolute; right:0; width:200px">
-        <h2 style="margin-left:12px;">Scoreboard</h2>
-        <table id="leadertable" style="margin-left:12px;">
-        </table>
-    </div>
-    <canvas id="breakoutbg" width="800" height="500" style="position:absolute;left:0;border:0;">
-    </canvas>
-    <canvas id="breakout" width="800" height="500" style="position:absolute;left:0;">
-    </canvas>
-</div>
-<link href="https://fonts.googleapis.com/css?family=Gugi" rel="stylesheet">
-<style>
-    body {
-        font-family: 'Gugi', cursive;
-    }
-    #scoreboard {
-        border: solid 1px #000;
-        border-left: none;
-        border-top-right-radius: 20px;
-        border-bottom-right-radius: 20px;
-        padding-bottom: 12px;
-        background: linear-gradient(to bottom, rgb(0, 0, 0), rgb(0, 0, 50) 500px);
-        color: white;
-    }
-    th, td {
-        color: white;
-    }
-</style>
-<script>
-    // Set game difficulty if it has been set in deep linking
-    var curr_diff = '<?= $jwt_body['https://purl.imsglobal.org/spec/lti/claim/custom']['difficulty'] ?: 'normal'; ?>';
-    var curr_user_name = '<?= $jwt_body['name']; ?>';
-</script>
-<script type="text/javascript" src="js/breakout.js" charset="utf-8"></script>

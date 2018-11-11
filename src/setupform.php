@@ -1,20 +1,21 @@
 <?php session_start(); ?>
-<div class="box">
+<div id="setup-form" style="display:none;" class="box">
     <h3>Set Up Your Game</h3>
     <form method="POST" action="deeplink.php">
-    <ul>
-        <li>
-            <lable>Difficulty</lable>
-            <select name="difficulty">
-                <option value="easy">Easy</option>
-                <option value="normal" selected>Normal</option>
-                <option value="hard">Hard</option>
-            </select>
-        </li>
-        <li>
-            <input type="submit" value="Go!" />
-        </li>
-    </ul>
+        <ul>
+            <li>
+                <label>Difficulty</label>
+                <select name="difficulty">
+                    <option value="easy">Easy</option>
+                    <option value="normal" selected>Normal</option>
+                    <option value="hard">Hard</option>
+                </select>
+            </li>
+            <li>
+                <input type="submit" value="Go!" />
+            </li>
+        </ul>
+    </form>
 </div>
 
 <style>
@@ -48,7 +49,7 @@
         border-radius:4px;
         padding: 4px 6px;
     }
-    .box lable {
+    .box label {
         display:block;
         font-size:14;
         font-weight: bold;

@@ -11,6 +11,8 @@ $access_token = get_access_token([
     "https://purl.imsglobal.org/spec/lti-ags/scope/score"
 ]);
 
+$session = $_SESSION[$_COOKIE['be_session_id']];
+
 // Build grade book request
 $grade_call = [
     "scoreGiven" => $_REQUEST['grade'],
@@ -19,16 +21,16 @@ $grade_call = [
     "activityProgress" => "Completed",
     "gradingProgress" => "Completed",
     "timestamp" => "2017-02-07T12:34:56+00:00",
-    "userId" => $_SESSION['current_request']['sub']
+    "userId" => $session['sub']
 ];
 
 // Call grade book line item endpoint to send back a grade
 $line_item_url;
-if (empty($_SESSION['current_request']['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint']['lineitem'])) {
+if (empty($session['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint']['lineitem'])) {
     $line_item = get_line_item('score', 108);
     $line_item_url = $line_item['id'];
 } else {
-    $line_item_url =$_SESSION['current_request']['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint']['lineitem'];
+    $line_item_url = $session['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint']['lineitem'];
 }
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $line_item_url . '/scores');

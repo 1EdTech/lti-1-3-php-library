@@ -11,9 +11,11 @@ function get_line_item($tag, $max_score = 9999) {
         "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem"
     ]);
 
+    $be_session_id = $_COOKIE['be_session_id'];
+
     // Line items GET
     $ch = curl_init();
-    $line_items_url = $_SESSION['current_request']['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint']['lineitems'];
+    $line_items_url = $_SESSION[$be_session_id]['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint']['lineitems'];
     curl_setopt($ch, CURLOPT_URL, $line_items_url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
@@ -38,13 +40,13 @@ function get_line_item($tag, $max_score = 9999) {
         $new_line_item = [
             "label" => $tag,
             "tag" => $tag,
-            "resourceId" => "" . $_SESSION['current_request']['https://purl.imsglobal.org/spec/lti/claim/resource_link']['id'],
+            "resourceId" => "" . $_SESSION[$be_session_id]['https://purl.imsglobal.org/spec/lti/claim/resource_link']['id'],
             "scoreMaximum" => $max_score,
         ];
 
         // Call grade book line item endpoint to send back a grade
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $_SESSION['current_request']['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint']['lineitems']);
+        curl_setopt($ch, CURLOPT_URL, $_SESSION[$be_session_id]['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint']['lineitems']);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($new_line_item));

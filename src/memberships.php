@@ -13,9 +13,11 @@ $access_token = get_access_token([
     "https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly"
 ]);
 
+$session = $_SESSION[$_COOKIE['be_session_id']];
+
 // Memberships call
 $ch = curl_init();
-$memberships_url = $_SESSION['current_request']['https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice']['context_memberships_url'];
+$memberships_url = $session['https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice']['context_memberships_url'];
 curl_setopt($ch, CURLOPT_URL, $memberships_url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
@@ -27,13 +29,13 @@ curl_close ($ch);
 
 // Find the Score line item
 $line_item_url;
-if (empty($_SESSION['current_request']['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint']['lineitem'])) {
+if (empty($session['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint']['lineitem'])) {
     // We were't given a line item, so we will find or create it.
     $score_line_item = get_line_item('score', 108);
     $line_item_url = $score_line_item['id'];
 } else {
     // We were given the line item url in the launch, use that
-    $line_item_url = $_SESSION['current_request']['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint']['lineitem'];
+    $line_item_url = $session['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint']['lineitem'];
 }
 // Results call
 $ch = curl_init();

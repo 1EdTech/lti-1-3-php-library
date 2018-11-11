@@ -11,6 +11,8 @@ $access_token = get_access_token([
     "https://purl.imsglobal.org/spec/lti-ags/scope/score"
 ]);
 
+$session = $_SESSION[$_COOKIE['be_session_id']];
+
 $time_line_item = get_line_item('timescore');
 
 // Build grade book request
@@ -19,7 +21,7 @@ $grade_call = [
     "activityProgress" => "Completed",
     "gradingProgress" => "Completed",
     "timestamp" => "2017-02-07T12:34:56+00:00",
-    "userId" => $_SESSION['current_request']['sub']
+    "userId" => $session['sub']
 ];
 
 // Call grade book line item endpoint to send back a grade
