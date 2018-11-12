@@ -1,34 +1,15 @@
 <?php
 require_once('util.php');
-require_once 'jwt/src/BeforeValidException.php';
-require_once 'jwt/src/ExpiredException.php';
-require_once 'jwt/src/SignatureInvalidException.php';
-require_once 'jwt/src/JWT.php';
-require_once 'jwt/src/JWK.php';
+require_once('jwt/src/BeforeValidException.php');
+require_once('jwt/src/ExpiredException.php');
+require_once('jwt/src/SignatureInvalidException.php');
+require_once('jwt/src/JWT.php');
+require_once('jwt/src/JWK.php');
 
 use \Firebase\JWT\JWT;
 use \Firebase\JWT\JWK;
 
 session_start();
-
-// Check if this is an OIDC launch.
-if (!empty($_REQUEST) && !empty($_REQUEST['iss']) && !empty($_REQUEST['login_hint'])) {
-    // Check if the requested issuer has been registered.
-    if (empty($_SESSION['issuers'][$_REQUEST['iss']])) {
-        // If there is no key set url, go to registration
-        $register_details = [
-            'iss' => $_REQUEST['iss'],
-            'client_id' => 'testing12345',    // What are the implications of this? We can only have one authorization url per issuer?
-                                    // Would we not want a url per deployment?
-        ];
-        include('registerform.php');
-        die;
-    }
-
-    // Return redirect page.
-    include('authorize.php');
-    die;
-}
 
 // Make sure request is a post
 if (empty($_POST)) {
@@ -57,7 +38,7 @@ if (empty($client_id)) {
 }
 
 // Find key set URL to fetch the JWKS
-if (empty($_SESSION['issuers'][$jwt_body['iss']]['clients'][$client_id]['deployments'][$jwt_body['https://purl.imsglobal.org/spec/lti/claim/deployment_id']])) {
+if (empty($_SESSION['issuers'][$jwt_body['iss']]['deployments'][$jwt_body['https://purl.imsglobal.org/spec/lti/claim/deployment_id']])) {
     // If there is no key set url, go to registration
     $register_details = [
         'iss' => $jwt_body['iss'],
@@ -66,7 +47,7 @@ if (empty($_SESSION['issuers'][$jwt_body['iss']]['clients'][$client_id]['deploym
     include('registerform.php');
     die;
 }
-$key_set_url = $_SESSION['issuers'][$jwt_body['iss']]['clients'][$client_id]['key_set_url'];
+$key_set_url = $_SESSION['issuers'][$jwt_body['iss']]['key_set_url'];
 
 // Download key set
 
@@ -94,29 +75,32 @@ try {
 }
 
 
+if (!empty($_POST['state'])) {
+    $fe_session_data = [
+        'be_session_id' => uniqid('session-', true),
+        'state'         => $_REQUEST['state'],
+        'message_type'  => $jwt_body['https://purl.imsglobal.org/spec/lti/claim/message_type'],
+        'iss'           => $jwt_body['iss'],
+        'client_id'     => $client_id,
+        'deployment_id' => $jwt_body['https://purl.imsglobal.org/spec/lti/claim/deployment_id'],
+        'name'          => $jwt_body['name'],
+        'difficulty'    => $jwt_body['https://purl.imsglobal.org/spec/lti/claim/custom']['difficulty'] ?: 'normal',
+    ];
+    // Store a copy of the launch so we can refer back to it
+    $_SESSION[$fe_session_data['be_session_id']] = $jwt_body;
+    $_SESSION[$fe_session_data['be_session_id']]['current_request_url'] = ($_SERVER['HTTP_X-Forwarded-Proto'] ?: $_SERVER['REQUEST_SCHEME']) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'];
+
+    include('launchredirect.php');
+    die;
+}
+
 // Are we a deep linking request?
-// if ($jwt_body['https://purl.imsglobal.org/spec/lti/claim/message_type'] == 'LtiDeepLinkingRequest') {
-    //     // Go to deep linking setup form
-    //     include('setupform.php');
-//     die;
-// }
+if ($jwt_body['https://purl.imsglobal.org/spec/lti/claim/message_type'] == 'LtiDeepLinkingRequest') {
+    // Go to deep linking setup form
+    include('setupform.php');
+    die;
+}
 
-$fe_session_data = [
-    'be_session_id' => uniqid('session-', true),
-    'state'         => $_REQUEST['state'],
-    'message_type'  => $jwt_body['https://purl.imsglobal.org/spec/lti/claim/message_type'],
-    'iss'           => $jwt_body['iss'],
-    'client_id'     => $client_id,
-    'deployment_id' => $jwt_body['https://purl.imsglobal.org/spec/lti/claim/deployment_id'],
-    'name'          => $jwt_body['name'],
-    'difficulty'    => $jwt_body['https://purl.imsglobal.org/spec/lti/claim/custom']['difficulty'] ?: 'normal',
-];
-// Store a copy of the launch so we can refer back to it
-$_SESSION[$fe_session_data['be_session_id']] = $jwt_body;
-$_SESSION[$fe_session_data['be_session_id']]['current_request_url'] = ($_SERVER['HTTP_X-Forwarded-Proto'] ?: $_SERVER['REQUEST_SCHEME']) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'];
-
-
-
-include('launchredirect.php');
+include('game.php');
 
 ?>

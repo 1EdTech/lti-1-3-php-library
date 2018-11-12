@@ -12,6 +12,10 @@
             <input id="auth-token" type="text" name="auth_token_url" value="https://lti-ri.imsglobal.org/platforms/7/access_tokens" />
         </li>
         <li>
+            <label>Initialization Login URL</label>
+            <input id="initialization-login" type="text" name="initialization_login_url" value="https://lti-ri.imsglobal.org/platforms/7/authorizations/new" />
+        </li>
+        <li>
             <label>Private Key</label>
             <textarea id="priv-key" type="text" name="private_key" placeholder="Use Tool Key" ></textarea>
         </li>
@@ -26,7 +30,7 @@
     <ul>
         <li>
             <input id="account-input" type="text" name="account" value="" placeholder="Account" />
-            <span class="help-icon" title="Account to link with Deplyment: <?= $jwt_body['https://purl.imsglobal.org/spec/lti/claim/deployment_id'] ?>">?</span>
+            <span class="help-icon" title="Account to link with Deployment: <?= $jwt_body['https://purl.imsglobal.org/spec/lti/claim/deployment_id'] ?>">?</span>
         </li>
         <li>
             <input type="submit" value="Go!" onclick="deploy();" />
@@ -71,6 +75,7 @@ function register() {
     query += '&client_id=<?= $register_details['client_id'] ?>';
     query += '&key_set_url=' + encodeURIComponent(document.getElementById('key-set').value);
     query += '&auth_token_url=' + encodeURIComponent(document.getElementById('auth-token').value);
+    query += '&initialization_login_url=' + encodeURIComponent(document.getElementById('initialization-login').value);
     query += '&private_key=' + encodeURIComponent(document.getElementById('priv-key').value);
     query += '&registration=true';
     xhttp.open("POST", "register.php?" + query, false);
@@ -80,7 +85,7 @@ function register() {
     document.getElementById('messagebox').innerHTML = '<?= $register_details['client_id'] ?> registered to <?= $register_details['iss'] ?>';
 }
 
-var registered = <?= empty($_SESSION['issuers'][$register_details['iss']]['clients'][$register_details['client_id']]) ? 'false' : 'true' ?>
+var registered = <?= empty($_SESSION['issuers'][$register_details['iss']]) ? 'false' : 'true' ?>
 
 if (!registered) {
     document.getElementById('registerbox').style = "display:block";

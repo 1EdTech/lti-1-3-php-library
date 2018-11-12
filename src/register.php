@@ -14,20 +14,16 @@ if (!$_REQUEST['registration']) {
     die;
 }
 
-$_SESSION['issuers'][$_REQUEST['iss']]['clients'][$_REQUEST['client_id']]['key_set_url'] = $_REQUEST['key_set_url'];
-$_SESSION['issuers'][$_REQUEST['iss']]['clients'][$_REQUEST['client_id']]['auth_token_url'] = $_REQUEST['auth_token_url'];
+$_SESSION['issuers'][$_REQUEST['iss']]['key_set_url'] = $_REQUEST['key_set_url'];
+$_SESSION['issuers'][$_REQUEST['iss']]['auth_token_url'] = $_REQUEST['auth_token_url'];
+$_SESSION['issuers'][$_REQUEST['iss']]['initialization_login_url'] = $_REQUEST['initialization_login_url'];
 
 $key = [
     'private' => empty($_REQUEST['private_key']) ? $GLOBALS['privateKey'] : $_REQUEST['private_key']
 ];
-$_SESSION['issuers'][$_REQUEST['iss']]['clients'][$_REQUEST['client_id']]['key'] = $key;
+$_SESSION['issuers'][$_REQUEST['iss']]['key'] = $key;
 var_dump($_SESSION);
 
-//$_SESSION['key_set_urls'][$_REQUEST['iss'].':'.$_REQUEST['client_id']] = $_REQUEST['key_set_url'];
-//$_SESSION['auth_token_urls'][$_REQUEST['iss'].':'.$_REQUEST['client_id']] = $_REQUEST['auth_token_url'];
-//echo "public key added for " .$_REQUEST['iss'].':'.$_REQUEST['client_id'];
-
-//$_SESSION['deployments'][$_REQUEST['deployment_id']] = $_REQUEST['account'];
 echo "\n<br>Deployment " . $_REQUEST['deployment_id'] . ' deployed to account '.$_REQUEST['account'];
 
 ?>

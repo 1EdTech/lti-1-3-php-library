@@ -9,7 +9,7 @@ $nonce = uniqid('nonce-', true);
 ?>
 <img style="position:absolute; left:50%; top:20px; margin-left:-400px;" src="https://66.media.tumblr.com/addb47b81e8d8c33c0c9a2abd7b442e6/tumblr_p1bnydcv9t1toamj8o1_500.gif" id="spin-img" />
 <iframe style="position:absolute; right:0; width:400px; top:0; bottom:0px; height:100%; border:none;" id="auth_frame" name="auth_frame"></iframe>
-<form id="auth_form" action="https://lti-ri.imsglobal.org/platforms/7/authorizations/new" method="GET"  target="auth_frame">
+<form id="auth_form" action="<?= $_SESSION['issuers'][$_REQUEST['iss']]['initialization_login_url'] ?>" method="GET"  target="auth_frame">
     <!-- static fields -->
     <input type="hidden" name="scope" value="openid"/>
     <input type="hidden" name="response_type" value="id_token"/>
@@ -23,6 +23,12 @@ $nonce = uniqid('nonce-', true);
     <input type="hidden" name="nonce" value="<?= $nonce ?>"/>
 </form>
 
+<style>
+    #game-screen, #setup-form {
+        display:none;
+    }
+</style>
+
 <script>
     var state = '<?= $state ?>';
     var authorized = function(session) {
@@ -33,9 +39,9 @@ $nonce = uniqid('nonce-', true);
         }
         window.session = session;
         if (session.message_type == "LtiDeepLinkingRequest") {
-            document.getElementById('setup-form').style = '';
+            document.getElementById('setup-form').style = 'display:block';
         } else {
-            document.getElementById('game-screen').style = '';
+            document.getElementById('game-screen').style = 'display:block';
             //start game
         }
         document.getElementById('spin-img').style = 'display:none';

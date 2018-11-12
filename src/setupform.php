@@ -1,5 +1,5 @@
 <?php session_start(); ?>
-<div id="setup-form" style="display:none;" class="box">
+<div id="setup-form" class="box">
     <h3>Set Up Your Game</h3>
     <form method="POST" action="deeplink.php">
         <ul>

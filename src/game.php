@@ -1,15 +1,15 @@
-<div id="game-screen" style="display:none;">
-<div style="position:absolute;width:1000px;margin-left:-500px;left:50%; display:block">
-    <div id="scoreboard" style="position:absolute; right:0; width:200px">
-        <h2 style="margin-left:12px;">Scoreboard</h2>
-        <table id="leadertable" style="margin-left:12px;">
-        </table>
+<div id="game-screen">
+    <div style="position:absolute;width:1000px;margin-left:-500px;left:50%; display:block">
+        <div id="scoreboard" style="position:absolute; right:0; width:200px">
+            <h2 style="margin-left:12px;">Scoreboard</h2>
+            <table id="leadertable" style="margin-left:12px;">
+            </table>
+        </div>
+        <canvas id="breakoutbg" width="800" height="500" style="position:absolute;left:0;border:0;">
+        </canvas>
+        <canvas id="breakout" width="800" height="500" style="position:absolute;left:0;">
+        </canvas>
     </div>
-    <canvas id="breakoutbg" width="800" height="500" style="position:absolute;left:0;border:0;">
-    </canvas>
-    <canvas id="breakout" width="800" height="500" style="position:absolute;left:0;">
-    </canvas>
-</div>
 </div>
 <link href="https://fonts.googleapis.com/css?family=Gugi" rel="stylesheet">
 <style>

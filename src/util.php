@@ -34,21 +34,21 @@ function db() {
 
 class FakerBase {
     function set_registration($iss, $client_id, $key_set_url, $auth_token_url, $private_key = false) {
-        $_SESSION['issuers'][$iss]['clients'][$client_id]['key_set_url'] = $key_set_url;
-        $_SESSION['issuers'][$iss]['clients'][$client_id]['auth_token_url'] = $auth_token_url;
+        $_SESSION['issuers'][$iss]['key_set_url'] = $key_set_url;
+        $_SESSION['issuers'][$iss]['auth_token_url'] = $auth_token_url;
         return $this;
     }
 
     function set_deployment($iss, $client_id, $deployment_id, $account_id) {
-        $_SESSION['issuers'][$iss]['clients'][$client_id]['deployments'][$deployment_id] = $account_id;
+        $_SESSION['issuers'][$iss]['deployments'][$deployment_id] = $account_id;
         return $this;
     }
 
     function get_registration($iss, $client_id) {
-        return $_SESSION['issuers'][$iss]['clients'][$client_id];
+        return $_SESSION['issuers'][$iss];
     }
 
     function get_deployment($iss, $client_id, $deployment_id) {
-        return $_SESSION['issuers'][$iss]['clients'][$client_id]['deployments'][$deployment_id];
+        return $_SESSION['issuers'][$iss]['deployments'][$deployment_id];
     }
 }

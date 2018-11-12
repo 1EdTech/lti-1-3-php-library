@@ -13,7 +13,8 @@ if (!$_REQUEST['deployment']) {
     die;
 }
 
-$_SESSION['issuers'][$_REQUEST['iss']]['clients'][$_REQUEST['client_id']]['deployments'][$_REQUEST['deployment_id']] = $_REQUEST['account'];
+$_SESSION['issuers'][$_REQUEST['iss']]['client'] = $_REQUEST['client_id'];
+$_SESSION['issuers'][$_REQUEST['iss']]['deployments'][$_REQUEST['deployment_id']] = $_REQUEST['account'];
 echo '{"success":true}';
 
 ?>
