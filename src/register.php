@@ -14,6 +14,7 @@ if (!$_REQUEST['registration']) {
     die;
 }
 
+$_SESSION['issuers'][$_REQUEST['iss']]['client'] = $_REQUEST['client_id'];
 $_SESSION['issuers'][$_REQUEST['iss']]['key_set_url'] = $_REQUEST['key_set_url'];
 $_SESSION['issuers'][$_REQUEST['iss']]['auth_token_url'] = $_REQUEST['auth_token_url'];
 $_SESSION['issuers'][$_REQUEST['iss']]['initialization_login_url'] = $_REQUEST['initialization_login_url'];

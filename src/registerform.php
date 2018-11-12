@@ -16,6 +16,10 @@
             <input id="initialization-login" type="text" name="initialization_login_url" value="https://lti-ri.imsglobal.org/platforms/7/authorizations/new" />
         </li>
         <li>
+            <label>Client Id</label>
+            <input id="client-id" type="text" name="client_id" value="testing12345" />
+        </li>
+        <li>
             <label>Private Key</label>
             <textarea id="priv-key" type="text" name="private_key" placeholder="Use Tool Key" ></textarea>
         </li>
@@ -72,7 +76,7 @@ function register() {
     var xhttp = new XMLHttpRequest();
     var query = 'deployment_id=<?= $jwt_body['https://purl.imsglobal.org/spec/lti/claim/deployment_id'] ?>';
     query += '&iss=<?= $register_details['iss'] ?>';
-    query += '&client_id=<?= $register_details['client_id'] ?>';
+    query += '&client_id=' + encodeURIComponent(document.getElementById('client-id').value);
     query += '&key_set_url=' + encodeURIComponent(document.getElementById('key-set').value);
     query += '&auth_token_url=' + encodeURIComponent(document.getElementById('auth-token').value);
     query += '&initialization_login_url=' + encodeURIComponent(document.getElementById('initialization-login').value);

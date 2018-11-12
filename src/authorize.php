@@ -15,12 +15,13 @@ $nonce = uniqid('nonce-', true);
     <input type="hidden" name="response_type" value="id_token"/>
     <input type="hidden" name="prompt" value="none"/>
 
-    <input type="hidden" name="client_id" value="<?= $client_id ?>"/>
-    <input type="hidden" name="redirect_uri" value=""/>
+    <input type="hidden" name="client_id" value="<?= $_SESSION['issuers'][$_REQUEST['iss']]['client'] ?>"/>
+    <input type="hidden" name="redirect_uri" value="https://9fb91d2c.ngrok.io/launch.php"/>
     <input type="hidden" name="login_hint" value="<?= $_REQUEST['login_hint'] ?>"/>
     <input type="hidden" name="lti_message_hint" value="<?= $_REQUEST['lti_message_hint'] ?>"/>
     <input type="hidden" name="state" value="<?= $state ?>"/>
     <input type="hidden" name="nonce" value="<?= $nonce ?>"/>
+    <input type="hidden" name="cmd" value="authenticate"/>
 </form>
 
 <style>
@@ -50,5 +51,6 @@ $nonce = uniqid('nonce-', true);
     }
 
     var auth_form = document.getElementById('auth_form');
+    auth_form.target = '_blank';
     auth_form.submit();
 </script>
