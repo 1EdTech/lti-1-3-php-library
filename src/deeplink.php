@@ -56,13 +56,13 @@ $message_jwt = [
     ],
     "https://purl.imsglobal.org/spec/lti-dl/claim/data" => $session['https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings']['data']
 ];
-$registration = db()->get_registration($session['iss'], $session['client_id']);
+$registration = db()->get_registration($session['iss'], is_array($session['aud']) ? $session['aud'][0] : $session['aud'] );
 $jwt = JWT::encode($message_jwt, $registration['key']['private'], 'RS256');
 
 ?>
 
 <form id="autosubmit" action="<?= $session['https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings']['deep_link_return_url']; ?>" method="POST">
-    <input type="hidden" name="id_token" value="<?= $jwt ?>" />
+    <input type="hidden" name="JWT" value="<?= $jwt ?>" />
 </form>
 <script>
     console.log(<?= json_encode($_SESSION, true) ?>);

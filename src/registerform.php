@@ -53,7 +53,7 @@ function deploy() {
     var xhttp = new XMLHttpRequest();
     var query = 'deployment_id=<?= $jwt_body['https://purl.imsglobal.org/spec/lti/claim/deployment_id'] ?>';
     query += '&iss=<?= $register_details['iss'] ?>';
-    query += '&client_id=<?= $client_id ?>';
+    query += '&client_id=<?= $register_details['client_id'] ?>';
     query += '&account=' + encodeURIComponent(document.getElementById('account-input').value);
     query += '&deployment=true';
     xhttp.open("POST", "deploy.php?" + query, false);
@@ -68,7 +68,7 @@ function register() {
     var xhttp = new XMLHttpRequest();
     var query = 'deployment_id=<?= $jwt_body['https://purl.imsglobal.org/spec/lti/claim/deployment_id'] ?>';
     query += '&iss=<?= $register_details['iss'] ?>';
-    query += '&client_id=<?= $client_id ?>';
+    query += '&client_id=<?= $register_details['client_id'] ?>';
     query += '&key_set_url=' + encodeURIComponent(document.getElementById('key-set').value);
     query += '&auth_token_url=' + encodeURIComponent(document.getElementById('auth-token').value);
     query += '&private_key=' + encodeURIComponent(document.getElementById('priv-key').value);
@@ -77,7 +77,7 @@ function register() {
     xhttp.send();
     document.getElementById('registerbox').style = '';
     document.getElementById('deploybox').style = "display:block";
-    document.getElementById('messagebox').innerHTML = '<?= $client_id ?> registered to <?= $register_details['iss'] ?>';
+    document.getElementById('messagebox').innerHTML = '<?= $register_details['client_id'] ?> registered to <?= $register_details['iss'] ?>';
 }
 
 var registered = <?= empty($_SESSION['issuers'][$register_details['iss']]['clients'][$register_details['client_id']]) ? 'false' : 'true' ?>
