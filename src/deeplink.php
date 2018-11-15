@@ -27,7 +27,7 @@ $message_jwt = [
     "https://purl.imsglobal.org/spec/lti/claim/version" => "1.3.0",
     "https://purl.imsglobal.org/spec/lti-dl/claim/content_items" => [
         [
-            "type" => "ltiLink",
+            "type" => "ltiResourceLink",
             "title" => "Breakout ".$_POST['difficulty']." mode",
             "url" => $session['current_request_url'],
             "presentation" => [

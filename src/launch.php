@@ -74,7 +74,7 @@ try {
     die_with($e->getMessage());
 }
 
-
+// Is this a launch from open id flow?
 if (!empty($_POST['state'])) {
     $fe_session_data = [
         'be_session_id' => uniqid('session-', true),
