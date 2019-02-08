@@ -12,12 +12,21 @@ use \Firebase\JWT\JWK;
 
 class LTI_Service_Connector {
     private $registration;
+    private $access_tokens = [];
 
     public function __construct(LTI_Registration $registration) {
         $this->registration = $registration;
     }
 
     public function get_access_token($scopes) {
+
+        // Don't fetch the same key more than once.
+        sort($scopes);
+        $scope_key = md5(implode('|', $scopes));
+        if (isset($this->access_tokens[$scope_key])) {
+            return $this->access_tokens[$scope_key];
+        }
+
         // Build up JWT to exchange for an auth token
         $client_id = $this->registration->get_client_id();
         $auth_url = $this->registration->get_auth_token_url();
@@ -51,27 +60,37 @@ class LTI_Service_Connector {
         $token_data = json_decode($resp, true);
         curl_close ($ch);
 
-        return $token_data['access_token'];
+        return $this->access_tokens[$scope_key] = $token_data['access_token'];
     }
 
-    public function make_service_request($scopes, $method, $url, $body = null, $content_type = 'application/json') {
+    public function make_service_request($scopes, $method, $url, $body = null, $content_type = 'application/json', $accept = 'application/json') {
         $ch = curl_init();
-        $headers = ['Authorization: Bearer '. $this->get_access_token($scopes)];
+        $headers = [
+            'Authorization: Bearer ' . $this->get_access_token($scopes),
+            'Accept:' . $accept,
+        ];
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HEADER, 1);
         if ($method === 'POST') {
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, strval($body));
             $headers[] = 'Content-Type: ' . $content_type;
         }
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        $resp_raw = curl_exec($ch);
-        $resp = json_decode($resp_raw, true);
         if (curl_errno($ch)){
             echo 'Request Error:' . curl_error($ch);
         }
+        $response = curl_exec($ch);
+        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         curl_close ($ch);
-        return $resp;
+
+        $resp_headers = substr($response, 0, $header_size);
+        $resp_body = substr($response, $header_size);
+        return [
+            'headers' => array_filter(explode("\r\n", $resp_headers)),
+            'body' => json_decode($resp_body, true),
+        ];
     }
 }
 ?>

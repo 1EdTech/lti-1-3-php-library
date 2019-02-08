@@ -1,7 +1,5 @@
 <?php
 include_once("../lti/database.php");
-include_once("../lti/registration.php");
-include_once("../lti/deployment.php");
 session_start();
 use \IMSGlobal\LTI\Database;
 use \IMSGlobal\LTI\LTI_Registration;
@@ -9,7 +7,7 @@ use \IMSGlobal\LTI\LTI_Deployment;
 $_SESSION['iss'] = [
     'http://localhost/' => [
         'client_id' => 'testing12345',
-        'auth_login_url' => 'http://localhost:9001/example/platform/return.php',
+        'auth_login_url' => TOOL_HOST . 'example/platform/return.php',
         'key_set_url' => 'http://localhost/example/platform/jwks.json',
         'deployment' => [
             '1234' => '1234'
@@ -24,6 +22,15 @@ $_SESSION['iss'] = [
             '1234' => '1234'
         ]
     ],
+    'ltiadvantagevalidator.imsglobal.org' => [
+        'client_id' => 'imstestuser',
+        'auth_login_url' => 'https://ltiadvantagevalidator.imsglobal.org/ltitool/oidcauthurl.html',
+        'auth_token_url' => 'https://oauth2server.imsglobal.org/oauth2server/authcodejwt',
+        'key_set_url' => 'https://oauth2server.imsglobal.org/jwks',
+        'deployment' => [
+            'testdeploy' => 'testdeploy'
+        ]
+    ],
 ];
 class Example_Database implements Database {
     public function find_registration_by_issuer($iss) {
@@ -35,6 +42,7 @@ class Example_Database implements Database {
             ->set_auth_token_url($_SESSION['iss'][$iss]['auth_token_url'])
             ->set_client_id($_SESSION['iss'][$iss]['client_id'])
             ->set_key_set_url($_SESSION['iss'][$iss]['key_set_url'])
+            ->set_issuer($iss)
             ->set_tool_private_key($this->private_key());
     }
 

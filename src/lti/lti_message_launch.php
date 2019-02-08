@@ -5,7 +5,12 @@ include_once("lti_exception.php");
 include_once("lti_names_roles_provisioning_service.php");
 include_once("lti_assignments_grades_service.php");
 include_once("lti_service_connector.php");
+require_once('lti_deep_link.php');
 include_once("cookie.php");
+include_once("cache.php");
+include_once("message_validator.php");
+include_once("lti_grade.php");
+include_once("lti_lineitem.php");
 require_once('../jwt/src/BeforeValidException.php');
 require_once('../jwt/src/ExpiredException.php');
 require_once('../jwt/src/SignatureInvalidException.php');
@@ -18,13 +23,22 @@ use \Firebase\JWT\JWK;
 class LTI_Message_Launch {
 
     private $db;
+    private $cache;
     private $request;
     private $cookie;
     private $jwt;
     private $registration;
+    private $launch_id;
 
-    function __construct(Database $database, Cookie $cookie = null) {
+    function __construct(Database $database, Cache $cache = null, Cookie $cookie = null) {
         $this->db = $database;
+
+        $this->launch_id = uniqid("lti1p3_launch_");
+
+        if ($cache === null) {
+            $cache = new Cache();
+        }
+        $this->cache = $cache;
 
         if ($cookie === null) {
             $cookie = new Cookie();
@@ -32,8 +46,15 @@ class LTI_Message_Launch {
         $this->cookie = $cookie;
     }
 
-    public function new(Database $database, Cookie $cookie = null) {
-        return new LTI_Message_Launch($database, $request, $cookie);
+    public static function new(Database $database, Cache $cache = null, Cookie $cookie = null) {
+        return new LTI_Message_Launch($database, $cache, $cookie);
+    }
+
+    public static function from_cache($launch_id, Database $database, Cache $cache = null) {
+        $new = new LTI_Message_Launch($database, $cache, null);
+        $new->launch_id = $launch_id;
+        $new->jwt = [ 'body' => $new->cache->get_launch_data($launch_id) ];
+        return $new->validate_registration();
     }
 
     public function validate(array $request = null) {
@@ -48,7 +69,8 @@ class LTI_Message_Launch {
             ->validate_registration()
             ->validate_jwt_signature()
             ->validate_deployment()
-            ->validate_message();
+            ->validate_message()
+            ->cache_launch_data();
     }
 
     public function has_nrps() {
@@ -71,12 +93,23 @@ class LTI_Message_Launch {
             $this->jwt['body']['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint']);
     }
 
+    public function get_deep_link() {
+        return new LTI_Deep_Link(
+            $this->registration,
+            $this->jwt['body']['https://purl.imsglobal.org/spec/lti/claim/deployment_id'],
+            $this->jwt['body']['https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings']);
+    }
+
     public function is_deep_link_launch() {
         return $this->jwt['body']['https://purl.imsglobal.org/spec/lti/claim/message_type'] === 'LtiDeepLinkingRequest';
     }
 
     public function is_resource_launch() {
         return $this->jwt['body']['https://purl.imsglobal.org/spec/lti/claim/message_type'] === 'LtiResourceLinkRequest';
+    }
+
+    public function get_launch_data() {
+        return $this->jwt['body'];
     }
 
     private function validate_state() {
@@ -164,7 +197,6 @@ class LTI_Message_Launch {
         }
 
         // Do message type validation
-        include_once("message_validator.php");
 
         // Import all validators
         foreach (glob(__DIR__ . "/message_validators/*.php") as $filename) {
@@ -204,6 +236,15 @@ class LTI_Message_Launch {
 
         return $this;
 
+    }
+
+    public function cache_launch_data() {
+        $this->cache->cache_launch_data($this->launch_id, $this->jwt['body']);
+        return $this;
+    }
+
+    public function get_launch_id() {
+        return $this->launch_id;
     }
 
     public function get_public_key() {

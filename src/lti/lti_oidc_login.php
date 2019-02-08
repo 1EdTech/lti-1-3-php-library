@@ -58,9 +58,10 @@ class LTI_OIDC_Login {
         $auth_params = [
             'scope'         => 'openid', // OIDC Scope.
             'response_type' => 'id_token', // OIDC response is always an id token.
+            'response_mode' => 'form_post', // OIDC response is always a form post.
             'prompt'        => 'none', // Don't prompt user on redirect.
             'client_id'     => $registration->get_client_id(), // Registered client id.
-            'redirect_url'  => $launch_url, // URL to return to after login.
+            'redirect_uri'  => $launch_url, // URL to return to after login.
             'state'         => $state, // State to identify browser session.
             'nonce'         => $nonce, // Prevent replay attacks.
             'login_hint'    => $request['login_hint'] // Login hint to identify platform session.

@@ -9,7 +9,7 @@ class LTI_Grade {
     private $timestamp;
     private $user_id;
 
-    public function new() {
+    public static function new() {
         return new LTI_Grade();
     }
 
