@@ -67,5 +67,19 @@ class LTI_Assignments_Grades_Service {
         );
         return new LTI_Lineitem($created_line_item['body']);
     }
+
+    public function get_grades(LTI_Lineitem $lineitem) {
+        $lineitem = $this->find_or_create_lineitem($lineitem);
+        $scores = $this->service_connector->make_service_request(
+            $this->service_data['scope'],
+            'GET',
+            $lineitem->get_id() . '/results',
+            null,
+            null,
+            'application/vnd.ims.lis.v2.resultcontainer+json'
+        );
+
+        return $scores['body'];
+    }
 }
 ?>

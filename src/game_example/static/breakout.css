@@ -1,0 +1,15 @@
+body {
+    font-family: 'Gugi', cursive;
+}
+#scoreboard {
+    border: solid 1px #000;
+    border-left: none;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    padding-bottom: 12px;
+    background: linear-gradient(to bottom, rgb(0, 0, 0), rgb(0, 0, 50) 500px);
+    color: white;
+}
+th, td {
+    color: white;
+}

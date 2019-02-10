@@ -1,10 +1,10 @@
 <?php
 require_once('../keys.php');
-require_once '../jwt/src/BeforeValidException.php';
-require_once '../jwt/src/ExpiredException.php';
-require_once '../jwt/src/SignatureInvalidException.php';
-require_once '../jwt/src/JWT.php';
-require_once '../jwt/src/JWK.php';
+require_once 'jwt/src/BeforeValidException.php';
+require_once 'jwt/src/ExpiredException.php';
+require_once 'jwt/src/SignatureInvalidException.php';
+require_once 'jwt/src/JWT.php';
+require_once 'jwt/src/JWK.php';
 
 use \Firebase\JWT\JWT;
 use \IMSGlobal\LTI;
