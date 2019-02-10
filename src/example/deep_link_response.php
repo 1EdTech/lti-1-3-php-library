@@ -9,7 +9,7 @@ if (!$launch->is_deep_link_launch()) {
     throw new Exception("Must be a deep link!");
 }
 $resource = LTI_Deep_Link_Resource::new()
-    ->set_url(TOOL_HOST . "example/launch.php")
+    ->set_url(TOOL_HOST . "/example/launch.php")
     ->set_custom_params(['test' => 'testing'])
     ->set_title('It Lives!');
 $launch->get_deep_link()

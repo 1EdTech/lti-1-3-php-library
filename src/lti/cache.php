@@ -10,5 +10,18 @@ class Cache {
         $_SESSION[$key] = $jwt_body;
         return $this;
     }
+
+    public function cache_nonce($nonce) {
+        $_SESSION['nonce'][$nonce] = true;
+        return $this;
+    }
+
+    public function check_nonce($nonce) {
+        if (!isset($_SESSION['nonce'][$nonce])) {
+            return false;
+        }
+        unset($_SESSION['nonce'][$nonce]);
+        return true;
+    }
 }
 ?>

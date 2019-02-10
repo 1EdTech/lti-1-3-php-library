@@ -6,7 +6,7 @@ use \IMSGlobal\LTI\LTI_Message_Launch;
 $launch = LTI_Message_Launch::new(new Example_Database())
     ->validate();
 if ($launch->is_deep_link_launch()) {
-    ?><a href="<?= TOOL_HOST ?>example/deep_link_response.php?launch_id=<?= $launch->get_launch_id(); ?>">Return Deep Link</a><?php
+    ?><a href="<?= TOOL_HOST ?>/example/deep_link_response.php?launch_id=<?= $launch->get_launch_id(); ?>">Return Deep Link</a><?php
     die;
 }
 if (!$launch->is_resource_launch()) {

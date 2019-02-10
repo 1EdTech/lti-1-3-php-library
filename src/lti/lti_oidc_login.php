@@ -4,19 +4,20 @@ namespace IMSGlobal\LTI;
 include_once("oidc_exception.php");
 include_once("redirect.php");
 include_once("cookie.php");
+include_once("cache.php");
 
 class LTI_OIDC_Login {
 
     private $db;
-    private $session;
+    private $cache;
     private $cookie;
 
-    function __construct(Database $database, $session = false, Cookie $cookie = null) {
+    function __construct(Database $database, Cache $cache = null, Cookie $cookie = null) {
         $this->db = $database;
-        if ($session === false) {
-            // Create session
+        if ($cache === null) {
+            $cache = new Cache();
         }
-        $this->session = $session;
+        $this->cache = $cache;
 
         if ($cookie === null) {
             $cookie = new Cookie();
@@ -24,8 +25,8 @@ class LTI_OIDC_Login {
         $this->cookie = $cookie;
     }
 
-    public static function new(Database $database, $session = false, Cookie $cookie = null) {
-        return new LTI_OIDC_Login($database, $session, $cookie);
+    public static function new(Database $database, Cache $cache = null, Cookie $cookie = null) {
+        return new LTI_OIDC_Login($database, $cache, $cookie);
     }
 
     public function do_oidc_login_redirect($launch_url, array $request = null) {
@@ -52,7 +53,7 @@ class LTI_OIDC_Login {
 
         // Generate Nonce.
         $nonce = uniqid('nonce-', true);
-        $session["lti1p3_$nonce"] = $nonce;
+        $this->cache->cache_nonce($nonce);
 
         // Build Response.
         $auth_params = [

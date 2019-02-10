@@ -66,6 +66,7 @@ class LTI_Message_Launch {
 
         return $this->validate_state()
             ->validate_jwt_format()
+            ->validate_nonce()
             ->validate_registration()
             ->validate_jwt_signature()
             ->validate_deployment()
@@ -141,6 +142,13 @@ class LTI_Message_Launch {
         // Decode JWT Body.
         $this->jwt['body'] = json_decode(JWT::urlsafeB64Decode($jwt_parts[1]), true);
 
+        return $this;
+    }
+
+    private function validate_nonce() {
+        if (!$this->cache->check_nonce($this->jwt['body']['nonce'])) {
+            //throw new LTI_Exception("Invalid Nonce");
+        }
         return $this;
     }
 
