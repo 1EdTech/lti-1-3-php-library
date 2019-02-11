@@ -428,7 +428,7 @@ var frame = function() {
 }
 
 start_time = false;
-document.fonts.load('60px Gugi').then(frame);
+document.fonts.load('50px Gugi').then(frame);
 
 var endGame = function() {
     window.pause = true;

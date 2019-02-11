@@ -5,6 +5,9 @@ include_once("db/example_database.php");
 use \IMSGlobal\LTI\LTI_Message_Launch;
 $launch = LTI_Message_Launch::new(new Example_Database())
     ->validate();
+
+?><link href="static/breakout.css" rel="stylesheet"><?php
+
 if ($launch->is_deep_link_launch()) {
     ?>
     <div class="dl-config">
@@ -34,7 +37,6 @@ if ($launch->is_deep_link_launch()) {
     </div>
 </div>
 <link href="https://fonts.googleapis.com/css?family=Gugi" rel="stylesheet">
-<link href="static/breakout.css" rel="stylesheet">
 <script>
     // Set game difficulty if it has been set in deep linking
     var curr_diff = "<?= $launch->get_launch_data()['https://purl.imsglobal.org/spec/lti/claim/custom']['difficulty'] ?: 'normal'; ?>";
