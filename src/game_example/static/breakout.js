@@ -428,29 +428,15 @@ var frame = function() {
 }
 
 start_time = false;
-document.fonts.load('60px Gugi').then(frame);
+document.fonts.load('50px Gugi').then(frame);
 
 var endGame = function() {
     window.pause = true;
     window.gameover = true;
-    var xhttp = new XMLHttpRequest();
-    xhttp.open("GET", "score.php?grade=" + window.score, false);
-    xhttp.send();
-    var xhttp = new XMLHttpRequest();
-    var time_taken = Math.floor(Date.now() / 1000) - start_time;
-    xhttp.open("GET", "time.php?time=" + time_taken, false);
-    xhttp.send();
-    window.getScoreBoard();
+    window.submitScore();
 }
 
-var getScoreBoard = function() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.addEventListener("load", resultsListner);
-    xhttp.open("GET", "memberships.php", true);
-    xhttp.send();
-}
-
-var resultsListner = function() {
+var refreshScoreBoard = function() {
     var scores = JSON.parse(this.responseText);
     console.log(scores);
     var output = '<tr><th>Score</th><th>Time</th><th>Name</th></tr>';
@@ -458,6 +444,21 @@ var resultsListner = function() {
         output += '<tr><td>' + scores[i].score + '</td><td>' + scores[i].time + 's</td><td>' + scores[i].name + '</td></tr>';
     }
     document.getElementById("leadertable").innerHTML = output;
+}
+
+var submitScore = function() {
+    var time_taken = Math.floor(Date.now() / 1000) - start_time;
+    var xhttp = new XMLHttpRequest();
+    xhttp.addEventListener("load", getScoreBoard);
+    xhttp.open("GET", "api/score.php?launch_id=" + launch_id + "&score=" + window.score + "&time=" + time_taken, false);
+    xhttp.send();
+}
+
+var getScoreBoard = function() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.addEventListener("load", refreshScoreBoard);
+    xhttp.open("GET", "api/scoreboard.php?launch_id=" + launch_id, true);
+    xhttp.send();
 }
 
 getScoreBoard();

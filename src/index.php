@@ -1,1 +1,0 @@
-Launch to launch.php to get started
