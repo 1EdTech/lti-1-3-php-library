@@ -68,14 +68,14 @@ class LTI_Grade {
     }
 
     public function __toString() {
-        return json_encode([
-            "scoreGiven" => $this->score_given,
-            "scoreMaximum" => $this->score_maximum,
+        return json_encode(array_filter([
+            "scoreGiven" => 0 + $this->score_given,
+            "scoreMaximum" => 0 + $this->score_maximum,
             "activityProgress" => $this->activity_progress,
             "gradingProgress" => $this->grading_progress,
             "timestamp" => $this->timestamp,
             "userId" => $this->user_id,
-        ]);
+        ]));
     }
 }
 ?>

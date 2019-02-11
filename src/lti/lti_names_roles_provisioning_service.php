@@ -21,7 +21,10 @@ class LTI_Names_Roles_Provisioning_Service {
             $page = $this->service_connector->make_service_request(
                 ['https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly'],
                 'GET',
-                $next_page
+                $next_page,
+                null,
+                null,
+                'application/vnd.ims.lti-nrps.v2.membershipcontainer+json'
             );
 
             $members = array_merge($members, $page['body']['members']);

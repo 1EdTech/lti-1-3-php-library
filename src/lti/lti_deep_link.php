@@ -23,12 +23,11 @@ class LTI_Deep_Link {
             "iat" => time(),
             "nonce" => uniqid("nonce"),
             "https://purl.imsglobal.org/spec/lti/claim/deployment_id" => $this->deployment_id,
-            "https://purl.imsglobal.org/spec/lti/claim/message_type" => "LTIDeepLinkingResponse",
+            "https://purl.imsglobal.org/spec/lti/claim/message_type" => "LtiDeepLinkingResponse",
             "https://purl.imsglobal.org/spec/lti/claim/version" => "1.3.0",
             "https://purl.imsglobal.org/spec/lti-dl/claim/content_items" => array_map(function($resource) { return $resource->to_array(); }, $resources),
             "https://purl.imsglobal.org/spec/lti-dl/claim/data" => $this->deep_link_settings['data'],
         ];
-        var_dump($this->registration);
         return JWT::encode($message_jwt, $this->registration->get_tool_private_key(), 'RS256');
     }
 
@@ -40,7 +39,7 @@ class LTI_Deep_Link {
             <input type="submit" name="Go" />
         </form>
         <script>
-            //document.getElementById('auto_submit').submit();
+            document.getElementById('auto_submit').submit();
         </script>
         <?php
     }

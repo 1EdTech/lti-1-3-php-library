@@ -6,5 +6,5 @@ use \IMSGlobal\LTI\LTI_OIDC_Login;
 
 LTI_OIDC_Login::new(new Example_Database())
     ->do_oidc_login_redirect(TOOL_HOST . "/game_example/game.php")
-    ->do_js_redirect();
+    ->do_redirect();
 ?>
