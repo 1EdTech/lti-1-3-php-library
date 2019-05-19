@@ -1,0 +1,18 @@
+{
+    "name": "imsglobal/lti-1p3-tool",
+    "type": "library",
+    "require": {
+        "firebase/php-jwt": "^5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "IMSGlobal\\LTI": "src/lti"
+        }
+    },
+    "authors": [
+        {
+            "name": "Martin Lenord",
+            "email": "m@rtin.dev"
+        }
+    ]
+}
