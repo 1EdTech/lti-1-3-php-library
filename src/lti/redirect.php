@@ -15,7 +15,7 @@ class Redirect {
     }
 
     public function do_js_redirect() {
-        echo "<button onclick=\"window.location='{$this->location}'\">Go!</button>";
+        echo "<script>window.location='{$this->location}';</script>";
     }
 
     public function get_redirect_url() {
