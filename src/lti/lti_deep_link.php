@@ -17,7 +17,7 @@ class LTI_Deep_Link {
 
     public function get_response_jwt($resources) {
         $message_jwt = [
-            "iss" => "TODO_CHANGE_ME",
+            "iss" => $this->registration->get_client_id(),
             "aud" => [$this->registration->get_issuer()],
             "exp" => time() + 600,
             "iat" => time(),

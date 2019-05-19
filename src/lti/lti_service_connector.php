@@ -78,10 +78,10 @@ class LTI_Service_Connector {
             $headers[] = 'Content-Type: ' . $content_type;
         }
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $response = curl_exec($ch);
         if (curl_errno($ch)){
             echo 'Request Error:' . curl_error($ch);
         }
-        $response = curl_exec($ch);
         $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         curl_close ($ch);
 
