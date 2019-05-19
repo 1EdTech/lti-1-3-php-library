@@ -2,8 +2,8 @@
 include_once("../lti/lti.php");
 include_once("db/example_database.php");
 
-use \IMSGlobal\LTI\LTI_Message_Launch;
-$launch = LTI_Message_Launch::new(new Example_Database())
+use \IMSGlobal\LTI;
+$launch = LTI\LTI_Message_Launch::new(new Example_Database())
     ->validate();
 
 ?><link href="static/breakout.css" rel="stylesheet"><?php

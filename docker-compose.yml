@@ -5,5 +5,5 @@ services:
     image: breakout-docker
     ports:
       - 9001:80
-    volumes: 
+    volumes:
       - ./src:/srv/app
