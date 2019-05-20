@@ -34,7 +34,7 @@ class LTI_Service_Connector {
                 "iss" => "TODO_CHANGE_ME",
                 "sub" => $client_id,
                 "aud" => $auth_url,
-                "iat" => time(),
+                "iat" => time() - 5,
                 "exp" => time() + 60,
                 "jti" => uniqid("lti-service-token")
         ];

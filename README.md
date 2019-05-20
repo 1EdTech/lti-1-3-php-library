@@ -11,20 +11,22 @@ The example is all written in PHP, and it also contains a docker compose file fo
 ### Registration and Deployment
 First thing you will need is to configure your registration and deployment in the example code's fake registrations database.
 
-This can be found in each example tool's code at `db/example_database.php`.
-To configure your registration add a new object into the `$_SESSION['iss']` array in the following format.
+This can be found in each example tool's code at `db/configs/local.json`.
+To configure your registration add a JSON object into the `local.json` file in the following format.
 
-```php
-'<issuer>' => [ // This will usually look something like 'http://example.com'
-    'client_id' => '<client_id>', // This is the id received in the 'aud' during a launch
-    'auth_login_url' => '<auth_login_url>', // The platform's OIDC login endpoint
-    'auth_token_url' => '<auth_token_url>', // The platform's service authorization endpoint
-    'key_set_url' => '<key_set_url>', // The platform's JWKS endpoint
-    'private_key_file' => '<path_to_private_key>', // Relative path to the tool's private key
-    'deployment' => [
-        '<deployment_id>' => '<deployment_id>' // The deployment_id passed by the platform during launch
-    ]
-],
+```javascript
+{
+    "<issuer>" : { // This will usually look something like 'http://example.com'
+        "client_id" : "<client_id>", // This is the id received in the 'aud' during a launch
+        "auth_login_url" : "<auth_login_url>", // The platform's OIDC login endpoint
+        "auth_token_url" : "<auth_token_url>", // The platform's service authorization endpoint
+        "key_set_url" : "<key_set_url>", // The platform's JWKS endpoint
+        "private_key_file" : "<path_to_private_key>", // Relative path to the tool's private key
+        "deployment" : {
+            "<deployment_id>" : "<deployment_id>" // The deployment_id passed by the platform during launch
+        }
+    }
+}
 ```
 
 ### Running in Docker
