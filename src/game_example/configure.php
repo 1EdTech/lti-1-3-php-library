@@ -12,5 +12,5 @@ $resource = LTI\LTI_Deep_Link_Resource::new()
     ->set_custom_params(['difficulty' => $_REQUEST['diff']])
     ->set_title('Breakout ' . $_REQUEST['diff'] . ' mode!');
 $launch->get_deep_link()
-    ->get_response_form([$resource]);
+    ->output_response_form([$resource]);
 ?>

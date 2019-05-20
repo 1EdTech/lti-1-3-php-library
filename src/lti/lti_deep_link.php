@@ -31,7 +31,7 @@ class LTI_Deep_Link {
         return JWT::encode($message_jwt, $this->registration->get_tool_private_key(), 'RS256');
     }
 
-    public function get_response_form($resources) {
+    public function output_response_form($resources) {
         $jwt = $this->get_response_jwt($resources);
         ?>
         <form id="auto_submit" action="<?= $this->deep_link_settings['deep_link_return_url']; ?>" method="POST">

@@ -20,7 +20,7 @@ $score_lineitem = LTI\LTI_Lineitem::new()
     ->set_tag('score')
     ->set_score_maximum(100)
     ->set_label('Score');
-var_dump($grades->put_grade($score, $score_lineitem));
+$grades->put_grade($score, $score_lineitem);
 
 
 $time = LTI\LTI_Grade::new()
@@ -34,6 +34,6 @@ $time_lineitem = LTI\LTI_Lineitem::new()
     ->set_tag('time')
     ->set_score_maximum(999)
     ->set_label('Time Taken');
-var_dump($grades->put_grade($time, $time_lineitem));
+$grades->put_grade($time, $time_lineitem);
 echo '{"success" : true}';
 ?>

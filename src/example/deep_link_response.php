@@ -13,5 +13,5 @@ $resource = LTI_Deep_Link_Resource::new()
     ->set_custom_params(['test' => 'testing'])
     ->set_title('It Lives!');
 $launch->get_deep_link()
-    ->get_response_form([$resource]);
+    ->output_response_form([$resource]);
 ?>

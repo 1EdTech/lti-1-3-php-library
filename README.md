@@ -219,7 +219,7 @@ Everything is set to return the resource to the platform. There are two methods 
 
 The following method will output the html for an aut-posting form for you.
 ```php
-$dl->get_response_form([$resource]);
+$dl->output_response_form([$resource]);
 ```
 
 Alternatively you can just request the signed JWT that will need posting back to the platform by calling.
