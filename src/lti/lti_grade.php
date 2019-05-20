@@ -9,6 +9,9 @@ class LTI_Grade {
     private $timestamp;
     private $user_id;
 
+    /**
+     * Static function to allow for method chaining without having to assign to a variable first.
+     */
     public static function new() {
         return new LTI_Grade();
     }

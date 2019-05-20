@@ -1,5 +1,6 @@
 <?php
 include_once("lti_oidc_login.php");
 include_once("lti_message_launch.php");
+include_once("database.php");
 define("TOOL_HOST", $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST']);
 ?>

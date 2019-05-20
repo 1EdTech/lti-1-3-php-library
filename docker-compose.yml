@@ -4,6 +4,6 @@ services:
     build: .
     image: breakout-docker
     ports:
-      - 9001:80
-    volumes: 
+      - ${BREAKOUT_PORT:-9001}:80
+    volumes:
       - ./src:/srv/app

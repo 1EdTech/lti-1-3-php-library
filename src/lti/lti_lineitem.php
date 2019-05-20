@@ -23,6 +23,9 @@ class LTI_Lineitem {
         $this->end_date_time = $lineitem["endDateTime"];
     }
 
+    /**
+     * Static function to allow for method chaining without having to assign to a variable first.
+     */
     public static function new() {
         return new LTI_Lineitem();
     }
