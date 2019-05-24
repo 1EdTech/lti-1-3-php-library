@@ -38,8 +38,19 @@ if ($launch->is_deep_link_launch()) {
 </div>
 <link href="https://fonts.googleapis.com/css?family=Gugi" rel="stylesheet">
 <script>
+
+    <?php
+    $launch_data = $launch->get_launch_data();
+    $difficulty = 'normal';
+    if (array_key_exists('https://purl.imsglobal.org/spec/lti/claim/custom', $launch_data)) {
+        if (array_key_exists('difficulty', $launch_data['https://purl.imsglobal.org/spec/lti/claim/custom'])) {
+            $difficulty = $launch_data['https://purl.imsglobal.org/spec/lti/claim/custom']['difficulty'];
+        }
+        
+    }
+    ?>
     // Set game difficulty if it has been set in deep linking
-    var curr_diff = "<?= $launch->get_launch_data()['https://purl.imsglobal.org/spec/lti/claim/custom']['difficulty'] ?: 'normal'; ?>";
+    var curr_diff = "<?= $difficulty ?>";
     var curr_user_name = "<?= $launch->get_launch_data()['name']; ?>";
     var launch_id = "<?= $launch->get_launch_id(); ?>";
 </script>
