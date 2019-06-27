@@ -6,7 +6,7 @@
     },
     "autoload": {
         "psr-4": {
-            "IMSGlobal\\LTI": "src/lti"
+            "IMSGlobal\\LTI\\": "src/lti"
         }
     },
     "authors": [
