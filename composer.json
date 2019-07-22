@@ -2,7 +2,8 @@
     "name": "imsglobal/lti-1p3-tool",
     "type": "library",
     "require": {
-        "fproject/php-jwt": "^4.0"
+        "fproject/php-jwt": "^4.0",
+        "phpseclib/phpseclib": "^2.0"
     },
     "autoload": {
         "psr-4": {
