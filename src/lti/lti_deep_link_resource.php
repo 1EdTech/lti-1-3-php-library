@@ -80,8 +80,8 @@ class LTI_Deep_Link_Resource {
         ];
         if ($this->lineitem !== null) {
             $resource["lineItem"] = [
-                "scoreMaximum" => $lineitem->get_score_maximum(),
-                "label" => $lineitem->get_label(),
+                "scoreMaximum" => $this->lineitem->get_score_maximum(),
+                "label" => $this->lineitem->get_label(),
             ];
         }
         return $resource;
