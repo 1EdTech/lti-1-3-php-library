@@ -10,7 +10,7 @@ if ($launch->is_deep_link_launch()) {
     die;
 }
 if (!$launch->is_resource_launch()) {
-    throw new Exception("Currently only resource launch supported");
+    throw new Exception("Currently only deep link and resource launches are supported");
 }
 
 ?>
