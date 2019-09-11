@@ -30,7 +30,9 @@ class LTI_Assignments_Grades_Service {
             $lineitem = $this->find_or_create_lineitem($lineitem);
             $score_url = $lineitem->get_id();
         }
-        $score_url .= '/scores';
+        // Place '/scores' before url params
+        $pos = strpos($score_url, '?');
+        $score_url = substr_replace( $score_url, '/scores', $pos, 0 );
         return $this->service_connector->make_service_request(
             $this->service_data['scope'],
             'POST',
@@ -70,10 +72,13 @@ class LTI_Assignments_Grades_Service {
 
     public function get_grades(LTI_Lineitem $lineitem) {
         $lineitem = $this->find_or_create_lineitem($lineitem);
+        // Place '/results' before url params
+        $pos = strpos($lineitem->get_id(), '?');
+        $results_url = substr_replace( $lineitem->get_id(), '/results', $pos, 0 );
         $scores = $this->service_connector->make_service_request(
             $this->service_data['scope'],
             'GET',
-            $lineitem->get_id() . '/results',
+            $results_url,
             null,
             null,
             'application/vnd.ims.lis.v2.resultcontainer+json'
