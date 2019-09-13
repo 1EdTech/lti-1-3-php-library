@@ -19,7 +19,8 @@ $score = LTI\LTI_Grade::new()
 $score_lineitem = LTI\LTI_Lineitem::new()
     ->set_tag('score')
     ->set_score_maximum(100)
-    ->set_label('Score');
+    ->set_label('Score')
+    ->set_resource_id($launch->get_launch_data()['https://purl.imsglobal.org/spec/lti/claim/resource_link']['id']);
 $grades->put_grade($score, $score_lineitem);
 
 
@@ -33,7 +34,8 @@ $time = LTI\LTI_Grade::new()
 $time_lineitem = LTI\LTI_Lineitem::new()
     ->set_tag('time')
     ->set_score_maximum(999)
-    ->set_label('Time Taken');
+    ->set_label('Time Taken')
+    ->set_resource_id('time'.$launch->get_launch_data()['https://purl.imsglobal.org/spec/lti/claim/resource_link']['id']);
 $grades->put_grade($time, $time_lineitem);
 echo '{"success" : true}';
 ?>
