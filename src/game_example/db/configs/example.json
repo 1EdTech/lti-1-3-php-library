@@ -18,5 +18,16 @@
         "deployment": {
             "testdeploy": "testdeploy"
         }
+    },
+    {
+   "l3.digitalyouthnetwork.org": {
+        "client_id" : "l3test",
+        "auth_login_url" : "https://qa.cityoflearning.me/lti-auth",
+        "auth_token_url" : "http://evanston.col-engine-qa.com/api/v1/lti_tool_providers/1/auth.json",
+        "key_set_url" : "https://qa.cityoflearning.me/packages/l3lti/assets/jwks.json",
+        "private_key_file" : "/private.key",
+        "deployment" : {
+            "1234" : "1234"
+        }
     }
 }
