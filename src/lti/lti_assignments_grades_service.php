@@ -1,8 +1,6 @@
 <?php
 namespace IMSGlobal\LTI;
 
-include_once("lti_lineitem.php");
-
 class LTI_Assignments_Grades_Service {
 
     private $service_connector;

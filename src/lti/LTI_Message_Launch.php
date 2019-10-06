@@ -4,6 +4,8 @@ namespace IMSGlobal\LTI;
 use \Firebase\JWT\JWT;
 use \Firebase\JWT\JWK;
 
+Firebase\JWT\JWT::$leeway = 5;
+
 class LTI_Message_Launch {
 
     private $db;

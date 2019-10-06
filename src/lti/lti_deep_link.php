@@ -1,7 +1,6 @@
 <?php
 namespace IMSGlobal\LTI;
 
-require_once('lti_deep_link_resource.php');
 use \Firebase\JWT\JWT;
 class LTI_Deep_Link {
 
