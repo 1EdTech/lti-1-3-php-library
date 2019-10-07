@@ -31,7 +31,7 @@ class LTI_Assignments_Grades_Service {
 
         // Place '/scores' before url params
         $pos = strpos($score_url, '?');
-        $score_url = substr_replace($score_url, '/scores', $pos, 0);
+        $score_url = $pos === false ? $score_url . '/scores' : substr_replace($score_url, '/scores', $pos, 0);
         return $this->service_connector->make_service_request(
             $this->service_data['scope'],
             'POST',
@@ -75,7 +75,7 @@ class LTI_Assignments_Grades_Service {
         $lineitem = $this->find_or_create_lineitem($lineitem);
         // Place '/results' before url params
         $pos = strpos($lineitem->get_id(), '?');
-        $results_url = substr_replace($lineitem->get_id(), '/results', $pos, 0);
+        $results_url = $pos === false ? $lineitem->get_id() . '/results' : substr_replace($lineitem->get_id(), '/results', $pos, 0);
         $scores = $this->service_connector->make_service_request(
             $this->service_data['scope'],
             'GET',
