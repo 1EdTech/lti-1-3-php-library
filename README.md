@@ -1,67 +1,31 @@
-# LTI 1.3 Advantage Demo Tool And Library
-This code consists of two parts:
-A library for creating LTI tool providers in PHP.
-An collection of example tools that utilize the library.
-
-# Running The Example Code
-
-## Setup
-The example is all written in PHP, and it also contains a docker compose file for easy setup if you have docker installed.
-
-### Registration and Deployment
-First thing you will need is to configure your registration and deployment in the example code's fake registrations database.
-
-This can be found in each example tool's code at `db/configs/local.json`.
-To configure your registration add a JSON object into the `local.json` file in the following format.
-
-```javascript
-{
-    "<issuer>" : { // This will usually look something like 'http://example.com'
-        "client_id" : "<client_id>", // This is the id received in the 'aud' during a launch
-        "auth_login_url" : "<auth_login_url>", // The platform's OIDC login endpoint
-        "auth_token_url" : "<auth_token_url>", // The platform's service authorization endpoint
-        "key_set_url" : "<key_set_url>", // The platform's JWKS endpoint
-        "private_key_file" : "<path_to_private_key>", // Relative path to the tool's private key
-        "deployment" : {
-            "<deployment_id>" : "<deployment_id>" // The deployment_id passed by the platform during launch
-        }
-    }
-}
-```
-
-### Running in Docker
-To run in docker you will need both `docker` and `docker-compose`
-
-To get the examples up and running in docker simply run:
-```
-docker-compose up --build
-```
-
-There are now two example tools you can launch into on the port 9001:
-```
-Simple Example:
-OIDC Login URL http://localhost:9001/example/login.php
-LTI Launch URL http://localhost:9001/example/launch.php
-
-Game Example:
-OIDC Login URL http://localhost:9001/game_example/login.php
-LTI Launch URL http://localhost:9001/game_example/game.php
-```
-
-You're now free to launch in and use the tool.
+# LTI 1.3 Advantage Library
+This code consists of a library for creating LTI tool providers in PHP.
 
 # Library Documentation
 
 ## Importing the library
+### Using Composer
+Add the following to your `composer.json` file
+```json
+"repositories": [
+    {
+        "type": "vcs",
+        "url": "https://github.com/IMSGlobal/lti-1-3-php-library"
+    }
+],
+"require": {
+    "imsglobal/lti-1p3-tool": "dev-composer"
+}
+```
+Run `composer install` or `composer update`
+In your code, you will now be able to use classes in the `\IMSGlobal\LTI` namespace to access the library.
+
 ### Manually
 To import the library, copy the `lti` folder inside `src` into your project and use the following code at the beginning of execution:
 ```php
 require_once('lti/lti.php');
 use \IMSGlobal\LTI;
 ```
-
-### Using Composer
-Coming soon...
 
 ## Accessing Registration Data
 
