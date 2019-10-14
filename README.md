@@ -1,3 +1,7 @@
+
+| **Note** : If you are looking for the example tool that uses this library, it has been moved into its own repo https://github.com/IMSGlobal/lti-1-3-php-example-tool |
+| --- |
+
 # LTI 1.3 Advantage Library
 This code consists of a library for creating LTI tool providers in PHP.
 
