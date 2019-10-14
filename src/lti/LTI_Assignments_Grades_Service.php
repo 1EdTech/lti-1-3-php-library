@@ -1,8 +1,6 @@
 <?php
 namespace IMSGlobal\LTI;
 
-include_once("lti_lineitem.php");
-
 class LTI_Assignments_Grades_Service {
 
     private $service_connector;
@@ -30,9 +28,10 @@ class LTI_Assignments_Grades_Service {
             $lineitem = $this->find_or_create_lineitem($lineitem);
             $score_url = $lineitem->get_id();
         }
+
         // Place '/scores' before url params
         $pos = strpos($score_url, '?');
-        $score_url = substr_replace( $score_url, '/scores', $pos, 0 );
+        $score_url = $pos === false ? $score_url . '/scores' : substr_replace($score_url, '/scores', $pos, 0);
         return $this->service_connector->make_service_request(
             $this->service_data['scope'],
             'POST',
@@ -55,8 +54,10 @@ class LTI_Assignments_Grades_Service {
             'application/vnd.ims.lis.v2.lineitemcontainer+json'
         );
         foreach ($line_items['body'] as $line_item) {
-            if ($line_item['tag'] == $new_line_item->get_tag()) {
-                return new LTI_Lineitem($line_item);
+            if (empty($new_line_item->get_resource_id()) || $line_item['resourceId'] == $new_line_item->get_resource_id()) {
+                if (empty($new_line_item->get_tag()) || $line_item['tag'] == $new_line_item->get_tag()) {
+                    return new LTI_Lineitem($line_item);
+                }
             }
         }
         $created_line_item = $this->service_connector->make_service_request(
@@ -74,7 +75,7 @@ class LTI_Assignments_Grades_Service {
         $lineitem = $this->find_or_create_lineitem($lineitem);
         // Place '/results' before url params
         $pos = strpos($lineitem->get_id(), '?');
-        $results_url = substr_replace( $lineitem->get_id(), '/results', $pos, 0 );
+        $results_url = $pos === false ? $lineitem->get_id() . '/results' : substr_replace($lineitem->get_id(), '/results', $pos, 0);
         $scores = $this->service_connector->make_service_request(
             $this->service_data['scope'],
             'GET',

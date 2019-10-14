@@ -1,9 +1,0 @@
-version: '3'
-services:
-  app:
-    build: .
-    image: breakout-docker
-    ports:
-      - ${BREAKOUT_PORT:-9001}:80
-    volumes:
-      - ./src:/srv/app

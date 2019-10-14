@@ -1,6 +1,8 @@
 <?php
 namespace IMSGlobal\LTI;
 
+use phpseclib\Crypt\RSA;
+
 class LTI_Registration {
 
     private $issuer;
@@ -8,7 +10,7 @@ class LTI_Registration {
     private $key_set_url;
     private $auth_token_url;
     private $auth_login_url;
-    private $tool_key_set;
+    private $tool_private_key;
 
     public static function new() {
         return new LTI_Registration();
@@ -66,6 +68,28 @@ class LTI_Registration {
     public function set_tool_private_key($tool_private_key) {
         $this->tool_private_key = $tool_private_key;
         return $this;
+    }
+
+    public function get_public_jwk() {
+        $key = new RSA();
+        $key->setPublicKey($pubkey);
+        if ( !$key->publicExponent ){
+            return [];
+        }
+        $kid = hash('sha256', trim($pubkey));
+        $components = array(
+            'kty' => 'RSA',
+            'alg' => 'RS256',
+            'e' => JOSE_URLSafeBase64::encode($key->publicExponent->toBytes()),
+            'n' => JOSE_URLSafeBase64::encode($key->modulus->toBytes()),
+            'kid' => $kid,
+        );
+        if ($key->exponent != $key->publicExponent) {
+            $components = array_merge($components, array(
+            'd' => JOSE_URLSafeBase64::encode($key->exponent->toBytes())
+            ));
+        }
+        $jwks[] = $components;
     }
 
 }

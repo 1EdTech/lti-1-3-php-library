@@ -1,11 +1,6 @@
 <?php
 namespace IMSGlobal\LTI;
 
-include_once("oidc_exception.php");
-include_once("redirect.php");
-include_once("cookie.php");
-include_once("cache.php");
-
 class LTI_OIDC_Login {
 
     private $db;
