@@ -18,7 +18,7 @@ Add the following to your `composer.json` file
     }
 ],
 "require": {
-    "imsglobal/lti-1p3-tool": "dev-composer"
+    "imsglobal/lti-1p3-tool": "dev-master"
 }
 ```
 Run `composer install` or `composer update`
