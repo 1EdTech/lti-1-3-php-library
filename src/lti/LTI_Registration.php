@@ -2,6 +2,7 @@
 namespace IMSGlobal\LTI;
 
 use phpseclib\Crypt\RSA;
+use \Firebase\JWT\JWT;
 
 class LTI_Registration {
 
@@ -72,24 +73,25 @@ class LTI_Registration {
 
     public function get_public_jwk() {
         $key = new RSA();
-        $key->setPublicKey($pubkey);
+        $key->setPrivateKey($this->get_tool_private_key());
         if ( !$key->publicExponent ){
             return [];
         }
-        $kid = hash('sha256', trim($pubkey));
+        $kid = hash('sha256', trim($this->issuer . $this->client_id));
         $components = array(
             'kty' => 'RSA',
             'alg' => 'RS256',
-            'e' => JOSE_URLSafeBase64::encode($key->publicExponent->toBytes()),
-            'n' => JOSE_URLSafeBase64::encode($key->modulus->toBytes()),
+            'e' => JWT::urlsafeB64Encode($key->publicExponent->toBytes()),
+            'n' => JWT::urlsafeB64Encode($key->modulus->toBytes()),
             'kid' => $kid,
         );
         if ($key->exponent != $key->publicExponent) {
             $components = array_merge($components, array(
-            'd' => JOSE_URLSafeBase64::encode($key->exponent->toBytes())
+            'd' => JWT::urlsafeB64Encode($key->exponent->toBytes())
             ));
         }
         $jwks[] = $components;
+        return ['keys' => $jwks];
     }
 
 }
