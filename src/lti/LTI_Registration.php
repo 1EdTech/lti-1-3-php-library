@@ -71,20 +71,23 @@ class LTI_Registration {
         return $this;
     }
 
+    public function get_kid() {
+        hash('sha256', trim($this->issuer . $this->client_id));
+    }
+
     public function get_public_jwk() {
         $key = new RSA();
         $key->setPrivateKey($this->get_tool_private_key());
         $key->setPublicKey();
-        if ( !$key->publicExponent ){
+        if ( !$key->publicExponent ) {
             return [];
         }
-        $kid = hash('sha256', trim($this->issuer . $this->client_id));
         $components = array(
             'kty' => 'RSA',
             'alg' => 'RS256',
             'e' => JWT::urlsafeB64Encode($key->publicExponent->toBytes()),
             'n' => JWT::urlsafeB64Encode($key->modulus->toBytes()),
-            'kid' => $kid,
+            'kid' => $this->get_kid(),
         );
         if ($key->exponent != $key->publicExponent) {
             $components = array_merge($components, array(
