@@ -74,6 +74,7 @@ class LTI_Registration {
     public function get_public_jwk() {
         $key = new RSA();
         $key->setPrivateKey($this->get_tool_private_key());
+        $key->setPublicKey();
         if ( !$key->publicExponent ){
             return [];
         }
