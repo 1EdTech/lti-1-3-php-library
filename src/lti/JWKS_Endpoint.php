@@ -23,8 +23,9 @@ class JWKS_Endpoint {
 
     public function get_public_jwks() {
         $key = new RSA();
-        $key->setPrivateKey($this->registration->get_tool_private_key());
-        $key->setPublicKey();
+        $key->setHash("sha256");
+        $key->loadKey($this->registration->get_tool_private_key());
+        $key->setPublicKey(false, RSA::PUBLIC_FORMAT_PKCS8);
         if ( !$key->publicExponent ) {
             return [];
         }
