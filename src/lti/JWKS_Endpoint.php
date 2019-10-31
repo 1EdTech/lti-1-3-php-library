@@ -13,12 +13,12 @@ class JWKS_Endpoint {
     }
 
     public static function new(LTI_Registration $registration) {
-        return new LTI_Registration($registration);
+        return new JWKS_Endpoint($registration);
     }
 
     public static function from_issuer(Database $database, $issuer) {
         $registration = $database->find_registration_by_issuer($issuer);
-        return new LTI_Registration($registration);
+        return new JWKS_Endpoint($registration);
     }
 
     public function get_public_jwks() {
