@@ -69,7 +69,7 @@ class LTI_Registration {
     }
 
     public function get_kid() {
-        hash('sha256', trim($this->issuer . $this->client_id));
+        return hash('sha256', trim($this->issuer . $this->client_id));
     }
 
 }
