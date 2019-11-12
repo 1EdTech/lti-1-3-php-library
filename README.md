@@ -54,6 +54,7 @@ return LTI\LTI_Registration::new()
     ->set_auth_token_url($auth_token_url)
     ->set_client_id($client_id)
     ->set_key_set_url($key_set_url)
+    ->set_kid($kid)
     ->set_issuer($issuer)
     ->set_tool_private_key($private_key);
 ```
@@ -65,6 +66,17 @@ return LTI\LTI_Deployment::new()
 ```
 
 Calls into the Library will require an instance of `LTI\Database` to be passed into them.
+
+### Creating a JWKS endpoint
+A JWKS (JSON Web Key Set) endpoint can be generated for either an individual registration or from an array of `KID`s and private keys.
+```php
+// From issuer
+LTI\JWKS_Endpoint::from_issuer(new Example_Database(), 'http://example.com')->output_jwks();
+// From registration
+LTI\JWKS_Endpoint::from_registration($registration)->output_jwks();
+// From array
+LTI\JWKS_Endpoint::new(['a_unique_KID' => file_get_contents('/path/to/private/key.pem')])->output_jwks();
+```
 
 ## Handling Requests
 

@@ -9,6 +9,7 @@ class LTI_Registration {
     private $auth_token_url;
     private $auth_login_url;
     private $tool_private_key;
+    private $kid;
 
     public static function new() {
         return new LTI_Registration();
@@ -69,7 +70,12 @@ class LTI_Registration {
     }
 
     public function get_kid() {
-        return hash('sha256', trim($this->issuer . $this->client_id));
+        return empty($this->kid) ? hash('sha256', trim($this->issuer . $this->client_id)) : $this->kid;
+    }
+
+    public function set_kid($kid) {
+        $this->kid = $kid;
+        return $this;
     }
 
 }
