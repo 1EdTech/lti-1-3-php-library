@@ -8,6 +8,7 @@ class LTI_Registration {
     private $key_set_url;
     private $auth_token_url;
     private $auth_login_url;
+    private $auth_server;
     private $tool_private_key;
     private $kid;
 
@@ -57,6 +58,15 @@ class LTI_Registration {
 
     public function set_auth_login_url($auth_login_url) {
         $this->auth_login_url = $auth_login_url;
+        return $this;
+    }
+
+    public function get_auth_server() {
+        return empty($this->auth_server) ? $this->auth_token_url : $this->auth_server;
+    }
+
+    public function set_auth_server($auth_server) {
+        $this->auth_server = $auth_server;
         return $this;
     }
 
