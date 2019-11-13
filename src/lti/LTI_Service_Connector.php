@@ -23,18 +23,17 @@ class LTI_Service_Connector {
 
         // Build up JWT to exchange for an auth token
         $client_id = $this->registration->get_client_id();
-        $auth_url = $this->registration->get_auth_token_url();
         $jwt_claim = [
                 "iss" => $client_id,
                 "sub" => $client_id,
-                "aud" => $auth_url,
+                "aud" => $this->registration->get_auth_server(),
                 "iat" => time() - 5,
                 "exp" => time() + 60,
                 "jti" => uniqid("lti-service-token")
         ];
 
         // Sign the JWT with our private key (given by the platform on registration)
-        $jwt = JWT::encode($jwt_claim, $this->registration->get_tool_private_key(), 'RS256');
+        $jwt = JWT::encode($jwt_claim, $this->registration->get_tool_private_key(), 'RS256', $this->registration->get_kid());
 
         // Build auth token request headers
         $auth_request = [
@@ -46,10 +45,11 @@ class LTI_Service_Connector {
 
         // Make request to get auth token
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $auth_url);
+        curl_setopt($ch, CURLOPT_URL, $this->registration->get_auth_token_url());
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($auth_request));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         $resp = curl_exec($ch);
         $token_data = json_decode($resp, true);
         curl_close ($ch);
@@ -66,6 +66,7 @@ class LTI_Service_Connector {
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HEADER, 1);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         if ($method === 'POST') {
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, strval($body));
