@@ -23,11 +23,10 @@ class LTI_Service_Connector {
 
         // Build up JWT to exchange for an auth token
         $client_id = $this->registration->get_client_id();
-        $auth_url = $this->registration->get_auth_token_url();
         $jwt_claim = [
                 "iss" => $client_id,
                 "sub" => $client_id,
-                "aud" => $auth_url,
+                "aud" => $this->registration->get_auth_server(),
                 "iat" => time() - 5,
                 "exp" => time() + 60,
                 "jti" => uniqid("lti-service-token")
@@ -46,7 +45,7 @@ class LTI_Service_Connector {
 
         // Make request to get auth token
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $auth_url);
+        curl_setopt($ch, CURLOPT_URL, $this->registration->get_auth_token_url());
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($auth_request));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
