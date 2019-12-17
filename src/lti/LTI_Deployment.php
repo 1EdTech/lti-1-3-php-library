@@ -5,7 +5,7 @@ class LTI_Deployment {
 
     private $deployment_id;
 
-    public function new() {
+    public static function new() {
         return new LTI_Deployment();
     }
 
