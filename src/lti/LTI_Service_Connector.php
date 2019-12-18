@@ -1,8 +1,7 @@
 <?php
 namespace IMSGlobal\LTI;
 
-use \Firebase\JWT\JWT;
-use \Firebase\JWT\JWK;
+use Firebase\JWT\JWT;
 
 class LTI_Service_Connector {
     private $registration;
@@ -29,7 +28,7 @@ class LTI_Service_Connector {
                 "aud" => $this->registration->get_auth_server(),
                 "iat" => time() - 5,
                 "exp" => time() + 60,
-                "jti" => uniqid("lti-service-token")
+                "jti" => 'lti-service-token' . hash('sha256', random_bytes(64))
         ];
 
         // Sign the JWT with our private key (given by the platform on registration)
