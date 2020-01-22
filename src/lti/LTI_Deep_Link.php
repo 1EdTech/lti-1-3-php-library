@@ -20,7 +20,7 @@ class LTI_Deep_Link {
             "aud" => [$this->registration->get_issuer()],
             "exp" => time() + 600,
             "iat" => time(),
-            "nonce" => uniqid("nonce"),
+            "nonce" => 'nonce' . hash('sha256', random_bytes(64)),
             "https://purl.imsglobal.org/spec/lti/claim/deployment_id" => $this->deployment_id,
             "https://purl.imsglobal.org/spec/lti/claim/message_type" => "LtiDeepLinkingResponse",
             "https://purl.imsglobal.org/spec/lti/claim/version" => "1.3.0",
