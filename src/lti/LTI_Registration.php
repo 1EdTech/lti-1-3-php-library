@@ -90,4 +90,3 @@ class LTI_Registration {
 
 }
 
-?>

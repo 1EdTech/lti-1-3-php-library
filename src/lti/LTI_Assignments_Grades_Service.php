@@ -88,4 +88,3 @@ class LTI_Assignments_Grades_Service {
         return $scores['body'];
     }
 }
-?>

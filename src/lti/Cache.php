@@ -43,4 +43,3 @@ class Cache {
         file_put_contents(sys_get_temp_dir() . '/lti_cache.txt', json_encode($this->cache));
     }
 }
-?>

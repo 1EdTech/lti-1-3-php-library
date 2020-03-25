@@ -105,4 +105,3 @@ class LTI_Lineitem {
         ]));
     }
 }
-?>

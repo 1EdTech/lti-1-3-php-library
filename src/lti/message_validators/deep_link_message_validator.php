@@ -33,4 +33,3 @@ class Deep_Link_Message_Validator implements Message_Validator {
         return true;
     }
 }
-?>

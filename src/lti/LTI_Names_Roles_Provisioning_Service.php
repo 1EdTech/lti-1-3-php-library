@@ -41,4 +41,3 @@ class LTI_Names_Roles_Provisioning_Service {
 
     }
 }
-?>
