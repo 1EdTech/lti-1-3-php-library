@@ -191,7 +191,11 @@ class LTI_Message_Launch {
         foreach ($public_key_set['keys'] as $key) {
             if ($key['kid'] == $this->jwt['header']['kid']) {
                 try {
-                    return openssl_pkey_get_details(JWK::parseKey($key));
+                    return openssl_pkey_get_details(
+                        JWK::parseKeySet([
+                            'keys' => [$key]
+                        ])[$key['kid']]
+                    );
                 } catch(\Exception $e) {
                     return false;
                 }
@@ -265,6 +269,10 @@ class LTI_Message_Launch {
     }
 
     private function validate_jwt_signature() {
+        if (!isset($this->jwt['header']['kid'])) {
+            throw new LTI_Exception("No KID specified in the JWT Header");
+        }
+
         // Fetch public key.
         $public_key = $this->get_public_key();
 
