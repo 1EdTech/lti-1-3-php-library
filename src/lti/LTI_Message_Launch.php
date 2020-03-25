@@ -29,12 +29,12 @@ class LTI_Message_Launch {
         $this->launch_id = uniqid("lti1p3_launch_", true);
 
         if ($cache === null) {
-            $cache = new Cache();
+            $cache = new ImsCache();
         }
         $this->cache = $cache;
 
         if ($cookie === null) {
-            $cookie = new Cookie();
+            $cookie = new ImsCookie();
         }
         $this->cookie = $cookie;
     }

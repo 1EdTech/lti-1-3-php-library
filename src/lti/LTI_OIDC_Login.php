@@ -17,12 +17,12 @@ class LTI_OIDC_Login {
     function __construct(Database $database, Cache $cache = null, Cookie $cookie = null) {
         $this->db = $database;
         if ($cache === null) {
-            $cache = new Cache();
+            $cache = new ImsCache();
         }
         $this->cache = $cache;
 
         if ($cookie === null) {
-            $cookie = new Cookie();
+            $cookie = new ImsCookie();
         }
         $this->cookie = $cookie;
     }
