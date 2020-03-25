@@ -191,7 +191,11 @@ class LTI_Message_Launch {
         foreach ($public_key_set['keys'] as $key) {
             if ($key['kid'] == $this->jwt['header']['kid']) {
                 try {
-                    return openssl_pkey_get_details(JWK::parseKey($key));
+                    return openssl_pkey_get_details(
+                        JWK::parseKeySet([
+                            'keys' => [$key]
+                        ])[$key['kid']]
+                    );
                 } catch(\Exception $e) {
                     return false;
                 }
