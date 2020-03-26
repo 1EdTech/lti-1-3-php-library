@@ -95,7 +95,7 @@ class LTI_Message_Launch {
      * @return boolean  Returns a boolean indicating the availability of names and roles.
      */
     public function has_nrps() {
-        return !empty($this->jwt['body']['https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice']['context_memberships_url']);
+        return !empty($this->jwt['body'][LTI_Constants::NRPS_NAMESROLESPROVISIONINGSERVICE]['context_memberships_url']);
     }
 
     /**
@@ -106,7 +106,7 @@ class LTI_Message_Launch {
     public function get_nrps() {
         return new LTI_Names_Roles_Provisioning_Service(
             new LTI_Service_Connector($this->registration),
-            $this->jwt['body']['https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice']);
+            $this->jwt['body'][LTI_Constants::NRPS_NAMESROLESPROVISIONINGSERVICE]);
     }
 
     /**
@@ -115,7 +115,7 @@ class LTI_Message_Launch {
      * @return boolean  Returns a boolean indicating the availability of assignments and grades.
      */
     public function has_ags() {
-        return !empty($this->jwt['body']['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint']);
+        return !empty($this->jwt['body'][LTI_Constants::AGS_ENDPOINT]);
     }
 
     /**
@@ -126,7 +126,7 @@ class LTI_Message_Launch {
     public function get_ags() {
         return new LTI_Assignments_Grades_Service(
             new LTI_Service_Connector($this->registration),
-            $this->jwt['body']['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint']);
+            $this->jwt['body'][LTI_Constants::AGS_ENDPOINT]);
     }
 
     /**
@@ -138,7 +138,7 @@ class LTI_Message_Launch {
         return new LTI_Deep_Link(
             $this->registration,
             $this->jwt['body'][LTI_Constants::DEPLOYMENT_ID],
-            $this->jwt['body']['https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings']);
+            $this->jwt['body'][LTI_Constants::DL_DEEP_LINK_SETTINGS]);
     }
 
     /**

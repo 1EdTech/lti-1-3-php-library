@@ -22,8 +22,14 @@ class LTI_Constants
     const LIS = 'https://purl.imsglobal.org/spec/lti/claim/lis';
     const CUSTOM = 'https://purl.imsglobal.org/spec/lti/claim/custom';
 
+    // LTI DL
+    const DL_CONTENT_ITEMS = 'https://purl.imsglobal.org/spec/lti-dl/claim/content_items';
+    const DL_DATA = 'https://purl.imsglobal.org/spec/lti-dl/claim/data';
+    const DL_DEEP_LINK_SETTINGS = 'https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings';
+
     // LTI NRPS
-    const NRPS = 'https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice';
+    const NRPS_NAMESROLESPROVISIONINGSERVICE = 'https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice';
+    const NRPS_CONTEXT_MEMBERSHIP_READ_ONLY = 'https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly';
 
     // LTI AGS
     const AGS_ENDPOINT = 'https://purl.imsglobal.org/spec/lti-ags/claim/endpoint';

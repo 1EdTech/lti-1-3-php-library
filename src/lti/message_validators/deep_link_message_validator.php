@@ -16,10 +16,10 @@ class Deep_Link_Message_Validator implements Message_Validator {
         if (!isset($jwt_body[LTI_Constants::ROLES])) {
             throw new LTI_Exception('Missing Roles Claim');
         }
-        if (empty($jwt_body['https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings'])) {
+        if (empty($jwt_body[LTI_Constants::DL_DEEP_LINK_SETTINGS])) {
             throw new LTI_Exception('Missing Deep Linking Settings');
         }
-        $deep_link_settings = $jwt_body['https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings'];
+        $deep_link_settings = $jwt_body[LTI_Constants::DL_DEEP_LINK_SETTINGS];
         if (empty($deep_link_settings['deep_link_return_url'])) {
             throw new LTI_Exception('Missing Deep Linking Return URL');
         }
