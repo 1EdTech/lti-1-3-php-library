@@ -10,6 +10,9 @@ class Resource_Message_Validator implements Message_Validator {
         if (empty($jwt_body['sub'])) {
             throw new LTI_Exception('Must have a user (sub)');
         }
+        if (!isset($jwt_body[LTI_Constants::VERSION])) {
+            throw new LTI_Exception('Missing LTI Version');
+        }
         if ($jwt_body[LTI_Constants::VERSION] !== LTI_Constants::V1_3) {
             throw new LTI_Exception('Incorrect version, expected 1.3.0');
         }
