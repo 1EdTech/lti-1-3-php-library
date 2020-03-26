@@ -137,7 +137,7 @@ class LTI_Message_Launch {
     public function get_deep_link() {
         return new LTI_Deep_Link(
             $this->registration,
-            $this->jwt['body']['https://purl.imsglobal.org/spec/lti/claim/deployment_id'],
+            $this->jwt['body'][LTI_Constants::DEPLOYMENT_ID],
             $this->jwt['body']['https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings']);
     }
 
@@ -147,7 +147,7 @@ class LTI_Message_Launch {
      * @return boolean  Returns true if the current launch is a deep linking launch.
      */
     public function is_deep_link_launch() {
-        return $this->jwt['body']['https://purl.imsglobal.org/spec/lti/claim/message_type'] === 'LtiDeepLinkingRequest';
+        return $this->jwt['body'][LTI_Constants::MESSAGE_TYPE] === 'LtiDeepLinkingRequest';
     }
 
     /**
@@ -156,7 +156,7 @@ class LTI_Message_Launch {
      * @return boolean  Returns true if the current launch is a resource launch.
      */
     public function is_resource_launch() {
-        return $this->jwt['body']['https://purl.imsglobal.org/spec/lti/claim/message_type'] === 'LtiResourceLinkRequest';
+        return $this->jwt['body'][LTI_Constants::MESSAGE_TYPE] === 'LtiResourceLinkRequest';
     }
 
     /**
@@ -289,12 +289,12 @@ class LTI_Message_Launch {
     }
 
     private function validate_deployment() {
-        if (!isset($this->jwt['body']['https://purl.imsglobal.org/spec/lti/claim/deployment_id'])) {
+        if (!isset($this->jwt['body'][LTI_Constants::DEPLOYMENT_ID])) {
             throw new LTI_Exception("No deployment ID was specified", 1);
         }
 
         // Find deployment.
-        $deployment = $this->db->find_deployment($this->jwt['body']['iss'], $this->jwt['body']['https://purl.imsglobal.org/spec/lti/claim/deployment_id']);
+        $deployment = $this->db->find_deployment($this->jwt['body']['iss'], $this->jwt['body'][LTI_Constants::DEPLOYMENT_ID]);
 
         if (empty($deployment)) {
             // deployment not recognized.
@@ -305,7 +305,7 @@ class LTI_Message_Launch {
     }
 
     private function validate_message() {
-        if (empty($this->jwt['body']['https://purl.imsglobal.org/spec/lti/claim/message_type'])) {
+        if (empty($this->jwt['body'][LTI_Constants::MESSAGE_TYPE])) {
             // Unable to identify message type.
             throw new LTI_Exception("Invalid message type", 1);
         }
