@@ -3,6 +3,7 @@ namespace IMSGlobal\LTI;
 
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
+use Firebase\JWT\ExpiredException;
 
 JWT::$leeway = 5;
 
@@ -279,7 +280,7 @@ class LTI_Message_Launch {
         // Validate JWT signature
         try {
             JWT::decode($this->request['id_token'], $public_key['key'], array('RS256'));
-        } catch(\Exception $e) {
+        } catch(ExpiredException $e) {
             var_dump($e);
             // Error validating signature.
             throw new LTI_Exception("Invalid signature on id_token", 1);
