@@ -245,6 +245,9 @@ class LTI_Message_Launch {
     }
 
     private function validate_nonce() {
+        if (!isset($this->jwt['body']['nonce'])) {
+            throw new LTI_Exception("Missing Nonce");
+        }
         if (!$this->cache->check_nonce($this->jwt['body']['nonce'])) {
             //throw new LTI_Exception("Invalid Nonce");
         }
