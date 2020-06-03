@@ -4,6 +4,9 @@ namespace IMSGlobal\LTI;
 use Firebase\JWT\JWT;
 
 class LTI_Service_Connector {
+
+    const NEXT_PAGE_REGEX = "/^Link:.*<([^>]*)>; ?rel=\"next\"/i";
+
     private $registration;
     private $access_tokens = [];
 
