@@ -4,10 +4,12 @@ namespace IMSGlobal\LTI;
 class LTI_Grade {
     private $score_given;
     private $score_maximum;
+    private $comment;
     private $activity_progress;
     private $grading_progress;
     private $timestamp;
     private $user_id;
+    private $submission_review;
 
     /**
      * Static function to allow for method chaining without having to assign to a variable first.
@@ -31,6 +33,15 @@ class LTI_Grade {
 
     public function set_score_maximum($value) {
         $this->score_maximum = $value;
+        return $this;
+    }
+
+    public function get_comment() {
+        return $this->comment;
+    }
+
+    public function set_comment($comment) {
+        $this->comment = $comment;
         return $this;
     }
 
@@ -70,14 +81,25 @@ class LTI_Grade {
         return $this;
     }
 
+    public function get_submission_review() {
+        return $this->submission_review;
+    }
+
+    public function set_submission_review($value) {
+        $this->submission_review = $value;
+        return $this;
+    }
+
     public function __toString() {
         return json_encode(array_filter([
             "scoreGiven" => 0 + $this->score_given,
             "scoreMaximum" => 0 + $this->score_maximum,
+            "comment" => $this->comment,
             "activityProgress" => $this->activity_progress,
             "gradingProgress" => $this->grading_progress,
             "timestamp" => $this->timestamp,
             "userId" => $this->user_id,
+            "submissionReview" => $this->submission_review,
         ]));
     }
 }
