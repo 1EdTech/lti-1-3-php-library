@@ -53,8 +53,16 @@ class LTI_Assignments_Grades_Service {
             null,
             'application/vnd.ims.lis.v2.lineitemcontainer+json'
         );
+        // If there is only one item, then wrap it in an array so the foreach works
+        if (isset($line_items['body']['id'])) {
+            $line_items['body'] = [$line_items['body']];
+        }
         foreach ($line_items['body'] as $line_item) {
-            if (empty($new_line_item->get_resource_id()) || $line_item['resourceId'] == $new_line_item->get_resource_id()) {
+            if (
+                (empty($new_line_item->get_resource_id()) && empty($new_line_item->get_resource_link_id())) ||
+                (isset($line_item['resourceId']) && $line_item['resourceId'] == $new_line_item->get_resource_id()) ||
+                (isset($line_item['resourceLinkId']) && $line_item['resourceLinkId'] == $new_line_item->get_resource_link_id())
+            ) {
                 if (empty($new_line_item->get_tag()) || $line_item['tag'] == $new_line_item->get_tag()) {
                     return new LTI_Lineitem($line_item);
                 }
