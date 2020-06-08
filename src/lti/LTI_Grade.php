@@ -103,4 +103,3 @@ class LTI_Grade {
         ]));
     }
 }
-?>

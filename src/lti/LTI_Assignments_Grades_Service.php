@@ -12,7 +12,7 @@ class LTI_Assignments_Grades_Service {
     }
 
     public function put_grade(LTI_Grade $grade, LTI_Lineitem $lineitem = null) {
-        if (!in_array("https://purl.imsglobal.org/spec/lti-ags/scope/score", $this->service_data['scope'])) {
+        if (!in_array(LTI_Constants::AGS_SCORE, $this->service_data['scope'])) {
             throw new LTI_Exception('Missing required scope', 1);
         }
         $score_url = '';
@@ -42,7 +42,7 @@ class LTI_Assignments_Grades_Service {
     }
 
     public function find_or_create_lineitem(LTI_Lineitem $new_line_item) {
-        if (!in_array("https://purl.imsglobal.org/spec/lti-ags/scope/lineitem", $this->service_data['scope'])) {
+        if (!in_array(LTI_Constants::AGS_LINEITEM, $this->service_data['scope'])) {
             throw new LTI_Exception('Missing required scope', 1);
         }
         $line_items = $this->service_connector->make_service_request(
@@ -88,4 +88,3 @@ class LTI_Assignments_Grades_Service {
         return $scores['body'];
     }
 }
-?>

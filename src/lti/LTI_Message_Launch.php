@@ -3,6 +3,7 @@ namespace IMSGlobal\LTI;
 
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
+use Firebase\JWT\ExpiredException;
 
 JWT::$leeway = 5;
 
@@ -29,12 +30,12 @@ class LTI_Message_Launch {
         $this->launch_id = uniqid("lti1p3_launch_", true);
 
         if ($cache === null) {
-            $cache = new Cache();
+            $cache = new ImsCache();
         }
         $this->cache = $cache;
 
         if ($cookie === null) {
-            $cookie = new Cookie();
+            $cookie = new ImsCookie();
         }
         $this->cookie = $cookie;
     }
@@ -94,7 +95,7 @@ class LTI_Message_Launch {
      * @return boolean  Returns a boolean indicating the availability of names and roles.
      */
     public function has_nrps() {
-        return !empty($this->jwt['body']['https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice']['context_memberships_url']);
+        return !empty($this->jwt['body'][LTI_Constants::NRPS_NAMESROLESPROVISIONINGSERVICE]['context_memberships_url']);
     }
 
     /**
@@ -105,7 +106,7 @@ class LTI_Message_Launch {
     public function get_nrps() {
         return new LTI_Names_Roles_Provisioning_Service(
             new LTI_Service_Connector($this->registration),
-            $this->jwt['body']['https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice']);
+            $this->jwt['body'][LTI_Constants::NRPS_NAMESROLESPROVISIONINGSERVICE]);
     }
 
     /**
@@ -134,7 +135,7 @@ class LTI_Message_Launch {
      * @return boolean  Returns a boolean indicating the availability of assignments and grades.
      */
     public function has_ags() {
-        return !empty($this->jwt['body']['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint']);
+        return !empty($this->jwt['body'][LTI_Constants::AGS_ENDPOINT]);
     }
 
     /**
@@ -145,7 +146,7 @@ class LTI_Message_Launch {
     public function get_ags() {
         return new LTI_Assignments_Grades_Service(
             new LTI_Service_Connector($this->registration),
-            $this->jwt['body']['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint']);
+            $this->jwt['body'][LTI_Constants::AGS_ENDPOINT]);
     }
 
     /**
@@ -156,8 +157,8 @@ class LTI_Message_Launch {
     public function get_deep_link() {
         return new LTI_Deep_Link(
             $this->registration,
-            $this->jwt['body']['https://purl.imsglobal.org/spec/lti/claim/deployment_id'],
-            $this->jwt['body']['https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings']);
+            $this->jwt['body'][LTI_Constants::DEPLOYMENT_ID],
+            $this->jwt['body'][LTI_Constants::DL_DEEP_LINK_SETTINGS]);
     }
 
     /**
@@ -166,7 +167,7 @@ class LTI_Message_Launch {
      * @return boolean  Returns true if the current launch is a deep linking launch.
      */
     public function is_deep_link_launch() {
-        return $this->jwt['body']['https://purl.imsglobal.org/spec/lti/claim/message_type'] === 'LtiDeepLinkingRequest';
+        return $this->jwt['body'][LTI_Constants::MESSAGE_TYPE] === 'LtiDeepLinkingRequest';
     }
 
     /**
@@ -184,7 +185,7 @@ class LTI_Message_Launch {
      * @return boolean  Returns true if the current launch is a resource launch.
      */
     public function is_resource_launch() {
-        return $this->jwt['body']['https://purl.imsglobal.org/spec/lti/claim/message_type'] === 'LtiResourceLinkRequest';
+        return $this->jwt['body'][LTI_Constants::MESSAGE_TYPE] === 'LtiResourceLinkRequest';
     }
 
     /**
@@ -220,7 +221,11 @@ class LTI_Message_Launch {
         foreach ($public_key_set['keys'] as $key) {
             if ($key['kid'] == $this->jwt['header']['kid']) {
                 try {
-                    return openssl_pkey_get_details(JWK::parseKey($key));
+                    return openssl_pkey_get_details(
+                        JWK::parseKeySet([
+                            'keys' => [$key]
+                        ])[$key['kid']]
+                    );
                 } catch(\Exception $e) {
                     return false;
                 }
@@ -269,6 +274,9 @@ class LTI_Message_Launch {
     }
 
     private function validate_nonce() {
+        if (!isset($this->jwt['body']['nonce'])) {
+            throw new LTI_Exception("Missing Nonce");
+        }
         if (!$this->cache->check_nonce($this->jwt['body']['nonce'])) {
             //throw new LTI_Exception("Invalid Nonce");
         }
@@ -294,14 +302,17 @@ class LTI_Message_Launch {
     }
 
     private function validate_jwt_signature() {
+        if (!isset($this->jwt['header']['kid'])) {
+            throw new LTI_Exception("No KID specified in the JWT Header");
+        }
+
         // Fetch public key.
         $public_key = $this->get_public_key();
 
         // Validate JWT signature
         try {
             JWT::decode($this->request['id_token'], $public_key['key'], array('RS256'));
-        } catch(\Exception $e) {
-            var_dump($e);
+        } catch(ExpiredException $e) {
             // Error validating signature.
             throw new LTI_Exception("Invalid signature on id_token", 1);
         }
@@ -310,8 +321,12 @@ class LTI_Message_Launch {
     }
 
     private function validate_deployment() {
+        if (!isset($this->jwt['body'][LTI_Constants::DEPLOYMENT_ID])) {
+            throw new LTI_Exception("No deployment ID was specified", 1);
+        }
+
         // Find deployment.
-        $deployment = $this->db->find_deployment($this->jwt['body']['iss'], $this->jwt['body']['https://purl.imsglobal.org/spec/lti/claim/deployment_id']);
+        $deployment = $this->db->find_deployment($this->jwt['body']['iss'], $this->jwt['body'][LTI_Constants::DEPLOYMENT_ID]);
 
         if (empty($deployment)) {
             // deployment not recognized.
@@ -322,7 +337,7 @@ class LTI_Message_Launch {
     }
 
     private function validate_message() {
-        if (empty($this->jwt['body']['https://purl.imsglobal.org/spec/lti/claim/message_type'])) {
+        if (empty($this->jwt['body'][LTI_Constants::MESSAGE_TYPE])) {
             // Unable to identify message type.
             throw new LTI_Exception("Invalid message type", 1);
         }
@@ -369,4 +384,4 @@ class LTI_Message_Launch {
 
     }
 }
-?>
+

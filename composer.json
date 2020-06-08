@@ -2,7 +2,7 @@
     "name": "imsglobal/lti-1p3-tool",
     "type": "library",
     "require": {
-        "fproject/php-jwt": "^4.0",
+        "firebase/php-jwt": "^5.2",
         "phpseclib/phpseclib": "^2.0"
     },
     "autoload": {

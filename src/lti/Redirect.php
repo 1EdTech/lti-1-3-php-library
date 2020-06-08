@@ -19,7 +19,7 @@ class Redirect {
 
     public function do_hybrid_redirect(Cookie $cookie = null) {
         if ($cookie == null) {
-            $cookie = new Cookie();
+            $cookie = new ImsCookie();
         }
         if (!empty($cookie->get_cookie(self::$CAN_302_COOKIE))) {
             return $this->do_redirect();
@@ -79,5 +79,3 @@ class Redirect {
     }
 
 }
-
-?>

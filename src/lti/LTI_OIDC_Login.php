@@ -3,6 +3,8 @@ namespace IMSGlobal\LTI;
 
 class LTI_OIDC_Login {
 
+    public const COOKIE_PREFIX = 'lti1p3_';
+
     private $db;
     private $cache;
     private $cookie;
@@ -17,12 +19,12 @@ class LTI_OIDC_Login {
     function __construct(Database $database, Cache $cache = null, Cookie $cookie = null) {
         $this->db = $database;
         if ($cache === null) {
-            $cache = new Cache();
+            $cache = new ImsCache();
         }
         $this->cache = $cache;
 
         if ($cookie === null) {
-            $cookie = new Cookie();
+            $cookie = new ImsCookie();
         }
         $this->cookie = $cookie;
     }
@@ -62,7 +64,7 @@ class LTI_OIDC_Login {
         // Generate State.
         // Set cookie (short lived)
         $state = str_replace('.', '_', uniqid('state-', true));
-        $this->cookie->set_cookie("lti1p3_$state", $state, 60);
+        $this->cookie->set_cookie(static::COOKIE_PREFIX.$state, $state, 60);
 
         // Generate Nonce.
         $nonce = uniqid('nonce-', true);

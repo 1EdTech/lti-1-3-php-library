@@ -19,7 +19,7 @@ class LTI_Names_Roles_Provisioning_Service {
 
         while ($next_page) {
             $page = $this->service_connector->make_service_request(
-                ['https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly'],
+                [LTI_Constants::NRPS_CONTEXT_MEMBERSHIP_READ_ONLY],
                 'GET',
                 $next_page,
                 null,
@@ -41,4 +41,3 @@ class LTI_Names_Roles_Provisioning_Service {
 
     }
 }
-?>

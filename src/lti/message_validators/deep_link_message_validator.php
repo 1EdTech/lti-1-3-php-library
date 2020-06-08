@@ -3,23 +3,23 @@ namespace IMSGlobal\LTI;
 
 class Deep_Link_Message_Validator implements Message_Validator {
     public function can_validate($jwt_body) {
-        return $jwt_body['https://purl.imsglobal.org/spec/lti/claim/message_type'] === 'LtiDeepLinkingRequest';
+        return $jwt_body[LTI_Constants::MESSAGE_TYPE] === 'LtiDeepLinkingRequest';
     }
 
     public function validate($jwt_body) {
         if (empty($jwt_body['sub'])) {
             throw new LTI_Exception('Must have a user (sub)');
         }
-        if ($jwt_body['https://purl.imsglobal.org/spec/lti/claim/version'] !== '1.3.0') {
+        if ($jwt_body[LTI_Constants::VERSION] !== LTI_Constants::V1_3) {
             throw new LTI_Exception('Incorrect version, expected 1.3.0');
         }
-        if (!isset($jwt_body['https://purl.imsglobal.org/spec/lti/claim/roles'])) {
+        if (!isset($jwt_body[LTI_Constants::ROLES])) {
             throw new LTI_Exception('Missing Roles Claim');
         }
-        if (empty($jwt_body['https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings'])) {
+        if (empty($jwt_body[LTI_Constants::DL_DEEP_LINK_SETTINGS])) {
             throw new LTI_Exception('Missing Deep Linking Settings');
         }
-        $deep_link_settings = $jwt_body['https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings'];
+        $deep_link_settings = $jwt_body[LTI_Constants::DL_DEEP_LINK_SETTINGS];
         if (empty($deep_link_settings['deep_link_return_url'])) {
             throw new LTI_Exception('Missing Deep Linking Return URL');
         }
@@ -33,4 +33,3 @@ class Deep_Link_Message_Validator implements Message_Validator {
         return true;
     }
 }
-?>
