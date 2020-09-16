@@ -4,8 +4,6 @@ namespace IMSGlobal\LTI;
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
 
-JWT::$leeway = 5;
-
 class LTI_Message_Launch {
 
     private $db;
@@ -37,6 +35,8 @@ class LTI_Message_Launch {
             $cookie = new Cookie();
         }
         $this->cookie = $cookie;
+
+        JWT::$leeway = 5;
     }
 
     /**
@@ -203,6 +203,19 @@ class LTI_Message_Launch {
      */
     public function get_launch_id() {
         return $this->launch_id;
+    }
+
+    /**
+     * Set Firebase\JWT leeway parameter to avoid synchronization issue between
+     * local server time and server which created the JWT
+     *
+     * @param int $leeway
+     *
+     * @return int
+     */
+    public function set_jwt_leeway( int $leeway ) {
+        JWT::$leeway = $leeway;
+        return JWT::$leeway;
     }
 
     private function get_public_key() {
