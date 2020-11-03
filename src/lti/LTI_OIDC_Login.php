@@ -106,15 +106,23 @@ class LTI_OIDC_Login {
             throw new OIDC_Exception("Could not find login hint", 1);
         }
 
+        // Validate Client ID.
+        if (empty($request['aud'])) {
+            throw new OIDC_Exception("Could not find aud", 1);
+        }
+
         // Fetch Registration Details.
-        $registration = $this->db->find_registration_by_issuer($request['iss']);
+        $registrations = $this->db->filter_registrations([
+            'iss' => $request['iss'],
+            'aud' => $request['aud']
+        ]);
 
         // Check we got something.
-        if (empty($registration)) {
+        if (!$registrations || count($registrations) === 0) {
             throw new OIDC_Exception("Could not find registration details", 1);
         }
 
         // Return Registration.
-        return $registration;
+        return $registrations[0];
     }
 }
