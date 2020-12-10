@@ -19,15 +19,15 @@ class LTI_Lineitem {
         $this->label = $lineitem["label"];
         $this->resource_id = $lineitem["resourceId"];
         $this->tag = $lineitem["tag"];
-        $this->start_date_time = $lineitem["startDateTime"];
-        $this->end_date_time = $lineitem["endDateTime"];
+        $this->start_date_time = $lineitem["startDateTime"]?? date(\DateTime::ISO8601);
+        $this->end_date_time = $lineitem["endDateTime"]?? date(\DateTime::ISO8601);
     }
 
     /**
      * Static function to allow for method chaining without having to assign to a variable first.
      */
     public static function new() {
-        return new LTI_Lineitem();
+        return new static();
     }
 
     public function get_id() {
@@ -93,8 +93,8 @@ class LTI_Lineitem {
         return $this;
     }
 
-    public function __toString() {
-        return json_encode(array_filter([
+    public function to_array() {
+        return [
             "id" => $this->id,
             "scoreMaximum" => $this->score_maximum,
             "label" => $this->label,
@@ -102,7 +102,11 @@ class LTI_Lineitem {
             "tag" => $this->tag,
             "startDateTime" => $this->start_date_time,
             "endDateTime" => $this->end_date_time,
-        ]));
+        ];
+    }
+    
+    public function __toString() {
+        return json_encode(array_filter($this->to_array()));
     }
 }
 ?>
