@@ -54,8 +54,8 @@ class LTI_Assignments_Grades_Service {
             'application/vnd.ims.lis.v2.lineitemcontainer+json'
         );
         foreach ($line_items['body'] as $line_item) {
-            if (empty($new_line_item->get_resource_id()) || $line_item['resourceId'] == $new_line_item->get_resource_id()) {
-                if (empty($new_line_item->get_tag()) || $line_item['tag'] == $new_line_item->get_tag()) {
+            if (empty($new_line_item->get_resource_id()) || (isset($line_item['resourceId']) && $line_item['resourceId'] == $new_line_item->get_resource_id())) {
+                if (empty($new_line_item->get_tag()) || (isset($line_item['tag']) && $line_item['tag'] == $new_line_item->get_tag())) {
                     return new LTI_Lineitem($line_item);
                 }
             }
