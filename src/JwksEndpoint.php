@@ -16,16 +16,16 @@ class JwksEndpoint {
         return new JwksEndpoint($keys);
     }
 
-    public static function from_issuer(Database $database, $issuer) {
-        $registration = $database->find_registration_by_issuer($issuer);
-        return new JwksEndpoint([$registration->get_kid() => $registration->get_tool_private_key()]);
+    public static function fromIssuer(Database $database, $issuer) {
+        $registration = $database->findRegistrationByIssuer($issuer);
+        return new JwksEndpoint([$registration->getKid() => $registration->getToolPrivateKey()]);
     }
 
-    public static function from_registration(LtiRegistration $registration) {
-        return new JwksEndpoint([$registration->get_kid() => $registration->get_tool_private_key()]);
+    public static function fromRegistration(LtiRegistration $registration) {
+        return new JwksEndpoint([$registration->getKid() => $registration->getToolPrivateKey()]);
     }
 
-    public function get_public_jwks() {
+    public function getPublicJwks() {
         $jwks = [];
         foreach ($this->keys as $kid => $private_key) {
             $key = new RSA();
@@ -48,8 +48,8 @@ class JwksEndpoint {
         return ['keys' => $jwks];
     }
 
-    public function output_jwks() {
-        echo json_encode($this->get_public_jwks());
+    public function outputJwks() {
+        echo json_encode($this->getPublicJwks());
     }
 
 }

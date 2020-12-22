@@ -2,6 +2,6 @@
 namespace LTI;
 
 interface Cookie {
-    public function get_cookie($name);
-    public function set_cookie($name, $value, $exp = 3600, $options = []);
+    public function getCookie($name);
+    public function setCookie($name, $value, $exp = 3600, $options = []);
 }

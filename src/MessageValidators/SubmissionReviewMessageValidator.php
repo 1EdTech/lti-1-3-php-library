@@ -1,8 +1,8 @@
 <?php
-namespace LTI;
+namespace LTI\MessageValidator;
 
 class SubmissionReviewMessageValidator implements MessageValidator {
-    public function can_validate($jwt_body) {
+    public function canValidate($jwt_body) {
         return $jwt_body['https://purl.imsglobal.org/spec/lti/claim/message_type'] === 'LtiSubmissionReviewRequest';
     }
 

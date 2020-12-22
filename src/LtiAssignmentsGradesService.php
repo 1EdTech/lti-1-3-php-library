@@ -11,28 +11,28 @@ class LtiAssignmentsGradesService {
         $this->service_data = $service_data;
     }
 
-    public function put_grade(LtiGrade $grade, LtiLineitem $lineitem = null) {
+    public function putGrade(LtiGrade $grade, LtiLineitem $lineitem = null) {
         if (!in_array(LtiConstants::AGS_SCORE, $this->service_data['scope'])) {
             throw new LtiException('Missing required scope', 1);
         }
         $score_url = '';
-        if ($lineitem !== null && empty($lineitem->get_id())) {
-            $lineitem = $this->find_or_create_lineitem($lineitem);
-            $score_url = $lineitem->get_id();
+        if ($lineitem !== null && empty($lineitem->getId())) {
+            $lineitem = $this->findOrCreateLineitem($lineitem);
+            $score_url = $lineitem->getId();
         } else if ($lineitem === null && !empty($this->service_data['lineitem'])) {
             $score_url = $this->service_data['lineitem'] ;
         } else {
             $lineitem = LtiLineitem::new()
-            ->set_label('default')
-            ->set_score_maximum(100);
-            $lineitem = $this->find_or_create_lineitem($lineitem);
-            $score_url = $lineitem->get_id();
+            ->setLabel('default')
+            ->setScoreMaximum(100);
+            $lineitem = $this->findOrCreateLineitem($lineitem);
+            $score_url = $lineitem->getId();
         }
 
         // Place '/scores' before url params
         $pos = strpos($score_url, '?');
         $score_url = $pos === false ? $score_url . '/scores' : substr_replace($score_url, '/scores', $pos, 0);
-        return $this->service_connector->make_service_request(
+        return $this->service_connector->makeServiceRequest(
             $this->service_data['scope'],
             'POST',
             $score_url,
@@ -41,11 +41,11 @@ class LtiAssignmentsGradesService {
         );
     }
 
-    public function find_or_create_lineitem(LtiLineitem $new_line_item) {
+    public function findOrCreateLineitem(LtiLineitem $new_line_item) {
         if (!in_array(LtiConstants::AGS_LINEITEM, $this->service_data['scope'])) {
             throw new LtiException('Missing required scope', 1);
         }
-        $line_items = $this->service_connector->make_service_request(
+        $line_items = $this->service_connector->makeServiceRequest(
             $this->service_data['scope'],
             'GET',
             $this->service_data['lineitems'],
@@ -59,16 +59,16 @@ class LtiAssignmentsGradesService {
         }
         foreach ($line_items['body'] as $line_item) {
             if (
-                (empty($new_line_item->get_resource_id()) && empty($new_line_item->get_resource_link_id())) ||
-                (isset($line_item['resourceId']) && $line_item['resourceId'] == $new_line_item->get_resource_id()) ||
-                (isset($line_item['resourceLinkId']) && $line_item['resourceLinkId'] == $new_line_item->get_resource_link_id())
+                (empty($new_line_item->getResourceId()) && empty($new_line_item->getResourceLinkId())) ||
+                (isset($line_item['resourceId']) && $line_item['resourceId'] == $new_line_item->getResourceId()) ||
+                (isset($line_item['resourceLinkId']) && $line_item['resourceLinkId'] == $new_line_item->getResourceLinkId())
             ) {
-                if (empty($new_line_item->get_tag()) || $line_item['tag'] == $new_line_item->get_tag()) {
+                if (empty($new_line_item->getTag()) || $line_item['tag'] == $new_line_item->getTag()) {
                     return new LtiLineitem($line_item);
                 }
             }
         }
-        $created_line_item = $this->service_connector->make_service_request(
+        $created_line_item = $this->service_connector->makeServiceRequest(
             $this->service_data['scope'],
             'POST',
             $this->service_data['lineitems'],
@@ -79,12 +79,12 @@ class LtiAssignmentsGradesService {
         return new LtiLineitem($created_line_item['body']);
     }
 
-    public function get_grades(LtiLineitem $lineitem) {
-        $lineitem = $this->find_or_create_lineitem($lineitem);
+    public function getGrades(LtiLineitem $lineitem) {
+        $lineitem = $this->findOrCreateLineitem($lineitem);
         // Place '/results' before url params
-        $pos = strpos($lineitem->get_id(), '?');
-        $results_url = $pos === false ? $lineitem->get_id() . '/results' : substr_replace($lineitem->get_id(), '/results', $pos, 0);
-        $scores = $this->service_connector->make_service_request(
+        $pos = strpos($lineitem->getId(), '?');
+        $results_url = $pos === false ? $lineitem->getId() . '/results' : substr_replace($lineitem->getId(), '/results', $pos, 0);
+        $scores = $this->service_connector->makeServiceRequest(
             $this->service_data['scope'],
             'GET',
             $results_url,

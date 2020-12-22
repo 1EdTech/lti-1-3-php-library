@@ -14,22 +14,15 @@ Add the following to your `composer.json` file
 "repositories": [
     {
         "type": "vcs",
-        "url": "https://github.com/IMSGlobal/lti-1-3-php-library"
+        "url": "https://github.com/packbackbooks/lti-1-3-php-library"
     }
 ],
 "require": {
-    "imsglobal/lti-1p3-tool": "dev-master"
+    "packbackbooks/lti-1p3-tool": "dev-master"
 }
 ```
 Run `composer install` or `composer update`
 In your code, you will now be able to use classes in the `\LTI` namespace to access the library.
-
-### Manually
-To import the library, copy the `lti` folder inside `src` into your project and use the following code at the beginning of execution:
-```php
-require_once('lti/lti.php');
-use \LTI;
-```
 
 ## Accessing Registration Data
 
@@ -38,10 +31,10 @@ Rather than dictating how this is store, the library instead provides an interfa
 The `LTI\Database` interface must be fully implemented for this to work.
 ```php
 class Example_Database implements LTI\Database {
-    public function find_registration_by_issuer($iss) {
+    public function findRegistrationByIssuer($iss) {
         ...
     }
-    public function find_deployment($iss, $deployment_id) {
+    public function findDeployment($iss, $deployment_id) {
         ...
     }
 }
@@ -50,19 +43,19 @@ class Example_Database implements LTI\Database {
 The `find_registration_by_issuer` method must return an `LTI\LtiRegistration`.
 ```php
 return LTI\LtiRegistration::new()
-    ->set_auth_login_url($auth_login_url)
-    ->set_auth_token_url($auth_token_url)
-    ->set_client_id($client_id)
-    ->set_key_set_url($key_set_url)
-    ->set_kid($kid)
-    ->set_issuer($issuer)
-    ->set_tool_private_key($private_key);
+    ->setAuthLoginUrl($auth_login_url)
+    ->setAuthTokenUrl($auth_token_url)
+    ->setClientId($client_id)
+    ->setKeySetUrl($key_set_url)
+    ->setKid($kid)
+    ->setIssuer($issuer)
+    ->setToolPrivateKey($private_key);
 ```
 
 The `find_deployment` method must return an `LTI\LtiDeployment` if it exists within the database.
 ```php
 return LTI\LtiDeployment::new()
-    ->set_deployment_id($deployment_id);
+    ->setDeploymentId($deployment_id);
 ```
 
 Calls into the Library will require an instance of `LTI\Database` to be passed into them.
@@ -71,11 +64,11 @@ Calls into the Library will require an instance of `LTI\Database` to be passed i
 A JWKS (JSON Web Key Set) endpoint can be generated for either an individual registration or from an array of `KID`s and private keys.
 ```php
 // From issuer
-LTI\JwksEndpoint::from_issuer(new Example_Database(), 'http://example.com')->output_jwks();
+LTI\JwksEndpoint::fromIssuer(new Example_Database(), 'http://example.com')->outputJwks();
 // From registration
-LTI\JwksEndpoint::from_registration($registration)->output_jwks();
+LTI\JwksEndpoint::fromRegistration($registration)->outputJwks();
 // From array
-LTI\JwksEndpoint::new(['a_unique_KID' => file_get_contents('/path/to/private/key.pem')])->output_jwks();
+LTI\JwksEndpoint::new(['a_unique_KID' => file_get_contents('/path/to/private/key.pem')])->outputJwks();
 ```
 
 ## Handling Requests
@@ -92,7 +85,7 @@ Now you must configure your login request with a return url (this must be precon
 If a redirect url is not given or the registration does not exist an `LTI\OidcException` will be thrown.
 ```php
 try {
-    $redirect = $login->do_oidc_login_redirect("https://my.tool/launch");
+    $redirect = $login->doOidcLoginRedirect("https://my.tool/launch");
 } catch (LTI\OidcException $e) {
     echo 'Error doing OIDC login';
 }
@@ -103,17 +96,17 @@ There are three ways to do this:
 
 This will add a 302 location header and then exit.
 ```php
-$redirect->do_redirect();
+$redirect->doRedirect();
 ```
 
 This will echo out some javascript to do the redirect instead of using a 302.
 ```php
-$redirect->do_js_redirect();
+$redirect->doJsRedirect();
 ```
 
 You can also get the url you need to redirect to, with all the necessary query parameters, if you would prefer to redirect in a custom way.
 ```php
-$redirect_url = $redirect->get_redirect_url();
+$redirect_url = $redirect->getRedirectUrl();
 ```
 
 Redirect is now done, we can move onto the launch.
@@ -138,9 +131,9 @@ Now we know the launch is valid we can find out more information about the launc
 
 Check if we have a resource launch or a deep linking launch.
 ```php
-if ($launch->is_resource_launch()) {
+if ($launch->isResourceLaunch()) {
     echo 'Resource Launch!';
-} else if ($launch->is_deep_link_launch()) {
+} else if ($launch->isDeepLinkLaunch()) {
     echo 'Deep Linking Launch!';
 } else {
     echo 'Unknown launch type';
@@ -149,10 +142,10 @@ if ($launch->is_resource_launch()) {
 
 Check which services we have access to.
 ```php
-if ($launch->has_ags()) {
+if ($launch->hasAgs()) {
     echo 'Has Assignments and Grades Service';
 }
-if ($launch->has_nrps()) {
+if ($launch->hasNrps()) {
     echo 'Has Names and Roles Service';
 }
 ```
@@ -161,7 +154,7 @@ if ($launch->has_nrps()) {
 
 It is likely that you will want to refer back to a launch later during subsequent requests. This is done using the launch id to identify a cached request. The launch id can be found using:
 ```php
-$launch_id = $launch->get_launch_id().
+$launch_id = $launch->getLaunchId().
 ```
 
 Once you have the launch id, you can link it to your session and pass it along as a query parameter.
@@ -170,12 +163,12 @@ Once you have the launch id, you can link it to your session and pass it along a
 
 Retrieving a launch using the launch id can be done using:
 ```php
-$launch = LtiMessageLaunch::from_cache($launch_id, new Example_Database());
+$launch = LtiMessageLaunch::fromCache($launch_id, new Example_Database());
 ```
 
 Once retrieved, you can call any of the methods on the launch object as normal, e.g.
 ```php
-if ($launch->has_ags()) {
+if ($launch->hasAgs()) {
     echo 'Has Assignments and Grades Service';
 }
 ```
@@ -186,27 +179,27 @@ If you receive a deep linking launch, it is very likely that you are going to wa
 
 To create a deep link response you will need to get the deep link for the current launch.
 ```php
-$dl = $launch->get_deep_link();
+$dl = $launch->getDeepLink();
 ```
 
 Now we are going to need to create `LTI\LtiDeepLinkResource` to return.
 ```php
 $resource = LTI\LtiDeepLinkResource::new()
-    ->set_url("https://my.tool/launch")
-    ->set_custom_params(['my_param' => $my_param])
-    ->set_title('My Resource');
+    ->setUrl("https://my.tool/launch")
+    ->setCustomParams(['my_param' => $my_param])
+    ->setTitle('My Resource');
 ```
 
 Everything is set to return the resource to the platform. There are two methods of doing this.
 
 The following method will output the html for an aut-posting form for you.
 ```php
-$dl->output_response_form([$resource]);
+$dl->outputResponseForm([$resource]);
 ```
 
 Alternatively you can just request the signed JWT that will need posting back to the platform by calling.
 ```php
-$dl->get_response_jwt([$resource]);
+$dl->getResponseJwt([$resource]);
 ```
 
 ## Calling Services
@@ -214,59 +207,59 @@ $dl->get_response_jwt([$resource]);
 
 Before using names and roles you should check that you have access to it.
 ```php
-if (!$launch->has_nrps()) {
+if (!$launch->hasNrps()) {
     throw new Exception("Don't have names and roles!");
 }
 ```
 
 Once we know we can access it, we can get an instance of the service from the launch.
 ```php
-$nrps = $launch->get_nrps();
+$nrps = $launch->getNrps();
 ```
 
 From the service we can get an array of all the members by calling:
 ```php
-$members = $nrps->get_members();
+$members = $nrps->getMembers();
 ```
 
 ### Assignments and Grades Service
 Before using assignments and grades you should check that you have access to it.
 ```php
-if (!$launch->has_ags()) {
+if (!$launch->hasAgs()) {
     throw new Exception("Don't have assignments and grades!");
 }
 ```
 
 Once we know we can access it, we can get an instance of the service from the launch.
 ```php
-$ags = $launch->get_ags();
+$ags = $launch->getAgs();
 ```
 
 To pass a grade back to the platform, you will need to create an `LTI\LtiGrade` object and populate it with the necessary information.
 ```php
 $grade = LTI\LtiGrade::new()
-    ->set_score_given($grade)
-    ->set_score_maximum(100)
-    ->set_timestamp(date(DateTime::ISO8601))
-    ->set_activity_progress('Completed')
-    ->set_grading_progress('FullyGraded')
-    ->set_user_id($external_user_id);
+    ->setScoreGiven($grade)
+    ->setScoreMaximum(100)
+    ->setTimestamp(date(DateTime::ISO8601))
+    ->setActivityProgress('Completed')
+    ->setGradingProgress('FullyGraded')
+    ->setUserId($external_user_id);
 ```
 
 To send the grade to the platform we can call:
 ```php
-$ags->put_grade($grade);
+$ags->putGrade($grade);
 ```
 This will put the grade into the default provided lineitem. If no default lineitem exists it will create one.
 
 If you want to send multiple types of grade back, that can be done by specifying an `LTI\LtiLineitem`.
 ```php
 $lineitem = LTI\LtiLineitem::new()
-    ->set_tag('grade')
-    ->set_score_maximum(100)
-    ->set_label('Grade');
+    ->setTag('grade')
+    ->setScoreMaximum(100)
+    ->setLabel('Grade');
 
-$ags->put_grade($grade, $lineitem);
+$ags->putGrade($grade, $lineitem);
 ```
 
 If a lineitem with the same `tag` exists, that lineitem will be used, otherwise a new lineitem will be created.

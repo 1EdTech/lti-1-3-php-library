@@ -18,74 +18,74 @@ class LtiGrade {
         return new LtiGrade();
     }
 
-    public function get_score_given() {
+    public function getScoreGiven() {
         return $this->score_given;
     }
 
-    public function set_score_given($value) {
+    public function setScoreGiven($value) {
         $this->score_given = $value;
         return $this;
     }
 
-    public function get_score_maximum() {
+    public function getScoreMaximum() {
         return $this->score_maximum;
     }
 
-    public function set_score_maximum($value) {
+    public function setScoreMaximum($value) {
         $this->score_maximum = $value;
         return $this;
     }
 
-    public function get_comment() {
+    public function getComment() {
         return $this->comment;
     }
 
-    public function set_comment($comment) {
+    public function setComment($comment) {
         $this->comment = $comment;
         return $this;
     }
 
-    public function get_activity_progress() {
+    public function getActivityProgress() {
         return $this->activity_progress;
     }
 
-    public function set_activity_progress($value) {
+    public function setActivityProgress($value) {
         $this->activity_progress = $value;
         return $this;
     }
 
-    public function get_grading_progress() {
+    public function getGradingProgress() {
         return $this->grading_progress;
     }
 
-    public function set_grading_progress($value) {
+    public function setGradingProgress($value) {
         $this->grading_progress = $value;
         return $this;
     }
 
-    public function get_timestamp() {
+    public function getTimestamp() {
         return $this->timestamp;
     }
 
-    public function set_timestamp($value) {
+    public function setTimestamp($value) {
         $this->timestamp = $value;
         return $this;
     }
 
-    public function get_user_id() {
+    public function getUserId() {
         return $this->user_id;
     }
 
-    public function set_user_id($value) {
+    public function setUserId($value) {
         $this->user_id = $value;
         return $this;
     }
 
-    public function get_submission_review() {
+    public function getSubmissionReview() {
         return $this->submission_review;
     }
 
-    public function set_submission_review($value) {
+    public function setSubmissionReview($value) {
         $this->submission_review = $value;
         return $this;
     }

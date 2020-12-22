@@ -11,14 +11,14 @@ class LtiCourseGroupsService {
         $this->service_data = $service_data;
     }
 
-    public function get_groups() {
+    public function getGroups() {
 
         $groups = [];
 
         $next_page = $this->service_data['context_groups_url'];
 
         while ($next_page) {
-            $page = $this->service_connector->make_service_request(
+            $page = $this->service_connector->makeServiceRequest(
                 $this->service_data['scope'],
                 'GET',
                 $next_page,
@@ -41,7 +41,7 @@ class LtiCourseGroupsService {
 
     }
 
-    public function get_sets() {
+    public function getSets() {
 
         $sets = [];
 
@@ -53,7 +53,7 @@ class LtiCourseGroupsService {
         $next_page = $this->service_data['context_group_sets_url'];
 
         while ($next_page) {
-            $page = $this->service_connector->make_service_request(
+            $page = $this->service_connector->makeServiceRequest(
                 $this->service_data['scope'],
                 'GET',
                 $next_page,
@@ -76,9 +76,9 @@ class LtiCourseGroupsService {
 
     }
 
-    public function get_groups_by_set() {
-        $groups = $this->get_groups();
-        $sets = $this->get_sets();
+    public function getGroupsBySet() {
+        $groups = $this->getGroups();
+        $sets = $this->getSets();
 
         $groups_by_set = [];
         $unsetted = [];

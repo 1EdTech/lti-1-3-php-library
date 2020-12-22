@@ -14,29 +14,29 @@ class LtiGradeSubmissionReview {
         return new LtiGradeSubmissionReview();
     }
 
-    public function get_reviewable_status() {
+    public function getReviewableStatus() {
         return $this->reviewable_status;
     }
 
-    public function set_reviewable_status($value) {
+    public function setReviewableStatus($value) {
         $this->reviewable_status = $value;
         return $this;
     }
 
-    public function get_label() {
+    public function getLabel() {
         return $this->label;
     }
 
-    public function set_label($value) {
+    public function setLabel($value) {
         $this->label = $value;
         return $this;
     }
 
-    public function get_url() {
+    public function getUrl() {
         return $this->url;
     }
 
-    public function set_url($url) {
+    public function setUrl($url) {
         $this->url = $url;
         return $this;
     }

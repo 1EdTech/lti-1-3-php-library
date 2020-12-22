@@ -2,7 +2,7 @@
 namespace LTI;
 
 class ImsCookie {
-    public function get_cookie($name) {
+    public function getCookie($name) {
         if (isset($_COOKIE[$name])) {
             return $_COOKIE[$name];
         }
@@ -13,7 +13,7 @@ class ImsCookie {
         return false;
     }
 
-    public function set_cookie($name, $value, $exp = 3600, $options = []) {
+    public function setCookie($name, $value, $exp = 3600, $options = []) {
         $cookie_options = [
             'expires' => time() + $exp
         ];

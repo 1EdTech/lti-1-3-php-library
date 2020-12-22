@@ -14,61 +14,61 @@ class LtiDeepLinkResource {
         return new LtiDeepLinkResource();
     }
 
-    public function get_type() {
+    public function getType() {
         return $this->type;
     }
 
-    public function set_type($value) {
+    public function setType($value) {
         $this->type = $value;
         return $this;
     }
 
-    public function get_title() {
+    public function getTitle() {
         return $this->title;
     }
 
-    public function set_title($value) {
+    public function setTitle($value) {
         $this->title = $value;
         return $this;
     }
 
-    public function get_url() {
+    public function getUrl() {
         return $this->url;
     }
 
-    public function set_url($value) {
+    public function setUrl($value) {
         $this->url = $value;
         return $this;
     }
 
-    public function get_lineitem() {
+    public function getLineitem() {
         return $this->lineitem;
     }
 
-    public function set_lineitem($value) {
+    public function setLineitem($value) {
         $this->lineitem = $value;
         return $this;
     }
 
-    public function get_custom_params() {
+    public function getCustomParams() {
         return $this->custom_params;
     }
 
-    public function set_custom_params($value) {
+    public function setCustomParams($value) {
         $this->custom_params = $value;
         return $this;
     }
 
-    public function get_target() {
+    public function getTarget() {
         return $this->target;
     }
 
-    public function set_target($value) {
+    public function setTarget($value) {
         $this->target = $value;
         return $this;
     }
 
-    public function to_array() {
+    public function toArray() {
         $resource = [
             "type" => $this->type,
             "title" => $this->title,
@@ -80,8 +80,8 @@ class LtiDeepLinkResource {
         ];
         if ($this->lineitem !== null) {
             $resource["lineItem"] = [
-                "scoreMaximum" => $this->lineitem->get_score_maximum(),
-                "label" => $this->lineitem->get_label(),
+                "scoreMaximum" => $this->lineitem->getScoreMaximum(),
+                "label" => $this->lineitem->getLabel(),
             ];
         }
         return $resource;

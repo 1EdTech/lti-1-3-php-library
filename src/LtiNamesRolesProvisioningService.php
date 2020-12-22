@@ -11,14 +11,14 @@ class LtiNamesRolesProvisioningService {
         $this->service_data = $service_data;
     }
 
-    public function get_members() {
+    public function getMembers() {
 
         $members = [];
 
         $next_page = $this->service_data['context_memberships_url'];
 
         while ($next_page) {
-            $page = $this->service_connector->make_service_request(
+            $page = $this->service_connector->makeServiceRequest(
                 [LtiConstants::NRPS_CONTEXT_MEMBERSHIP_READ_ONLY],
                 'GET',
                 $next_page,

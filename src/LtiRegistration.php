@@ -16,74 +16,74 @@ class LtiRegistration {
         return new LtiRegistration();
     }
 
-    public function get_issuer() {
+    public function getIssuer() {
         return $this->issuer;
     }
 
-    public function set_issuer($issuer) {
+    public function setIssuer($issuer) {
         $this->issuer = $issuer;
         return $this;
     }
 
-    public function get_client_id() {
+    public function getClientId() {
         return $this->client_id;
     }
 
-    public function set_client_id($client_id) {
+    public function setClientId($client_id) {
         $this->client_id = $client_id;
         return $this;
     }
 
-    public function get_key_set_url() {
+    public function getKeySetUrl() {
         return $this->key_set_url;
     }
 
-    public function set_key_set_url($key_set_url) {
+    public function setKeySetUrl($key_set_url) {
         $this->key_set_url = $key_set_url;
         return $this;
     }
 
-    public function get_auth_token_url() {
+    public function getAuthTokenUrl() {
         return $this->auth_token_url;
     }
 
-    public function set_auth_token_url($auth_token_url) {
+    public function setAuthTokenUrl($auth_token_url) {
         $this->auth_token_url = $auth_token_url;
         return $this;
     }
 
-    public function get_auth_login_url() {
+    public function getAuthLoginUrl() {
         return $this->auth_login_url;
     }
 
-    public function set_auth_login_url($auth_login_url) {
+    public function setAuthLoginUrl($auth_login_url) {
         $this->auth_login_url = $auth_login_url;
         return $this;
     }
 
-    public function get_auth_server() {
+    public function getAuthServer() {
         return empty($this->auth_server) ? $this->auth_token_url : $this->auth_server;
     }
 
-    public function set_auth_server($auth_server) {
+    public function setAuthServer($auth_server) {
         $this->auth_server = $auth_server;
         return $this;
     }
 
-    public function get_tool_private_key() {
+    public function getToolPrivateKey() {
         return $this->tool_private_key;
     }
 
-    public function set_tool_private_key($tool_private_key) {
+    public function setToolPrivateKey($tool_private_key) {
         $this->tool_private_key = $tool_private_key;
         return $this;
     }
 
-    public function get_kid() {
+    public function getKid() {
         return empty($this->kid) ? hash('sha256', trim($this->issuer . $this->client_id)) : $this->kid;
     }
 
-    public function set_kid($kid) {
+    public function setKid($kid) {
         $this->kid = $kid;
         return $this;
     }

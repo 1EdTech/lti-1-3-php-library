@@ -14,7 +14,7 @@ class LtiServiceConnector {
         $this->registration = $registration;
     }
 
-    public function get_access_token($scopes) {
+    public function getAccessToken($scopes) {
 
         // Don't fetch the same key more than once.
         sort($scopes);
@@ -24,18 +24,18 @@ class LtiServiceConnector {
         }
 
         // Build up JWT to exchange for an auth token
-        $client_id = $this->registration->get_client_id();
+        $client_id = $this->registration->getClientId();
         $jwt_claim = [
                 "iss" => $client_id,
                 "sub" => $client_id,
-                "aud" => $this->registration->get_auth_server(),
+                "aud" => $this->registration->getAuthServer(),
                 "iat" => time() - 5,
                 "exp" => time() + 60,
                 "jti" => 'lti-service-token' . hash('sha256', random_bytes(64))
         ];
 
         // Sign the JWT with our private key (given by the platform on registration)
-        $jwt = JWT::encode($jwt_claim, $this->registration->get_tool_private_key(), 'RS256', $this->registration->get_kid());
+        $jwt = JWT::encode($jwt_claim, $this->registration->getToolPrivateKey(), 'RS256', $this->registration->getKid());
 
         // Build auth token request headers
         $auth_request = [
@@ -47,7 +47,7 @@ class LtiServiceConnector {
 
         // Make request to get auth token
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->registration->get_auth_token_url());
+        curl_setopt($ch, CURLOPT_URL, $this->registration->getAuthTokenUrl());
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($auth_request));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -59,10 +59,10 @@ class LtiServiceConnector {
         return $this->access_tokens[$scope_key] = $token_data['access_token'];
     }
 
-    public function make_service_request($scopes, $method, $url, $body = null, $content_type = 'application/json', $accept = 'application/json') {
+    public function makeServiceRequest($scopes, $method, $url, $body = null, $content_type = 'application/json', $accept = 'application/json') {
         $ch = curl_init();
         $headers = [
-            'Authorization: Bearer ' . $this->get_access_token($scopes),
+            'Authorization: Bearer ' . $this->getAccessToken($scopes),
             'Accept:' . $accept,
         ];
         curl_setopt($ch, CURLOPT_URL, $url);

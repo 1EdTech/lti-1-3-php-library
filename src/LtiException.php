@@ -1,6 +1,8 @@
 <?php
 namespace LTI;
 
-class LtiException extends \Exception {
+use \Exception;
+
+class LtiException extends Exception {
 
 }

@@ -12,27 +12,27 @@ class Redirect {
         $this->referer_query = $referer_query;
     }
 
-    public function do_redirect() {
+    public function doRedirect() {
         header('Location: ' . $this->location, true, 302);
         die;
     }
 
-    public function do_hybrid_redirect(Cookie $cookie = null) {
+    public function doHybridRedirect(Cookie $cookie = null) {
         if ($cookie == null) {
             $cookie = new ImsCookie();
         }
-        if (!empty($cookie->get_cookie(self::$CAN_302_COOKIE))) {
-            return $this->do_redirect();
+        if (!empty($cookie->getCookie(self::$CAN_302_COOKIE))) {
+            return $this->doRedirect();
         }
-        $cookie->set_cookie(self::$CAN_302_COOKIE, "true");
-        $this->do_js_redirect();
+        $cookie->setCookie(self::$CAN_302_COOKIE, "true");
+        $this->doJsRedirect();
     }
 
-    public function get_redirect_url() {
+    public function getRedirectUrl() {
         return $this->location;
     }
 
-    public function do_js_redirect() {
+    public function doJsRedirect() {
         ?>
         <a id="try-again" target="_blank">If you are not automatically redirected, click here to continue</a>
         <script>

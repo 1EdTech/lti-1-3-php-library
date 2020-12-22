@@ -9,11 +9,11 @@ class LtiDeployment {
         return new LtiDeployment();
     }
 
-    public function get_deployment_id() {
+    public function getDeploymentId() {
         return $this->deployment_id;
     }
 
-    public function set_deployment_id($deployment_id) {
+    public function setDeploymentId($deployment_id) {
         $this->deployment_id = $deployment_id;
         return $this;
     }

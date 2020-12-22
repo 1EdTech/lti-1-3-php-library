@@ -44,7 +44,7 @@ class LtiOidcLogin {
      *
      * @return Redirect Returns a redirect object containing the fully formed OIDC login URL.
      */
-    public function do_oidc_login_redirect($launch_url, array $request = null) {
+    public function doOidcLoginRedirect($launch_url, array $request = null) {
 
         if ($request === null) {
             $request = $_REQUEST;
@@ -55,7 +55,7 @@ class LtiOidcLogin {
         }
 
         // Validate Request Data.
-        $registration = $this->validate_oidc_login($request);
+        $registration = $this->validateOidcLogin($request);
 
         /*
          * Build OIDC Auth Response.
@@ -64,11 +64,11 @@ class LtiOidcLogin {
         // Generate State.
         // Set cookie (short lived)
         $state = str_replace('.', '_', uniqid('state-', true));
-        $this->cookie->set_cookie(static::COOKIE_PREFIX.$state, $state, 60);
+        $this->cookie->setCookie(static::COOKIE_PREFIX.$state, $state, 60);
 
         // Generate Nonce.
         $nonce = uniqid('nonce-', true);
-        $this->cache->cache_nonce($nonce);
+        $this->cache->cacheNonce($nonce);
 
         // Build Response.
         $auth_params = [
@@ -76,7 +76,7 @@ class LtiOidcLogin {
             'response_type' => 'id_token', // OIDC response is always an id token.
             'response_mode' => 'form_post', // OIDC response is always a form post.
             'prompt'        => 'none', // Don't prompt user on redirect.
-            'client_id'     => $registration->get_client_id(), // Registered client id.
+            'client_id'     => $registration->getClientId(), // Registered client id.
             'redirect_uri'  => $launch_url, // URL to return to after login.
             'state'         => $state, // State to identify browser session.
             'nonce'         => $nonce, // Prevent replay attacks.
@@ -89,14 +89,14 @@ class LtiOidcLogin {
             $auth_params['lti_message_hint'] = $request['lti_message_hint'];
         }
 
-        $auth_login_return_url = $registration->get_auth_login_url() . "?" . http_build_query($auth_params);
+        $auth_login_return_url = $registration->getAuthLoginUrl() . "?" . http_build_query($auth_params);
 
         // Return auth redirect.
         return new Redirect($auth_login_return_url, http_build_query($request));
 
     }
 
-    protected function validate_oidc_login($request) {
+    protected function validateOidcLogin($request) {
 
         // Validate Issuer.
         if (empty($request['iss'])) {
@@ -109,7 +109,7 @@ class LtiOidcLogin {
         }
 
         // Fetch Registration Details.
-        $registration = $this->db->find_registration_by_issuer($request['iss'], $request['client_id'] ?? null);
+        $registration = $this->db->findRegistrationByIssuer($request['iss'], $request['client_id'] ?? null);
 
         // Check we got something.
         if (empty($registration)) {

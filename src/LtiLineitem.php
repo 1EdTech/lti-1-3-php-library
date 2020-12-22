@@ -32,74 +32,74 @@ class LtiLineitem {
         return new LtiLineitem();
     }
 
-    public function get_id() {
+    public function getId() {
         return $this->id;
     }
 
-    public function set_id($value) {
+    public function setId($value) {
         $this->id = $value;
         return $this;
     }
 
-    public function get_label() {
+    public function getLabel() {
         return $this->label;
     }
 
-    public function set_label($value) {
+    public function setLabel($value) {
         $this->label = $value;
         return $this;
     }
 
-    public function get_score_maximum() {
+    public function getScoreMaximum() {
         return $this->score_maximum;
     }
 
-    public function set_score_maximum($value) {
+    public function setScoreMaximum($value) {
         $this->score_maximum = $value;
         return $this;
     }
 
-    public function get_resource_id() {
+    public function getResourceId() {
         return $this->resource_id;
     }
 
-    public function set_resource_id($value) {
+    public function setResourceId($value) {
         $this->resource_id = $value;
         return $this;
     }
 
-    public function get_resource_link_id() {
+    public function getResourceLinkId() {
         return $this->resource_link_id;
     }
 
-    public function set_resource_link_id($value) {
+    public function setResourceLinkId($value) {
         $this->resource_link_id = $value;
         return $this;
     }
 
-    public function get_tag() {
+    public function getTag() {
         return $this->tag;
     }
 
-    public function set_tag($value) {
+    public function setTag($value) {
         $this->tag = $value;
         return $this;
     }
 
-    public function get_start_date_time() {
+    public function getStartDateTime() {
         return $this->start_date_time;
     }
 
-    public function set_start_date_time($value) {
+    public function setStartDateTime($value) {
         $this->start_date_time = $value;
         return $this;
     }
 
-    public function get_end_date_time() {
+    public function getEndDateTime() {
         return $this->end_date_time;
     }
 
-    public function set_end_date_time($value) {
+    public function setEndDateTime($value) {
         $this->end_date_time = $value;
         return $this;
     }
