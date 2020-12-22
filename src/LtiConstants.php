@@ -1,8 +1,8 @@
 <?php
 
-namespace IMSGlobal\LTI;
+namespace LTI;
 
-class LTI_Constants
+class LtiConstants
 {
     public const V1_3 = '1.3.0';
 

@@ -1,12 +1,12 @@
 <?php
-namespace IMSGlobal\LTI;
+namespace LTI;
 
-class LTI_Deployment {
+class LtiDeployment {
 
     private $deployment_id;
 
     public static function new() {
-        return new LTI_Deployment();
+        return new LtiDeployment();
     }
 
     public function get_deployment_id() {

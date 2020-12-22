@@ -1,7 +1,7 @@
 <?php
-namespace IMSGlobal\LTI;
+namespace LTI;
 
-class LTI_Grade_Submission_Review {
+class LtiGradeSubmissionReview {
     private $reviewable_status;
     private $label;
     private $url;
@@ -11,7 +11,7 @@ class LTI_Grade_Submission_Review {
      * Static function to allow for method chaining without having to assign to a variable first.
      */
     public static function new() {
-        return new LTI_Grade_Submission_Review();
+        return new LtiGradeSubmissionReview();
     }
 
     public function get_reviewable_status() {

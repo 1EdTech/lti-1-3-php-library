@@ -1,12 +1,12 @@
 <?php
-namespace IMSGlobal\LTI;
+namespace LTI;
 
-class LTI_Course_Groups_Service {
+class LtiCourseGroupsService {
 
     private $service_connector;
     private $service_data;
 
-    public function __construct(LTI_Service_Connector $service_connector, $service_data) {
+    public function __construct(LtiServiceConnector $service_connector, $service_data) {
         $this->service_connector = $service_connector;
         $this->service_data = $service_data;
     }
@@ -31,7 +31,7 @@ class LTI_Course_Groups_Service {
 
             $next_page = false;
             foreach($page['headers'] as $header) {
-                if (preg_match(LTI_Service_Connector::NEXT_PAGE_REGEX, $header, $matches)) {
+                if (preg_match(LtiServiceConnector::NEXT_PAGE_REGEX, $header, $matches)) {
                     $next_page = $matches[1];
                     break;
                 }
@@ -66,7 +66,7 @@ class LTI_Course_Groups_Service {
 
             $next_page = false;
             foreach($page['headers'] as $header) {
-                if (preg_match(LTI_Service_Connector::NEXT_PAGE_REGEX, $header, $matches)) {
+                if (preg_match(LtiServiceConnector::NEXT_PAGE_REGEX, $header, $matches)) {
                     $next_page = $matches[1];
                     break;
                 }

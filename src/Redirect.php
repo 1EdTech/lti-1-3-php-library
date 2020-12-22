@@ -1,5 +1,5 @@
 <?php
-namespace IMSGlobal\LTI;
+namespace LTI;
 
 class Redirect {
 

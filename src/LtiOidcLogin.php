@@ -1,7 +1,7 @@
 <?php
-namespace IMSGlobal\LTI;
+namespace LTI;
 
-class LTI_OIDC_Login {
+class LtiOidcLogin {
 
     public const COOKIE_PREFIX = 'lti1p3_';
 
@@ -33,7 +33,7 @@ class LTI_OIDC_Login {
      * Static function to allow for method chaining without having to assign to a variable first.
      */
     public static function new(Database $database, Cache $cache = null, Cookie $cookie = null) {
-        return new LTI_OIDC_Login($database, $cache, $cookie);
+        return new LtiOidcLogin($database, $cache, $cookie);
     }
 
     /**
@@ -51,7 +51,7 @@ class LTI_OIDC_Login {
         }
 
         if (empty($launch_url)) {
-            throw new OIDC_Exception("No launch URL configured", 1);
+            throw new OidcException("No launch URL configured", 1);
         }
 
         // Validate Request Data.
@@ -100,12 +100,12 @@ class LTI_OIDC_Login {
 
         // Validate Issuer.
         if (empty($request['iss'])) {
-            throw new OIDC_Exception("Could not find issuer", 1);
+            throw new OidcException("Could not find issuer", 1);
         }
 
         // Validate Login Hint.
         if (empty($request['login_hint'])) {
-            throw new OIDC_Exception("Could not find login hint", 1);
+            throw new OidcException("Could not find login hint", 1);
         }
 
         // Fetch Registration Details.
@@ -113,7 +113,7 @@ class LTI_OIDC_Login {
 
         // Check we got something.
         if (empty($registration)) {
-            throw new OIDC_Exception("Could not find registration details", 1);
+            throw new OidcException("Could not find registration details", 1);
         }
 
         // Return Registration.

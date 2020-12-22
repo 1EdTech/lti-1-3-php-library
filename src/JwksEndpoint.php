@@ -1,10 +1,10 @@
 <?php
-namespace IMSGlobal\LTI;
+namespace LTI;
 
 use phpseclib\Crypt\RSA;
 use \Firebase\JWT\JWT;
 
-class JWKS_Endpoint {
+class JwksEndpoint {
 
     private $keys;
 
@@ -13,16 +13,16 @@ class JWKS_Endpoint {
     }
 
     public static function new($keys) {
-        return new JWKS_Endpoint($keys);
+        return new JwksEndpoint($keys);
     }
 
     public static function from_issuer(Database $database, $issuer) {
         $registration = $database->find_registration_by_issuer($issuer);
-        return new JWKS_Endpoint([$registration->get_kid() => $registration->get_tool_private_key()]);
+        return new JwksEndpoint([$registration->get_kid() => $registration->get_tool_private_key()]);
     }
 
-    public static function from_registration(LTI_Registration $registration) {
-        return new JWKS_Endpoint([$registration->get_kid() => $registration->get_tool_private_key()]);
+    public static function from_registration(LtiRegistration $registration) {
+        return new JwksEndpoint([$registration->get_kid() => $registration->get_tool_private_key()]);
     }
 
     public function get_public_jwks() {

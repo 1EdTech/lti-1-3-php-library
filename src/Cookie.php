@@ -1,5 +1,5 @@
 <?php
-namespace IMSGlobal\LTI;
+namespace LTI;
 
 interface Cookie {
     public function get_cookie($name);

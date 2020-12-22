@@ -1,7 +1,7 @@
 <?php
-namespace IMSGlobal\LTI;
+namespace LTI;
 
-class LTI_Grade {
+class LtiGrade {
     private $score_given;
     private $score_maximum;
     private $comment;
@@ -15,7 +15,7 @@ class LTI_Grade {
      * Static function to allow for method chaining without having to assign to a variable first.
      */
     public static function new() {
-        return new LTI_Grade();
+        return new LtiGrade();
     }
 
     public function get_score_given() {

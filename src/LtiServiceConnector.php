@@ -1,16 +1,16 @@
 <?php
-namespace IMSGlobal\LTI;
+namespace LTI;
 
 use Firebase\JWT\JWT;
 
-class LTI_Service_Connector {
+class LtiServiceConnector {
 
     const NEXT_PAGE_REGEX = "/^Link:.*<([^>]*)>; ?rel=\"next\"/i";
 
     private $registration;
     private $access_tokens = [];
 
-    public function __construct(LTI_Registration $registration) {
+    public function __construct(LtiRegistration $registration) {
         $this->registration = $registration;
     }
 

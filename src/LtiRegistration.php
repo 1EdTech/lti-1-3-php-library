@@ -1,7 +1,7 @@
 <?php
-namespace IMSGlobal\LTI;
+namespace LTI;
 
-class LTI_Registration {
+class LtiRegistration {
 
     private $issuer;
     private $client_id;
@@ -13,7 +13,7 @@ class LTI_Registration {
     private $kid;
 
     public static function new() {
-        return new LTI_Registration();
+        return new LtiRegistration();
     }
 
     public function get_issuer() {

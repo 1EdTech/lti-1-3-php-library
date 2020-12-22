@@ -7,10 +7,18 @@
     },
     "autoload": {
         "psr-4": {
-            "IMSGlobal\\LTI\\": "src/lti"
+            "LTI\\": "src/lti"
         }
     },
     "authors": [
+        {
+            "name": "Davo Hynds",
+            "email": "davo@packback.co"
+        },
+        {
+            "name": "Eric Tendian",
+            "email": "eric@packback.co"
+        },
         {
             "name": "Martin Lenord",
             "email": "ims.m@rtin.dev"

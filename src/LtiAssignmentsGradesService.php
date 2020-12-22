@@ -1,19 +1,19 @@
 <?php
-namespace IMSGlobal\LTI;
+namespace LTI;
 
-class LTI_Assignments_Grades_Service {
+class LtiAssignmentsGradesService {
 
     private $service_connector;
     private $service_data;
 
-    public function __construct(LTI_Service_Connector $service_connector, $service_data) {
+    public function __construct(LtiServiceConnector $service_connector, $service_data) {
         $this->service_connector = $service_connector;
         $this->service_data = $service_data;
     }
 
-    public function put_grade(LTI_Grade $grade, LTI_Lineitem $lineitem = null) {
-        if (!in_array(LTI_Constants::AGS_SCORE, $this->service_data['scope'])) {
-            throw new LTI_Exception('Missing required scope', 1);
+    public function put_grade(LtiGrade $grade, LtiLineitem $lineitem = null) {
+        if (!in_array(LtiConstants::AGS_SCORE, $this->service_data['scope'])) {
+            throw new LtiException('Missing required scope', 1);
         }
         $score_url = '';
         if ($lineitem !== null && empty($lineitem->get_id())) {
@@ -22,7 +22,7 @@ class LTI_Assignments_Grades_Service {
         } else if ($lineitem === null && !empty($this->service_data['lineitem'])) {
             $score_url = $this->service_data['lineitem'] ;
         } else {
-            $lineitem = LTI_Lineitem::new()
+            $lineitem = LtiLineitem::new()
             ->set_label('default')
             ->set_score_maximum(100);
             $lineitem = $this->find_or_create_lineitem($lineitem);
@@ -41,9 +41,9 @@ class LTI_Assignments_Grades_Service {
         );
     }
 
-    public function find_or_create_lineitem(LTI_Lineitem $new_line_item) {
-        if (!in_array(LTI_Constants::AGS_LINEITEM, $this->service_data['scope'])) {
-            throw new LTI_Exception('Missing required scope', 1);
+    public function find_or_create_lineitem(LtiLineitem $new_line_item) {
+        if (!in_array(LtiConstants::AGS_LINEITEM, $this->service_data['scope'])) {
+            throw new LtiException('Missing required scope', 1);
         }
         $line_items = $this->service_connector->make_service_request(
             $this->service_data['scope'],
@@ -64,7 +64,7 @@ class LTI_Assignments_Grades_Service {
                 (isset($line_item['resourceLinkId']) && $line_item['resourceLinkId'] == $new_line_item->get_resource_link_id())
             ) {
                 if (empty($new_line_item->get_tag()) || $line_item['tag'] == $new_line_item->get_tag()) {
-                    return new LTI_Lineitem($line_item);
+                    return new LtiLineitem($line_item);
                 }
             }
         }
@@ -76,10 +76,10 @@ class LTI_Assignments_Grades_Service {
             'application/vnd.ims.lis.v2.lineitem+json',
             'application/vnd.ims.lis.v2.lineitem+json'
         );
-        return new LTI_Lineitem($created_line_item['body']);
+        return new LtiLineitem($created_line_item['body']);
     }
 
-    public function get_grades(LTI_Lineitem $lineitem) {
+    public function get_grades(LtiLineitem $lineitem) {
         $lineitem = $this->find_or_create_lineitem($lineitem);
         // Place '/results' before url params
         $pos = strpos($lineitem->get_id(), '?');

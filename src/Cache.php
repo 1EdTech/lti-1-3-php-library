@@ -1,5 +1,5 @@
 <?php
-namespace IMSGlobal\LTI;
+namespace LTI;
 
 interface Cache {
     public function get_launch_data($key);

@@ -22,13 +22,13 @@ Add the following to your `composer.json` file
 }
 ```
 Run `composer install` or `composer update`
-In your code, you will now be able to use classes in the `\IMSGlobal\LTI` namespace to access the library.
+In your code, you will now be able to use classes in the `\LTI` namespace to access the library.
 
 ### Manually
 To import the library, copy the `lti` folder inside `src` into your project and use the following code at the beginning of execution:
 ```php
 require_once('lti/lti.php');
-use \IMSGlobal\LTI;
+use \LTI;
 ```
 
 ## Accessing Registration Data
@@ -47,9 +47,9 @@ class Example_Database implements LTI\Database {
 }
 ```
 
-The `find_registration_by_issuer` method must return an `LTI\LTI_Registration`.
+The `find_registration_by_issuer` method must return an `LTI\LtiRegistration`.
 ```php
-return LTI\LTI_Registration::new()
+return LTI\LtiRegistration::new()
     ->set_auth_login_url($auth_login_url)
     ->set_auth_token_url($auth_token_url)
     ->set_client_id($client_id)
@@ -59,9 +59,9 @@ return LTI\LTI_Registration::new()
     ->set_tool_private_key($private_key);
 ```
 
-The `find_deployment` method must return an `LTI\LTI_Deployment` if it exists within the database.
+The `find_deployment` method must return an `LTI\LtiDeployment` if it exists within the database.
 ```php
-return LTI\LTI_Deployment::new()
+return LTI\LtiDeployment::new()
     ->set_deployment_id($deployment_id);
 ```
 
@@ -71,11 +71,11 @@ Calls into the Library will require an instance of `LTI\Database` to be passed i
 A JWKS (JSON Web Key Set) endpoint can be generated for either an individual registration or from an array of `KID`s and private keys.
 ```php
 // From issuer
-LTI\JWKS_Endpoint::from_issuer(new Example_Database(), 'http://example.com')->output_jwks();
+LTI\JwksEndpoint::from_issuer(new Example_Database(), 'http://example.com')->output_jwks();
 // From registration
-LTI\JWKS_Endpoint::from_registration($registration)->output_jwks();
+LTI\JwksEndpoint::from_registration($registration)->output_jwks();
 // From array
-LTI\JWKS_Endpoint::new(['a_unique_KID' => file_get_contents('/path/to/private/key.pem')])->output_jwks();
+LTI\JwksEndpoint::new(['a_unique_KID' => file_get_contents('/path/to/private/key.pem')])->output_jwks();
 ```
 
 ## Handling Requests
@@ -83,17 +83,17 @@ LTI\JWKS_Endpoint::new(['a_unique_KID' => file_get_contents('/path/to/private/ke
 ### Open Id Connect Login Request
 LTI 1.3 uses a modified version of the OpenId Connect third party initiate login flow. This means that to do an LTI 1.3 launch, you must first receive a login initialization request and return to the platform.
 
-To handle this request, you must first create a new `LTI\LTI_OIDC_Login` object.
+To handle this request, you must first create a new `LTI\LtiOidcLogin` object.
 ```php
-$login = LTI_OIDC_Login::new(new Example_Database());
+$login = LtiOidcLogin::new(new Example_Database());
 ```
 
 Now you must configure your login request with a return url (this must be preconfigured and white-listed on the tool).
-If a redirect url is not given or the registration does not exist an `LTI\OIDC_Exception` will be thrown.
+If a redirect url is not given or the registration does not exist an `LTI\OidcException` will be thrown.
 ```php
 try {
     $redirect = $login->do_oidc_login_redirect("https://my.tool/launch");
-} catch (LTI\OIDC_Exception $e) {
+} catch (LTI\OidcException $e) {
     echo 'Error doing OIDC login';
 }
 ```
@@ -119,9 +119,9 @@ $redirect_url = $redirect->get_redirect_url();
 Redirect is now done, we can move onto the launch.
 
 ### LTI Message Launches
-Now that we have done the OIDC log the platform will launch back to the tool. To handle this request, first we need to create a new `LTI\LTI_Message_Launch` object.
+Now that we have done the OIDC log the platform will launch back to the tool. To handle this request, first we need to create a new `LTI\LtiMessageLaunch` object.
 ```php
-$launch = LTI\LTI_Message_Launch::new(new Example_Database());
+$launch = LTI\LtiMessageLaunch::new(new Example_Database());
 ```
 
 Once we have the message launch, we can validate it. This will check signatures and the presence of a deployment and any required parameters.
@@ -170,7 +170,7 @@ Once you have the launch id, you can link it to your session and pass it along a
 
 Retrieving a launch using the launch id can be done using:
 ```php
-$launch = LTI_Message_Launch::from_cache($launch_id, new Example_Database());
+$launch = LtiMessageLaunch::from_cache($launch_id, new Example_Database());
 ```
 
 Once retrieved, you can call any of the methods on the launch object as normal, e.g.
@@ -189,9 +189,9 @@ To create a deep link response you will need to get the deep link for the curren
 $dl = $launch->get_deep_link();
 ```
 
-Now we are going to need to create `LTI\LTI_Deep_Link_Resource` to return.
+Now we are going to need to create `LTI\LtiDeepLinkResource` to return.
 ```php
-$resource = LTI\LTI_Deep_Link_Resource::new()
+$resource = LTI\LtiDeepLinkResource::new()
     ->set_url("https://my.tool/launch")
     ->set_custom_params(['my_param' => $my_param])
     ->set_title('My Resource');
@@ -242,9 +242,9 @@ Once we know we can access it, we can get an instance of the service from the la
 $ags = $launch->get_ags();
 ```
 
-To pass a grade back to the platform, you will need to create an `LTI\LTI_Grade` object and populate it with the necessary information.
+To pass a grade back to the platform, you will need to create an `LTI\LtiGrade` object and populate it with the necessary information.
 ```php
-$grade = LTI\LTI_Grade::new()
+$grade = LTI\LtiGrade::new()
     ->set_score_given($grade)
     ->set_score_maximum(100)
     ->set_timestamp(date(DateTime::ISO8601))
@@ -259,9 +259,9 @@ $ags->put_grade($grade);
 ```
 This will put the grade into the default provided lineitem. If no default lineitem exists it will create one.
 
-If you want to send multiple types of grade back, that can be done by specifying an `LTI\LTI_Lineitem`.
+If you want to send multiple types of grade back, that can be done by specifying an `LTI\LtiLineitem`.
 ```php
-$lineitem = LTI\LTI_Lineitem::new()
+$lineitem = LTI\LtiLineitem::new()
     ->set_tag('grade')
     ->set_score_maximum(100)
     ->set_label('Grade');
