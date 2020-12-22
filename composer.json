@@ -1,15 +1,10 @@
 {
-    "name": "imsglobal/lti-1p3-tool",
+    "name": "packbackbooks/lti-1p3-tool",
     "type": "library",
-    "require": {
-        "firebase/php-jwt": "^5.2",
-        "phpseclib/phpseclib": "^2.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "LTI\\": "src"
-        }
-    },
+    "description": "A simple library for LTI 1.3 Tools in PHP that fulfills IMS Globals certification suite.",
+    "keywords": [
+        "lti"
+    ],
     "authors": [
         {
             "name": "Davo Hynds",
@@ -23,5 +18,25 @@
             "name": "Martin Lenord",
             "email": "ims.m@rtin.dev"
         }
-    ]
+    ],
+    "require": {
+        "firebase/php-jwt": "^5.2",
+        "phpseclib/phpseclib": "^2.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "LTI\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    }
 }
