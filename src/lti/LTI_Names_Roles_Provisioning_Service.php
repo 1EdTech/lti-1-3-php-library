@@ -31,7 +31,7 @@ class LTI_Names_Roles_Provisioning_Service {
 
             $next_page = false;
             foreach($page['headers'] as $header) {
-                if (preg_match("/^Link:.*<([^>]*)>; ?rel=\"next\"/i", $header, $matches)) {
+                if (preg_match(LTI_Service_Connector::NEXT_PAGE_REGEX, $header, $matches)) {
                     $next_page = $matches[1];
                     break;
                 }
