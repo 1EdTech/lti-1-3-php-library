@@ -4,7 +4,8 @@ namespace LTI;
 use phpseclib\Crypt\RSA;
 use \Firebase\JWT\JWT;
 
-use LTI\Interfaces\Cookie;
+use LTI\Interfaces\Database;
+use LTI\Interfaces\LtiRegistrationInterface;
 
 class JwksEndpoint
 {
@@ -25,7 +26,7 @@ class JwksEndpoint
         return new JwksEndpoint([$registration->getKid() => $registration->getToolPrivateKey()]);
     }
 
-    public static function fromRegistration(LtiRegistration $registration) {
+    public static function fromRegistration(LtiRegistrationInterface $registration) {
         return new JwksEndpoint([$registration->getKid() => $registration->getToolPrivateKey()]);
     }
 

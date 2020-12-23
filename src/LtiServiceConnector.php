@@ -8,8 +8,10 @@ use LTI\Interfaces\LtiServiceConnectorInterface;
 
 class LtiServiceConnector implements LtiServiceConnectorInterface
 {
-
     const NEXT_PAGE_REGEX = "/^Link:.*<([^>]*)>; ?rel=\"next\"/i";
+
+    const METHOD_GET = 'GET';
+    const METHOD_POST = 'POST';
 
     private $registration;
     private $access_tokens = [];

@@ -25,7 +25,7 @@ class LtiNamesRolesProvisioningService
         while ($next_page) {
             $page = $this->service_connector->makeServiceRequest(
                 [LtiConstants::NRPS_CONTEXT_MEMBERSHIP_READ_ONLY],
-                'GET',
+                LtiServiceConnector::METHOD_GET,
                 $next_page,
                 null,
                 null,

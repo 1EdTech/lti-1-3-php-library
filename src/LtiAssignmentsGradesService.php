@@ -5,7 +5,6 @@ use LTI\Interfaces\LtiServiceConnectorInterface;
 
 class LtiAssignmentsGradesService
 {
-
     private $service_connector;
     private $service_data;
 
@@ -28,8 +27,8 @@ class LtiAssignmentsGradesService
             $score_url = $this->service_data['lineitem'] ;
         } else {
             $lineitem = LtiLineitem::new()
-            ->setLabel('default')
-            ->setScoreMaximum(100);
+                ->setLabel('default')
+                ->setScoreMaximum(100);
             $lineitem = $this->findOrCreateLineitem($lineitem);
             $score_url = $lineitem->getId();
         }
@@ -39,7 +38,7 @@ class LtiAssignmentsGradesService
         $score_url = $pos === false ? $score_url . '/scores' : substr_replace($score_url, '/scores', $pos, 0);
         return $this->service_connector->makeServiceRequest(
             $this->service_data['scope'],
-            'POST',
+            LtiServiceConnector::METHOD_POST,
             $score_url,
             strval($grade),
             'application/vnd.ims.lis.v1.score+json'
@@ -53,7 +52,7 @@ class LtiAssignmentsGradesService
         }
         $line_items = $this->service_connector->makeServiceRequest(
             $this->service_data['scope'],
-            'GET',
+            LtiServiceConnector::METHOD_GET,
             $this->service_data['lineitems'],
             null,
             null,
@@ -76,7 +75,7 @@ class LtiAssignmentsGradesService
         }
         $created_line_item = $this->service_connector->makeServiceRequest(
             $this->service_data['scope'],
-            'POST',
+            LtiServiceConnector::METHOD_POST,
             $this->service_data['lineitems'],
             strval($new_line_item),
             'application/vnd.ims.lis.v2.lineitem+json',
@@ -93,7 +92,7 @@ class LtiAssignmentsGradesService
         $results_url = $pos === false ? $lineitem->getId() . '/results' : substr_replace($lineitem->getId(), '/results', $pos, 0);
         $scores = $this->service_connector->makeServiceRequest(
             $this->service_data['scope'],
-            'GET',
+            LtiServiceConnector::METHOD_GET,
             $results_url,
             null,
             null,

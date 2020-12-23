@@ -25,7 +25,7 @@ class LtiCourseGroupsService
         while ($next_page) {
             $page = $this->service_connector->makeServiceRequest(
                 $this->service_data['scope'],
-                'GET',
+                LtiServiceConnector::METHOD_GET,
                 $next_page,
                 null,
                 null,
@@ -61,7 +61,7 @@ class LtiCourseGroupsService
         while ($next_page) {
             $page = $this->service_connector->makeServiceRequest(
                 $this->service_data['scope'],
-                'GET',
+                LtiServiceConnector::METHOD_GET,
                 $next_page,
                 null,
                 null,
