@@ -17,4 +17,8 @@ class LtiCourseGroupsServiceTest extends TestCase
 
         $this->assertInstanceOf(LtiCourseGroupsService::class, $service);
     }
+
+    /**
+     * TODO: Test this
+     */
 }
