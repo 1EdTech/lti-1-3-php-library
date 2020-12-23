@@ -2,19 +2,22 @@
 namespace LTI;
 
 use \Firebase\JWT\JWT;
-class LtiDeepLink {
+class LtiDeepLink
+{
 
     private $registration;
     private $deployment_id;
     private $deep_link_settings;
 
-    public function __construct($registration, $deployment_id, $deep_link_settings) {
+    public function __construct($registration, $deployment_id, $deep_link_settings)
+    {
         $this->registration = $registration;
         $this->deployment_id = $deployment_id;
         $this->deep_link_settings = $deep_link_settings;
     }
 
-    public function getResponseJwt($resources) {
+    public function getResponseJwt($resources)
+    {
         $message_jwt = [
             "iss" => $this->registration->getClientId(),
             "aud" => [$this->registration->getIssuer()],
@@ -30,7 +33,8 @@ class LtiDeepLink {
         return JWT::encode($message_jwt, $this->registration->getToolPrivateKey(), 'RS256', $this->registration->getKid());
     }
 
-    public function outputResponseForm($resources) {
+    public function outputResponseForm($resources)
+    {
         $jwt = $this->getResponseJwt($resources);
         ?>
         <form id="auto_submit" action="<?= $this->deep_link_settings['deep_link_return_url']; ?>" method="POST">

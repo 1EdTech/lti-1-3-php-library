@@ -1,17 +1,20 @@
 <?php
 namespace LTI;
 
-class LtiCourseGroupsService {
+class LtiCourseGroupsService
+{
 
     private $service_connector;
     private $service_data;
 
-    public function __construct(LtiServiceConnector $service_connector, $service_data) {
+    public function __construct(LtiServiceConnector $service_connector, $service_data)
+    {
         $this->service_connector = $service_connector;
         $this->service_data = $service_data;
     }
 
-    public function getGroups() {
+    public function getGroups()
+    {
 
         $groups = [];
 
@@ -41,7 +44,8 @@ class LtiCourseGroupsService {
 
     }
 
-    public function getSets() {
+    public function getSets()
+    {
 
         $sets = [];
 
@@ -76,7 +80,8 @@ class LtiCourseGroupsService {
 
     }
 
-    public function getGroupsBySet() {
+    public function getGroupsBySet()
+    {
         $groups = $this->getGroups();
         $sets = $this->getSets();
 

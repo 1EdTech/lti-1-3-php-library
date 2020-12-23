@@ -1,7 +1,8 @@
 <?php
 namespace LTI;
 
-class LtiLineitem {
+class LtiLineitem
+{
     private $id;
     private $score_maximum;
     private $label;
@@ -11,7 +12,8 @@ class LtiLineitem {
     private $start_date_time;
     private $end_date_time;
 
-    public function __construct(array $lineitem = null) {
+    public function __construct(array $lineitem = null)
+    {
         if (empty($lineitem)) {
             return;
         }
@@ -32,79 +34,96 @@ class LtiLineitem {
         return new LtiLineitem();
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function setId($value) {
+    public function setId($value)
+    {
         $this->id = $value;
         return $this;
     }
 
-    public function getLabel() {
+    public function getLabel()
+    {
         return $this->label;
     }
 
-    public function setLabel($value) {
+    public function setLabel($value)
+    {
         $this->label = $value;
         return $this;
     }
 
-    public function getScoreMaximum() {
+    public function getScoreMaximum()
+    {
         return $this->score_maximum;
     }
 
-    public function setScoreMaximum($value) {
+    public function setScoreMaximum($value)
+    {
         $this->score_maximum = $value;
         return $this;
     }
 
-    public function getResourceId() {
+    public function getResourceId()
+    {
         return $this->resource_id;
     }
 
-    public function setResourceId($value) {
+    public function setResourceId($value)
+    {
         $this->resource_id = $value;
         return $this;
     }
 
-    public function getResourceLinkId() {
+    public function getResourceLinkId()
+    {
         return $this->resource_link_id;
     }
 
-    public function setResourceLinkId($value) {
+    public function setResourceLinkId($value)
+    {
         $this->resource_link_id = $value;
         return $this;
     }
 
-    public function getTag() {
+    public function getTag()
+    {
         return $this->tag;
     }
 
-    public function setTag($value) {
+    public function setTag($value)
+    {
         $this->tag = $value;
         return $this;
     }
 
-    public function getStartDateTime() {
+    public function getStartDateTime()
+    {
         return $this->start_date_time;
     }
 
-    public function setStartDateTime($value) {
+    public function setStartDateTime($value)
+    {
         $this->start_date_time = $value;
         return $this;
     }
 
-    public function getEndDateTime() {
+    public function getEndDateTime()
+    {
         return $this->end_date_time;
     }
 
-    public function setEndDateTime($value) {
+    public function setEndDateTime($value)
+    {
         $this->end_date_time = $value;
         return $this;
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return json_encode(array_filter([
             "id" => $this->id,
             "scoreMaximum" => $this->score_maximum,

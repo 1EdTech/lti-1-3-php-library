@@ -1,7 +1,8 @@
 <?php
-namespace LTI;
+namespace LTI\Interfaces;
 
-interface Cache {
+interface Cache
+{
     public function getLaunchData($key);
     public function cacheLaunchData($key, $jwt_body);
     public function cacheNonce($nonce);

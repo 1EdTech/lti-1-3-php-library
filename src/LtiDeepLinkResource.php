@@ -1,7 +1,8 @@
 <?php
 namespace LTI;
 
-class LtiDeepLinkResource {
+class LtiDeepLinkResource
+{
 
     private $type = 'ltiResourceLink';
     private $title;
@@ -14,61 +15,74 @@ class LtiDeepLinkResource {
         return new LtiDeepLinkResource();
     }
 
-    public function getType() {
+    public function getType()
+    {
         return $this->type;
     }
 
-    public function setType($value) {
+    public function setType($value)
+    {
         $this->type = $value;
         return $this;
     }
 
-    public function getTitle() {
+    public function getTitle()
+    {
         return $this->title;
     }
 
-    public function setTitle($value) {
+    public function setTitle($value)
+    {
         $this->title = $value;
         return $this;
     }
 
-    public function getUrl() {
+    public function getUrl()
+    {
         return $this->url;
     }
 
-    public function setUrl($value) {
+    public function setUrl($value)
+    {
         $this->url = $value;
         return $this;
     }
 
-    public function getLineitem() {
+    public function getLineitem()
+    {
         return $this->lineitem;
     }
 
-    public function setLineitem($value) {
+    public function setLineitem($value)
+    {
         $this->lineitem = $value;
         return $this;
     }
 
-    public function getCustomParams() {
+    public function getCustomParams()
+    {
         return $this->custom_params;
     }
 
-    public function setCustomParams($value) {
+    public function setCustomParams($value)
+    {
         $this->custom_params = $value;
         return $this;
     }
 
-    public function getTarget() {
+    public function getTarget()
+    {
         return $this->target;
     }
 
-    public function setTarget($value) {
+    public function setTarget($value)
+    {
         $this->target = $value;
         return $this;
     }
 
-    public function toArray() {
+    public function toArray()
+    {
         $resource = [
             "type" => $this->type,
             "title" => $this->title,

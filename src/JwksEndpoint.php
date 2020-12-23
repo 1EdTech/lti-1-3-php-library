@@ -4,15 +4,17 @@ namespace LTI;
 use phpseclib\Crypt\RSA;
 use \Firebase\JWT\JWT;
 
-class JwksEndpoint {
+class JwksEndpoint
+{
 
     private $keys;
 
-    public function __construct(array $keys) {
+    public function __construct(array $keys)
+    {
         $this->keys = $keys;
     }
 
-    public static function new($keys) {
+    public static function new(array $keys) {
         return new JwksEndpoint($keys);
     }
 
@@ -25,7 +27,8 @@ class JwksEndpoint {
         return new JwksEndpoint([$registration->getKid() => $registration->getToolPrivateKey()]);
     }
 
-    public function getPublicJwks() {
+    public function getPublicJwks()
+    {
         $jwks = [];
         foreach ($this->keys as $kid => $private_key) {
             $key = new RSA();
@@ -48,7 +51,8 @@ class JwksEndpoint {
         return ['keys' => $jwks];
     }
 
-    public function outputJwks() {
+    public function outputJwks()
+    {
         echo json_encode($this->getPublicJwks());
     }
 

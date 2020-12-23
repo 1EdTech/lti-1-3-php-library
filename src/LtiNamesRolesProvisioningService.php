@@ -1,17 +1,20 @@
 <?php
 namespace LTI;
 
-class LtiNamesRolesProvisioningService {
+class LtiNamesRolesProvisioningService
+{
 
     private $service_connector;
     private $service_data;
 
-    public function __construct(LtiServiceConnector $service_connector, $service_data) {
+    public function __construct(LtiServiceConnector $service_connector, $service_data)
+    {
         $this->service_connector = $service_connector;
         $this->service_data = $service_data;
     }
 
-    public function getMembers() {
+    public function getMembers()
+    {
 
         $members = [];
 

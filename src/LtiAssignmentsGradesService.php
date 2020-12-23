@@ -1,17 +1,20 @@
 <?php
 namespace LTI;
 
-class LtiAssignmentsGradesService {
+class LtiAssignmentsGradesService
+{
 
     private $service_connector;
     private $service_data;
 
-    public function __construct(LtiServiceConnector $service_connector, $service_data) {
+    public function __construct(LtiServiceConnector $service_connector, $service_data)
+    {
         $this->service_connector = $service_connector;
         $this->service_data = $service_data;
     }
 
-    public function putGrade(LtiGrade $grade, LtiLineitem $lineitem = null) {
+    public function putGrade(LtiGrade $grade, LtiLineitem $lineitem = null)
+    {
         if (!in_array(LtiConstants::AGS_SCORE, $this->service_data['scope'])) {
             throw new LtiException('Missing required scope', 1);
         }
@@ -41,7 +44,8 @@ class LtiAssignmentsGradesService {
         );
     }
 
-    public function findOrCreateLineitem(LtiLineitem $new_line_item) {
+    public function findOrCreateLineitem(LtiLineitem $new_line_item)
+    {
         if (!in_array(LtiConstants::AGS_LINEITEM, $this->service_data['scope'])) {
             throw new LtiException('Missing required scope', 1);
         }
@@ -79,7 +83,8 @@ class LtiAssignmentsGradesService {
         return new LtiLineitem($created_line_item['body']);
     }
 
-    public function getGrades(LtiLineitem $lineitem) {
+    public function getGrades(LtiLineitem $lineitem)
+    {
         $lineitem = $this->findOrCreateLineitem($lineitem);
         // Place '/results' before url params
         $pos = strpos($lineitem->getId(), '?');

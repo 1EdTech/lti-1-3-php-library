@@ -1,7 +1,8 @@
 <?php
 namespace LTI;
 
-class LtiOidcLogin {
+class LtiOidcLogin
+{
 
     public const COOKIE_PREFIX = 'lti1p3_';
 
@@ -44,7 +45,8 @@ class LtiOidcLogin {
      *
      * @return Redirect Returns a redirect object containing the fully formed OIDC login URL.
      */
-    public function doOidcLoginRedirect($launch_url, array $request = null) {
+    public function doOidcLoginRedirect($launch_url, array $request = null)
+    {
 
         if ($request === null) {
             $request = $_REQUEST;

@@ -3,18 +3,21 @@ namespace LTI;
 
 use Firebase\JWT\JWT;
 
-class LtiServiceConnector {
+class LtiServiceConnector
+{
 
     const NEXT_PAGE_REGEX = "/^Link:.*<([^>]*)>; ?rel=\"next\"/i";
 
     private $registration;
     private $access_tokens = [];
 
-    public function __construct(LtiRegistration $registration) {
+    public function __construct(LtiRegistration $registration)
+    {
         $this->registration = $registration;
     }
 
-    public function getAccessToken($scopes) {
+    public function getAccessToken($scopes)
+    {
 
         // Don't fetch the same key more than once.
         sort($scopes);
@@ -59,7 +62,8 @@ class LtiServiceConnector {
         return $this->access_tokens[$scope_key] = $token_data['access_token'];
     }
 
-    public function makeServiceRequest($scopes, $method, $url, $body = null, $content_type = 'application/json', $accept = 'application/json') {
+    public function makeServiceRequest($scopes, $method, $url, $body = null, $content_type = 'application/json', $accept = 'application/json')
+    {
         $ch = curl_init();
         $headers = [
             'Authorization: Bearer ' . $this->getAccessToken($scopes),

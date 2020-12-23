@@ -1,28 +1,33 @@
 <?php
 namespace LTI;
 
-class ImsCache {
+class ImsCache
+{
 
     private $cache;
 
-    public function getLaunchData($key) {
+    public function getLaunchData($key)
+    {
         $this->loadCache();
         return $this->cache[$key];
     }
 
-    public function cacheLaunchData($key, $jwt_body) {
+    public function cacheLaunchData($key, $jwt_body)
+    {
         $this->cache[$key] = $jwt_body;
         $this->saveCache();
         return $this;
     }
 
-    public function cacheNonce($nonce) {
+    public function cacheNonce($nonce)
+    {
         $this->cache['nonce'][$nonce] = true;
         $this->saveCache();
         return $this;
     }
 
-    public function checkNonce($nonce) {
+    public function checkNonce($nonce)
+    {
         $this->loadCache();
         if (!isset($this->cache['nonce'][$nonce])) {
             return false;

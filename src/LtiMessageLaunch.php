@@ -8,10 +8,17 @@ use Firebase\JWT\ExpiredException;
 use LTI\MessageValidators\DeepLinkMessageValidator;
 use LTI\MessageValidators\ResourceMessageValidator;
 use LTI\MessageValidators\SubmissionReviewMessageValidator;
+use LTI\Interfaces\Cache;
+use LTI\Interfaces\Cookie;
+use LTI\Interfaces\Database;
 
+/**
+ * TODO: Fix this
+ */
 JWT::$leeway = 5;
 
-class LtiMessageLaunch {
+class LtiMessageLaunch
+{
 
     private $db;
     private $cache;
@@ -76,7 +83,8 @@ class LtiMessageLaunch {
      * @throws LtiException        Will throw an LtiException if validation fails.
      * @return LtiMessageLaunch   Will return $this if validation is successful.
      */
-    public function validate(array $request = null) {
+    public function validate(array $request = null)
+    {
 
         if ($request === null) {
             $request = $_POST;
@@ -98,7 +106,8 @@ class LtiMessageLaunch {
      *
      * @return boolean  Returns a boolean indicating the availability of names and roles.
      */
-    public function hasNrps() {
+    public function hasNrps()
+    {
         return !empty($this->jwt['body'][LtiConstants::NRPS_NAMESROLESPROVISIONINGSERVICE]['context_memberships_url']);
     }
 
@@ -107,7 +116,8 @@ class LtiMessageLaunch {
      *
      * @return LtiNamesRolesProvisioningService An instance of the names and roles service that can be used to make calls within the scope of the current launch.
      */
-    public function getNrps() {
+    public function getNrps()
+    {
         return new LtiNamesRolesProvisioningService(
             new LtiServiceConnector($this->registration),
             $this->jwt['body'][LtiConstants::NRPS_NAMESROLESPROVISIONINGSERVICE]);
@@ -118,7 +128,8 @@ class LtiMessageLaunch {
      *
      * @return boolean  Returns a boolean indicating the availability of groups.
      */
-    public function hasGs() {
+    public function hasGs()
+    {
         return !empty($this->jwt['body']['https://purl.imsglobal.org/spec/lti-gs/claim/groupsservice']['context_groups_url']);
     }
 
@@ -127,7 +138,8 @@ class LtiMessageLaunch {
      *
      * @return LtiCourseGroupsService An instance of the groups service that can be used to make calls within the scope of the current launch.
      */
-    public function getGs() {
+    public function getGs()
+    {
         return new LtiCourseGroupsService(
             new LtiServiceConnector($this->registration),
             $this->jwt['body']['https://purl.imsglobal.org/spec/lti-gs/claim/groupsservice']);
@@ -138,7 +150,8 @@ class LtiMessageLaunch {
      *
      * @return boolean  Returns a boolean indicating the availability of assignments and grades.
      */
-    public function hasAgs() {
+    public function hasAgs()
+    {
         return !empty($this->jwt['body'][LtiConstants::AGS_ENDPOINT]);
     }
 
@@ -147,7 +160,8 @@ class LtiMessageLaunch {
      *
      * @return LtiAssignmentsGradesService An instance of the assignments an grades service that can be used to make calls within the scope of the current launch.
      */
-    public function getAgs() {
+    public function getAgs()
+    {
         return new LtiAssignmentsGradesService(
             new LtiServiceConnector($this->registration),
             $this->jwt['body'][LtiConstants::AGS_ENDPOINT]);
@@ -158,7 +172,8 @@ class LtiMessageLaunch {
      *
      * @return LtiDeepLink An instance of a deep link to construct a deep linking response for the current launch.
      */
-    public function getDeepLink() {
+    public function getDeepLink()
+    {
         return new LtiDeepLink(
             $this->registration,
             $this->jwt['body'][LtiConstants::DEPLOYMENT_ID],
@@ -170,7 +185,8 @@ class LtiMessageLaunch {
      *
      * @return boolean  Returns true if the current launch is a deep linking launch.
      */
-    public function isDeepLinkLaunch() {
+    public function isDeepLinkLaunch()
+    {
         return $this->jwt['body'][LtiConstants::MESSAGE_TYPE] === 'LtiDeepLinkingRequest';
     }
 
@@ -179,7 +195,8 @@ class LtiMessageLaunch {
      *
      * @return boolean  Returns true if the current launch is a submission review launch.
      */
-    public function isSubmissionReviewLaunch() {
+    public function isSubmissionReviewLaunch()
+    {
         return $this->jwt['body']['https://purl.imsglobal.org/spec/lti/claim/message_type'] === 'LtiSubmissionReviewRequest';
     }
 
@@ -188,7 +205,8 @@ class LtiMessageLaunch {
      *
      * @return boolean  Returns true if the current launch is a resource launch.
      */
-    public function isResourceLaunch() {
+    public function isResourceLaunch()
+    {
         return $this->jwt['body'][LtiConstants::MESSAGE_TYPE] === 'LtiResourceLinkRequest';
     }
 
@@ -197,7 +215,8 @@ class LtiMessageLaunch {
      *
      * @return array|object Returns the decoded json body of the launch as an array.
      */
-    public function getLaunchData() {
+    public function getLaunchData()
+    {
         return $this->jwt['body'];
     }
 
@@ -206,7 +225,8 @@ class LtiMessageLaunch {
      *
      * @return string   A unique identifier used to re-reference the current launch in subsequent requests.
      */
-    public function getLaunchId() {
+    public function getLaunchId()
+    {
         return $this->launch_id;
     }
 

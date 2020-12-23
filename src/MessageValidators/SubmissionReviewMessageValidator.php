@@ -1,12 +1,17 @@
 <?php
 namespace LTI\MessageValidator;
 
-class SubmissionReviewMessageValidator implements MessageValidator {
-    public function canValidate($jwt_body) {
+use LTI\Interfaces\MessageValidator;
+
+class SubmissionReviewMessageValidator implements MessageValidator
+{
+    public function canValidate($jwt_body)
+    {
         return $jwt_body['https://purl.imsglobal.org/spec/lti/claim/message_type'] === 'LtiSubmissionReviewRequest';
     }
 
-    public function validate($jwt_body) {
+    public function validate($jwt_body)
+    {
         if (empty($jwt_body['sub'])) {
             throw new LtiException('Must have a user (sub)');
         }

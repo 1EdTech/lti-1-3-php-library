@@ -30,11 +30,14 @@ To allow for launches to be validated and to allow the tool to know where it has
 Rather than dictating how this is store, the library instead provides an interface that must be implemented to allow it to access registration data.
 The `LTI\Database` interface must be fully implemented for this to work.
 ```php
-class Example_Database implements LTI\Database {
-    public function findRegistrationByIssuer($iss) {
+class Example_Database implements LTI\Database
+{
+    public function findRegistrationByIssuer($iss)
+    {
         ...
     }
-    public function findDeployment($iss, $deployment_id) {
+    public function findDeployment($iss, $deployment_id)
+    {
         ...
     }
 }

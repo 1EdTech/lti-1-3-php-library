@@ -1,7 +1,8 @@
 <?php
 namespace LTI;
 
-class LtiGrade {
+class LtiGrade
+{
     private $score_given;
     private $score_maximum;
     private $comment;
@@ -18,79 +19,96 @@ class LtiGrade {
         return new LtiGrade();
     }
 
-    public function getScoreGiven() {
+    public function getScoreGiven()
+    {
         return $this->score_given;
     }
 
-    public function setScoreGiven($value) {
+    public function setScoreGiven($value)
+    {
         $this->score_given = $value;
         return $this;
     }
 
-    public function getScoreMaximum() {
+    public function getScoreMaximum()
+    {
         return $this->score_maximum;
     }
 
-    public function setScoreMaximum($value) {
+    public function setScoreMaximum($value)
+    {
         $this->score_maximum = $value;
         return $this;
     }
 
-    public function getComment() {
+    public function getComment()
+    {
         return $this->comment;
     }
 
-    public function setComment($comment) {
+    public function setComment($comment)
+    {
         $this->comment = $comment;
         return $this;
     }
 
-    public function getActivityProgress() {
+    public function getActivityProgress()
+    {
         return $this->activity_progress;
     }
 
-    public function setActivityProgress($value) {
+    public function setActivityProgress($value)
+    {
         $this->activity_progress = $value;
         return $this;
     }
 
-    public function getGradingProgress() {
+    public function getGradingProgress()
+    {
         return $this->grading_progress;
     }
 
-    public function setGradingProgress($value) {
+    public function setGradingProgress($value)
+    {
         $this->grading_progress = $value;
         return $this;
     }
 
-    public function getTimestamp() {
+    public function getTimestamp()
+    {
         return $this->timestamp;
     }
 
-    public function setTimestamp($value) {
+    public function setTimestamp($value)
+    {
         $this->timestamp = $value;
         return $this;
     }
 
-    public function getUserId() {
+    public function getUserId()
+    {
         return $this->user_id;
     }
 
-    public function setUserId($value) {
+    public function setUserId($value)
+    {
         $this->user_id = $value;
         return $this;
     }
 
-    public function getSubmissionReview() {
+    public function getSubmissionReview()
+    {
         return $this->submission_review;
     }
 
-    public function setSubmissionReview($value) {
+    public function setSubmissionReview($value)
+    {
         $this->submission_review = $value;
         return $this;
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return json_encode(array_filter([
             "scoreGiven" => 0 + $this->score_given,
             "scoreMaximum" => 0 + $this->score_maximum,

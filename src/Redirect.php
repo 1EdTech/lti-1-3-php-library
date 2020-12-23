@@ -1,23 +1,27 @@
 <?php
 namespace LTI;
 
-class Redirect {
+class Redirect
+{
 
     private $location;
     private $referer_query;
     private static $CAN_302_COOKIE = 'LTI1p3_302_Redirect';
 
-    public function __construct($location, $referer_query = null) {
+    public function __construct($location, $referer_query = null)
+    {
         $this->location = $location;
         $this->referer_query = $referer_query;
     }
 
-    public function doRedirect() {
+    public function doRedirect()
+    {
         header('Location: ' . $this->location, true, 302);
         die;
     }
 
-    public function doHybridRedirect(Cookie $cookie = null) {
+    public function doHybridRedirect(Cookie $cookie = null)
+    {
         if ($cookie == null) {
             $cookie = new ImsCookie();
         }
@@ -28,11 +32,13 @@ class Redirect {
         $this->doJsRedirect();
     }
 
-    public function getRedirectUrl() {
+    public function getRedirectUrl()
+    {
         return $this->location;
     }
 
-    public function doJsRedirect() {
+    public function doJsRedirect()
+    {
         ?>
         <a id="try-again" target="_blank">If you are not automatically redirected, click here to continue</a>
         <script>

@@ -1,7 +1,8 @@
 <?php
 namespace LTI;
 
-class LtiGradeSubmissionReview {
+class LtiGradeSubmissionReview
+{
     private $reviewable_status;
     private $label;
     private $url;
@@ -14,43 +15,52 @@ class LtiGradeSubmissionReview {
         return new LtiGradeSubmissionReview();
     }
 
-    public function getReviewableStatus() {
+    public function getReviewableStatus()
+    {
         return $this->reviewable_status;
     }
 
-    public function setReviewableStatus($value) {
+    public function setReviewableStatus($value)
+    {
         $this->reviewable_status = $value;
         return $this;
     }
 
-    public function getLabel() {
+    public function getLabel()
+    {
         return $this->label;
     }
 
-    public function setLabel($value) {
+    public function setLabel($value)
+    {
         $this->label = $value;
         return $this;
     }
 
-    public function getUrl() {
+    public function getUrl()
+    {
         return $this->url;
     }
 
-    public function setUrl($url) {
+    public function setUrl($url)
+    {
         $this->url = $url;
         return $this;
     }
 
-    public function get_custom() {
+    public function get_custom()
+    {
         return $this->custom;
     }
 
-    public function set_custom($value) {
+    public function set_custom($value)
+    {
         $this->custom = $value;
         return $this;
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return json_encode(array_filter([
             "reviewableStatus" => $this->reviewable_status,
             "label" => $this->label,

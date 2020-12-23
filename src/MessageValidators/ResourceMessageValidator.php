@@ -1,12 +1,17 @@
 <?php
 namespace LTI\MessageValidator;
 
-class ResourceMessageValidator implements MessageValidator {
-    public function canValidate($jwt_body) {
+use LTI\Interfaces\MessageValidator;
+
+class ResourceMessageValidator implements MessageValidator
+{
+    public function canValidate($jwt_body)
+    {
         return $jwt_body[LtiConstants::MESSAGE_TYPE] === 'LtiResourceLinkRequest';
     }
 
-    public function validate($jwt_body) {
+    public function validate($jwt_body)
+    {
         if (empty($jwt_body['sub'])) {
             throw new LtiException('Must have a user (sub)');
         }

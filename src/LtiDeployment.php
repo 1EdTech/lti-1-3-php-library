@@ -1,7 +1,8 @@
 <?php
 namespace LTI;
 
-class LtiDeployment {
+class LtiDeployment
+{
 
     private $deployment_id;
 
@@ -9,11 +10,13 @@ class LtiDeployment {
         return new LtiDeployment();
     }
 
-    public function getDeploymentId() {
+    public function getDeploymentId()
+    {
         return $this->deployment_id;
     }
 
-    public function setDeploymentId($deployment_id) {
+    public function setDeploymentId($deployment_id)
+    {
         $this->deployment_id = $deployment_id;
         return $this;
     }

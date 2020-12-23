@@ -3,6 +3,7 @@ namespace LTI;
 
 use \Exception;
 
-class LtiException extends Exception {
+class LtiException extends Exception
+{
 
 }
