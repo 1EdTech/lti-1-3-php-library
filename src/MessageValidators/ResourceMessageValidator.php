@@ -18,7 +18,7 @@ class ResourceMessageValidator implements MessageValidator
             throw new LtiException('Must have a user (sub)');
         }
         if (!isset($jwt_body[LtiConstants::VERSION])) {
-            throw new LtiException('Missing Packback\Lti1p3 Version');
+            throw new LtiException('Missing LTI Version');
         }
         if ($jwt_body[LtiConstants::VERSION] !== LtiConstants::V1_3) {
             throw new LtiException('Incorrect version, expected 1.3.0');
