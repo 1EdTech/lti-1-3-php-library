@@ -2,6 +2,7 @@
 namespace Packback\Lti1p3\MessageValidators;
 
 use Packback\Lti1p3\LtiConstants;
+use Packback\Lti1p3\LtiException;
 use Packback\Lti1p3\Interfaces\MessageValidator;
 
 class DeepLinkMessageValidator implements MessageValidator
