@@ -3,6 +3,8 @@ namespace LTI;
 
 use Firebase\JWT\JWT;
 
+use LTI\Interfaces\LtiRegistrationInterface;
+
 class LtiDeepLink
 {
 
@@ -10,7 +12,7 @@ class LtiDeepLink
     private $deployment_id;
     private $deep_link_settings;
 
-    public function __construct(LtiRegistration $registration, string $deployment_id, array $deep_link_settings)
+    public function __construct(LtiRegistrationInterface $registration, string $deployment_id, array $deep_link_settings)
     {
         $this->registration = $registration;
         $this->deployment_id = $deployment_id;

@@ -1,16 +1,17 @@
 <?php namespace Tests;
 
 use PHPUnit\Framework\TestCase;
+use Mockery;
 
+use LTI\Interfaces\LtiRegistrationInterface;
 use LTI\LtiDeepLink;
-use LTI\LtiRegistration;
 
 class LtiDeepLinkTest extends TestCase
 {
 
     public function testItInstantiates()
     {
-        $registration = new LtiRegistration;
+        $registration = Mockery::mock(LtiRegistrationInterface::class);
 
         $deepLink = new LtiDeepLink($registration, 'test', []);
 

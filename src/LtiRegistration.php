@@ -1,7 +1,9 @@
 <?php
 namespace LTI;
 
-class LtiRegistration
+use LTI\Interfaces\LtiRegistrationInterface;
+
+class LtiRegistration implements LtiRegistrationInterface
 {
 
     private $issuer;

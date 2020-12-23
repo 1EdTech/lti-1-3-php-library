@@ -3,6 +3,7 @@ namespace LTI;
 
 use Firebase\JWT\JWT;
 
+use LTI\Interfaces\LtiRegistrationInterface;
 use LTI\Interfaces\LtiServiceConnectorInterface;
 
 class LtiServiceConnector implements LtiServiceConnectorInterface
@@ -13,7 +14,7 @@ class LtiServiceConnector implements LtiServiceConnectorInterface
     private $registration;
     private $access_tokens = [];
 
-    public function __construct(LtiRegistration $registration)
+    public function __construct(LtiRegistrationInterface $registration)
     {
         $this->registration = $registration;
     }
