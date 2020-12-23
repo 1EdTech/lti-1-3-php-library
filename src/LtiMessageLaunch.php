@@ -380,7 +380,7 @@ class LtiMessageLaunch
 
         $message_validator = false;
         foreach ($validators as $validator) {
-            if ($validator->can_validate($this->jwt['body'])) {
+            if ($validator->canValidate($this->jwt['body'])) {
                 if ($message_validator !== false) {
                     // Can't have more than one validator apply at a time.
                     throw new LtiException("Validator conflict", 1);
