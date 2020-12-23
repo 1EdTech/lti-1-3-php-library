@@ -1,6 +1,10 @@
 <?php
 namespace LTI;
 
+use LTI\Interfaces\Cache;
+use LTI\Interfaces\Cookie;
+use LTI\Interfaces\Database;
+
 class LtiOidcLogin
 {
 

@@ -1,6 +1,8 @@
 <?php
 namespace LTI;
 
+use LTI\Interfaces\Cookie;
+
 class Redirect
 {
 

@@ -13,6 +13,7 @@ class LtiConstants
     public const TARGET_LINK_URI = 'https://purl.imsglobal.org/spec/lti/claim/target_link_uri';
     public const RESOURCE_LINK = 'https://purl.imsglobal.org/spec/lti/claim/resource_link';
     public const ROLES = 'https://purl.imsglobal.org/spec/lti/claim/roles';
+    public const FOR_USER = 'https://purl.imsglobal.org/spec/lti/claim/for_user';
 
     // Optional message claims
     public const CONTEXT = 'https://purl.imsglobal.org/spec/lti/claim/context';

@@ -4,6 +4,8 @@ namespace LTI;
 use phpseclib\Crypt\RSA;
 use \Firebase\JWT\JWT;
 
+use LTI\Interfaces\Cookie;
+
 class JwksEndpoint
 {
 

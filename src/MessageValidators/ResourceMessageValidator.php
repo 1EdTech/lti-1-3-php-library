@@ -1,6 +1,7 @@
 <?php
 namespace LTI\MessageValidator;
 
+use LTI\LtiConstants;
 use LTI\Interfaces\MessageValidator;
 
 class ResourceMessageValidator implements MessageValidator
