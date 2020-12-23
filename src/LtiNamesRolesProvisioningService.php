@@ -1,13 +1,15 @@
 <?php
 namespace LTI;
 
+use LTI\Interfaces\LtiServiceConnectorInterface;
+
 class LtiNamesRolesProvisioningService
 {
 
     private $service_connector;
     private $service_data;
 
-    public function __construct(LtiServiceConnector $service_connector, $service_data)
+    public function __construct(LtiServiceConnectorInterface $service_connector, array $service_data)
     {
         $this->service_connector = $service_connector;
         $this->service_data = $service_data;

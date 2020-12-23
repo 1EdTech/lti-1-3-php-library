@@ -9,8 +9,8 @@ class RedirectTest extends TestCase
 
     public function testItInstantiates()
     {
-        $jwks = new Redirect();
+        $redirect = new Redirect('test');
 
-        $this->assertInstanceOf(Redirect::class, $jwks);
+        $this->assertInstanceOf(Redirect::class, $redirect);
     }
 }

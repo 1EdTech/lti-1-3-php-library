@@ -9,8 +9,8 @@ class LtiGradeTest extends TestCase
 
     public function testItInstantiates()
     {
-        $jwks = new LtiGrade();
+        $grade = new LtiGrade();
 
-        $this->assertInstanceOf(LtiGrade::class, $jwks);
+        $this->assertInstanceOf(LtiGrade::class, $grade);
     }
 }

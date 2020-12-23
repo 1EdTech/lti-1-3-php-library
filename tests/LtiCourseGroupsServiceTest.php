@@ -1,7 +1,9 @@
 <?php namespace Tests;
 
 use PHPUnit\Framework\TestCase;
+use Mockery;
 
+use LTI\Interfaces\LtiServiceConnectorInterface;
 use LTI\LtiCourseGroupsService;
 
 class LtiCourseGroupsServiceTest extends TestCase
@@ -9,8 +11,10 @@ class LtiCourseGroupsServiceTest extends TestCase
 
     public function testItInstantiates()
     {
-        $jwks = new LtiCourseGroupsService();
+        $connector = Mockery::mock(LtiServiceConnectorInterface::class);
 
-        $this->assertInstanceOf(LtiCourseGroupsService::class, $jwks);
+        $service = new LtiCourseGroupsService($connector, []);
+
+        $this->assertInstanceOf(LtiCourseGroupsService::class, $service);
     }
 }

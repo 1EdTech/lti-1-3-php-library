@@ -10,7 +10,7 @@ class Redirect
     private $referer_query;
     private static $CAN_302_COOKIE = 'LTI1p3_302_Redirect';
 
-    public function __construct($location, $referer_query = null)
+    public function __construct(string $location, string $referer_query = null)
     {
         $this->location = $location;
         $this->referer_query = $referer_query;

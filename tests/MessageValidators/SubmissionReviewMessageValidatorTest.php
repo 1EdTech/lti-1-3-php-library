@@ -1,16 +1,16 @@
-<?php namespace Tests\MessageValidator;
+<?php namespace Tests\MessageValidators;
 
 use PHPUnit\Framework\TestCase;
 
-use LTI\SubmissionReviewMessageValidator;
+use LTI\MessageValidators\SubmissionReviewMessageValidator;
 
 class SubmissionReviewMessageValidatorTest extends TestCase
 {
 
     public function testItInstantiates()
     {
-        $jwks = new SubmissionReviewMessageValidator();
+        $validator = new SubmissionReviewMessageValidator([]);
 
-        $this->assertInstanceOf(SubmissionReviewMessageValidator::class, $jwks);
+        $this->assertInstanceOf(SubmissionReviewMessageValidator::class, $validator);
     }
 }

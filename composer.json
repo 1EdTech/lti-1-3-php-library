@@ -24,6 +24,7 @@
         "phpseclib/phpseclib": "^2.0"
     },
     "require-dev": {
+        "mockery/mockery": "^1.4",
         "phpunit/phpunit": "^9.5"
     },
     "autoload": {

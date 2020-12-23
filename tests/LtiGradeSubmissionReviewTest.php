@@ -9,8 +9,8 @@ class LtiGradeSubmissionReviewTest extends TestCase
 
     public function testItInstantiates()
     {
-        $jwks = new LtiGradeSubmissionReview();
+        $gradeReview = new LtiGradeSubmissionReview();
 
-        $this->assertInstanceOf(LtiGradeSubmissionReview::class, $jwks);
+        $this->assertInstanceOf(LtiGradeSubmissionReview::class, $gradeReview);
     }
 }

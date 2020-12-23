@@ -1,16 +1,19 @@
 <?php namespace Tests;
 
 use PHPUnit\Framework\TestCase;
+use Mockery;
 
+use LTI\Interfaces\LtiServiceConnectorInterface;
 use LTI\LtiNamesRolesProvisioningService;
 
 class LtiNamesRolesProvisioningServiceTest extends TestCase
 {
-
     public function testItInstantiates()
     {
-        $jwks = new LtiNamesRolesProvisioningService();
+        $connector = Mockery::mock(LtiServiceConnectorInterface::class);
 
-        $this->assertInstanceOf(LtiNamesRolesProvisioningService::class, $jwks);
+        $nrps = new LtiNamesRolesProvisioningService($connector, []);
+
+        $this->assertInstanceOf(LtiNamesRolesProvisioningService::class, $nrps);
     }
 }

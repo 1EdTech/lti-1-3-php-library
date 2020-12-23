@@ -9,8 +9,8 @@ class LtiLineitemTest extends TestCase
 
     public function testItInstantiates()
     {
-        $jwks = new LtiLineitem();
+        $lineitem = new LtiLineitem();
 
-        $this->assertInstanceOf(LtiLineitem::class, $jwks);
+        $this->assertInstanceOf(LtiLineitem::class, $lineitem);
     }
 }

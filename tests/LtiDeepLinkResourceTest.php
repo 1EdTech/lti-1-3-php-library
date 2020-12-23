@@ -9,8 +9,8 @@ class LtiDeepLinkResourceTest extends TestCase
 
     public function testItInstantiates()
     {
-        $jwks = new LtiDeepLinkResource();
+        $deepLinkResource = new LtiDeepLinkResource();
 
-        $this->assertInstanceOf(LtiDeepLinkResource::class, $jwks);
+        $this->assertInstanceOf(LtiDeepLinkResource::class, $deepLinkResource);
     }
 }

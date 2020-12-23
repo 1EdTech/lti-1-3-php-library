@@ -9,8 +9,8 @@ class LtiDeploymentTest extends TestCase
 
     public function testItInstantiates()
     {
-        $jwks = new LtiDeployment();
+        $deployment = new LtiDeployment();
 
-        $this->assertInstanceOf(LtiDeployment::class, $jwks);
+        $this->assertInstanceOf(LtiDeployment::class, $deployment);
     }
 }

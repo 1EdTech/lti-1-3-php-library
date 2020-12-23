@@ -3,7 +3,9 @@ namespace LTI;
 
 use Firebase\JWT\JWT;
 
-class LtiServiceConnector
+use LTI\Interfaces\LtiServiceConnectorInterface;
+
+class LtiServiceConnector implements LtiServiceConnectorInterface
 {
 
     const NEXT_PAGE_REGEX = "/^Link:.*<([^>]*)>; ?rel=\"next\"/i";

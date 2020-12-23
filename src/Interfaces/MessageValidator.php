@@ -1,8 +1,8 @@
 <?php
-namespace LTI\MessageValidator;
+namespace LTI\Interfaces;
 
 interface MessageValidator
 {
-    public function validate($jwt_body);
-    public function canValidate($jwt_body);
+    public function validate(array $jwt_body);
+    public function canValidate(array $jwt_body);
 }

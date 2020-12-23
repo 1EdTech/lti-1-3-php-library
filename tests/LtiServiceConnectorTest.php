@@ -2,6 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
+use LTI\LtiRegistration;
 use LTI\LtiServiceConnector;
 
 class LtiServiceConnectorTest extends TestCase
@@ -9,8 +10,9 @@ class LtiServiceConnectorTest extends TestCase
 
     public function testItInstantiates()
     {
-        $jwks = new LtiServiceConnector();
+        $registration = new LtiRegistration;
+        $connector = new LtiServiceConnector($registration);
 
-        $this->assertInstanceOf(LtiServiceConnector::class, $jwks);
+        $this->assertInstanceOf(LtiServiceConnector::class, $connector);
     }
 }

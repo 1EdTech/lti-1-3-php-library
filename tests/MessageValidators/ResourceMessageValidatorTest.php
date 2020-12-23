@@ -1,16 +1,16 @@
-<?php namespace Tests\MessageValidator;
+<?php namespace Tests\MessageValidators;
 
 use PHPUnit\Framework\TestCase;
 
-use LTI\ResourceMessageValidator;
+use LTI\MessageValidators\ResourceMessageValidator;
 
 class ResourceMessageValidatorTest extends TestCase
 {
 
     public function testItInstantiates()
     {
-        $jwks = new ResourceMessageValidator();
+        $validator = new ResourceMessageValidator([]);
 
-        $this->assertInstanceOf(ResourceMessageValidator::class, $jwks);
+        $this->assertInstanceOf(ResourceMessageValidator::class, $validator);
     }
 }

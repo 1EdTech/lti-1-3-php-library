@@ -1,16 +1,16 @@
-<?php namespace Tests\MessageValidator;
+<?php namespace Tests\MessageValidators;
 
 use PHPUnit\Framework\TestCase;
 
-use LTI\DeepLinkMessageValidator;
+use LTI\MessageValidators\DeepLinkMessageValidator;
 
 class DeepLinkMessageValidatorTest extends TestCase
 {
 
     public function testItInstantiates()
     {
-        $jwks = new DeepLinkMessageValidator();
+        $validator = new DeepLinkMessageValidator([]);
 
-        $this->assertInstanceOf(DeepLinkMessageValidator::class, $jwks);
+        $this->assertInstanceOf(DeepLinkMessageValidator::class, $validator);
     }
 }

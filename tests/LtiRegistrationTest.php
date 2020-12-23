@@ -9,8 +9,8 @@ class LtiRegistrationTest extends TestCase
 
     public function testItInstantiates()
     {
-        $jwks = new LtiRegistration();
+        $registration = new LtiRegistration();
 
-        $this->assertInstanceOf(LtiRegistration::class, $jwks);
+        $this->assertInstanceOf(LtiRegistration::class, $registration);
     }
 }

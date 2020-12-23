@@ -1,17 +1,17 @@
 <?php
-namespace LTI\MessageValidator;
+namespace LTI\MessageValidators;
 
 use LTI\LtiConstants;
 use LTI\Interfaces\MessageValidator;
 
 class DeepLinkMessageValidator implements MessageValidator
 {
-    public function canValidate($jwt_body)
+    public function canValidate(array $jwt_body)
     {
         return $jwt_body[LtiConstants::MESSAGE_TYPE] === 'LtiDeepLinkingRequest';
     }
 
-    public function validate($jwt_body)
+    public function validate(array $jwt_body)
     {
         if (empty($jwt_body['sub'])) {
             throw new LtiException('Must have a user (sub)');
