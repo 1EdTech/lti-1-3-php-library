@@ -3,8 +3,8 @@
 use PHPUnit\Framework\TestCase;
 use Mockery;
 
-use LTI\Interfaces\LtiServiceConnectorInterface;
-use LTI\LtiCourseGroupsService;
+use Packback\Lti1p3\Interfaces\LtiServiceConnectorInterface;
+use Packback\Lti1p3\LtiCourseGroupsService;
 
 class LtiCourseGroupsServiceTest extends TestCase
 {

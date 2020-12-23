@@ -3,8 +3,8 @@
 use PHPUnit\Framework\TestCase;
 use Mockery;
 
-use LTI\Interfaces\LtiServiceConnectorInterface;
-use LTI\LtiAssignmentsGradesService;
+use Packback\Lti1p3\Interfaces\LtiServiceConnectorInterface;
+use Packback\Lti1p3\LtiAssignmentsGradesService;
 
 class LtiAssignmentsGradesServiceTest extends TestCase
 {

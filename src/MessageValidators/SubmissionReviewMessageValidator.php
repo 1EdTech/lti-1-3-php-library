@@ -1,8 +1,8 @@
 <?php
-namespace LTI\MessageValidators;
+namespace Packback\Lti1p3\MessageValidators;
 
-use LTI\LtiConstants;
-use LTI\Interfaces\MessageValidator;
+use Packback\Lti1p3\LtiConstants;
+use Packback\Lti1p3\Interfaces\MessageValidator;
 
 class SubmissionReviewMessageValidator implements MessageValidator
 {

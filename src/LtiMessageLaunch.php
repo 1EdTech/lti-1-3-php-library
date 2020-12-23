@@ -1,16 +1,16 @@
 <?php
-namespace LTI;
+namespace Packback\Lti1p3;
 
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
 use Firebase\JWT\ExpiredException;
 
-use LTI\MessageValidators\DeepLinkMessageValidator;
-use LTI\MessageValidators\ResourceMessageValidator;
-use LTI\MessageValidators\SubmissionReviewMessageValidator;
-use LTI\Interfaces\Cache;
-use LTI\Interfaces\Cookie;
-use LTI\Interfaces\Database;
+use Packback\Lti1p3\MessageValidators\DeepLinkMessageValidator;
+use Packback\Lti1p3\MessageValidators\ResourceMessageValidator;
+use Packback\Lti1p3\MessageValidators\SubmissionReviewMessageValidator;
+use Packback\Lti1p3\Interfaces\Cache;
+use Packback\Lti1p3\Interfaces\Cookie;
+use Packback\Lti1p3\Interfaces\Database;
 
 /**
  * TODO: Fix this
@@ -76,7 +76,7 @@ class LtiMessageLaunch
     }
 
     /**
-     * Validates all aspects of an incoming LTI message launch and caches the launch if successful.
+     * Validates all aspects of an incoming Packback\Lti1p3 message launch and caches the launch if successful.
      *
      * @param array|string  $request    An array of post request parameters. If not set will default to $_POST.
      *

@@ -1,7 +1,7 @@
 <?php
-namespace LTI;
+namespace Packback\Lti1p3;
 
-use LTI\Interfaces\LtiRegistrationInterface;
+use Packback\Lti1p3\Interfaces\LtiRegistrationInterface;
 
 class LtiRegistration implements LtiRegistrationInterface
 {

@@ -11,7 +11,7 @@
     </report>
   </coverage>
   <testsuites>
-    <testsuite name="Packback LTI 1.3 Test Suite">
+    <testsuite name="Packback LTI Test Suite">
       <directory>tests</directory>
     </testsuite>
   </testsuites>

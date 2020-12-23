@@ -1,5 +1,5 @@
 <?php
-namespace LTI;
+namespace Packback\Lti1p3;
 
 class ImsCache
 {

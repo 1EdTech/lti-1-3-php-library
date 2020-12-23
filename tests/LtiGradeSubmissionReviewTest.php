@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-use LTI\LtiGradeSubmissionReview;
+use Packback\Lti1p3\LtiGradeSubmissionReview;
 
 class LtiGradeSubmissionReviewTest extends TestCase
 {

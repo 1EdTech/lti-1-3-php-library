@@ -1,10 +1,10 @@
 <?php
-namespace LTI;
+namespace Packback\Lti1p3;
 
 use Firebase\JWT\JWT;
 
-use LTI\Interfaces\LtiRegistrationInterface;
-use LTI\Interfaces\LtiServiceConnectorInterface;
+use Packback\Lti1p3\Interfaces\LtiRegistrationInterface;
+use Packback\Lti1p3\Interfaces\LtiServiceConnectorInterface;
 
 class LtiServiceConnector implements LtiServiceConnectorInterface
 {

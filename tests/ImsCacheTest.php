@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-use LTI\ImsCache;
+use Packback\Lti1p3\ImsCache;
 
 class ImsCacheTest extends TestCase
 {

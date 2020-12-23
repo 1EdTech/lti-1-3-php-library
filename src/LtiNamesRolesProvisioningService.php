@@ -1,7 +1,7 @@
 <?php
-namespace LTI;
+namespace Packback\Lti1p3;
 
-use LTI\Interfaces\LtiServiceConnectorInterface;
+use Packback\Lti1p3\Interfaces\LtiServiceConnectorInterface;
 
 class LtiNamesRolesProvisioningService
 {

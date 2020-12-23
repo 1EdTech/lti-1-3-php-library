@@ -1,14 +1,14 @@
 <?php
-namespace LTI;
+namespace Packback\Lti1p3;
 
-use LTI\Interfaces\Cookie;
+use Packback\Lti1p3\Interfaces\Cookie;
 
 class Redirect
 {
 
     private $location;
     private $referer_query;
-    private static $CAN_302_COOKIE = 'LTI1p3_302_Redirect';
+    private static $CAN_302_COOKIE = 'Packback\Lti1p31p3_302_Redirect';
 
     public function __construct(string $location, string $referer_query = null)
     {

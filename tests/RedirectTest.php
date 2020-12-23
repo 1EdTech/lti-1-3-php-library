@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-use LTI\Redirect;
+use Packback\Lti1p3\Redirect;
 
 class RedirectTest extends TestCase
 {

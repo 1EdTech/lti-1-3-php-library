@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-use LTI\MessageValidators\DeepLinkMessageValidator;
+use Packback\Lti1p3\MessageValidators\DeepLinkMessageValidator;
 
 class DeepLinkMessageValidatorTest extends TestCase
 {

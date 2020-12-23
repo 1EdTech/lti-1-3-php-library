@@ -1,11 +1,11 @@
 <?php
-namespace LTI;
+namespace Packback\Lti1p3;
 
 use phpseclib\Crypt\RSA;
 use \Firebase\JWT\JWT;
 
-use LTI\Interfaces\Database;
-use LTI\Interfaces\LtiRegistrationInterface;
+use Packback\Lti1p3\Interfaces\Database;
+use Packback\Lti1p3\Interfaces\LtiRegistrationInterface;
 
 class JwksEndpoint
 {

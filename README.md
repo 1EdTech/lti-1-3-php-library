@@ -28,9 +28,9 @@ In your code, you will now be able to use classes in the `\LTI` namespace to acc
 
 To allow for launches to be validated and to allow the tool to know where it has to make calls to, registration data must be stored.
 Rather than dictating how this is store, the library instead provides an interface that must be implemented to allow it to access registration data.
-The `LTI\Database` interface must be fully implemented for this to work.
+The `Packback\Lti1p3\Database` interface must be fully implemented for this to work.
 ```php
-class Example_Database implements LTI\Database
+class Example_Database implements Packback\Lti1p3\Database
 {
     public function findRegistrationByIssuer($iss)
     {
@@ -43,9 +43,9 @@ class Example_Database implements LTI\Database
 }
 ```
 
-The `find_registration_by_issuer` method must return an `LTI\LtiRegistration`.
+The `find_registration_by_issuer` method must return an `Packback\Lti1p3\LtiRegistration`.
 ```php
-return LTI\LtiRegistration::new()
+return Packback\Lti1p3\LtiRegistration::new()
     ->setAuthLoginUrl($auth_login_url)
     ->setAuthTokenUrl($auth_token_url)
     ->setClientId($client_id)
@@ -55,23 +55,23 @@ return LTI\LtiRegistration::new()
     ->setToolPrivateKey($private_key);
 ```
 
-The `find_deployment` method must return an `LTI\LtiDeployment` if it exists within the database.
+The `find_deployment` method must return an `Packback\Lti1p3\LtiDeployment` if it exists within the database.
 ```php
-return LTI\LtiDeployment::new()
+return Packback\Lti1p3\LtiDeployment::new()
     ->setDeploymentId($deployment_id);
 ```
 
-Calls into the Library will require an instance of `LTI\Database` to be passed into them.
+Calls into the Library will require an instance of `Packback\Lti1p3\Database` to be passed into them.
 
 ### Creating a JWKS endpoint
 A JWKS (JSON Web Key Set) endpoint can be generated for either an individual registration or from an array of `KID`s and private keys.
 ```php
 // From issuer
-LTI\JwksEndpoint::fromIssuer(new Example_Database(), 'http://example.com')->outputJwks();
+Packback\Lti1p3\JwksEndpoint::fromIssuer(new Example_Database(), 'http://example.com')->outputJwks();
 // From registration
-LTI\JwksEndpoint::fromRegistration($registration)->outputJwks();
+Packback\Lti1p3\JwksEndpoint::fromRegistration($registration)->outputJwks();
 // From array
-LTI\JwksEndpoint::new(['a_unique_KID' => file_get_contents('/path/to/private/key.pem')])->outputJwks();
+Packback\Lti1p3\JwksEndpoint::new(['a_unique_KID' => file_get_contents('/path/to/private/key.pem')])->outputJwks();
 ```
 
 ## Handling Requests
@@ -79,17 +79,17 @@ LTI\JwksEndpoint::new(['a_unique_KID' => file_get_contents('/path/to/private/key
 ### Open Id Connect Login Request
 LTI 1.3 uses a modified version of the OpenId Connect third party initiate login flow. This means that to do an LTI 1.3 launch, you must first receive a login initialization request and return to the platform.
 
-To handle this request, you must first create a new `LTI\LtiOidcLogin` object.
+To handle this request, you must first create a new `Packback\Lti1p3\LtiOidcLogin` object.
 ```php
 $login = LtiOidcLogin::new(new Example_Database());
 ```
 
 Now you must configure your login request with a return url (this must be preconfigured and white-listed on the tool).
-If a redirect url is not given or the registration does not exist an `LTI\OidcException` will be thrown.
+If a redirect url is not given or the registration does not exist an `Packback\Lti1p3\OidcException` will be thrown.
 ```php
 try {
     $redirect = $login->doOidcLoginRedirect("https://my.tool/launch");
-} catch (LTI\OidcException $e) {
+} catch (Packback\Lti1p3\OidcException $e) {
     echo 'Error doing OIDC login';
 }
 ```
@@ -115,9 +115,9 @@ $redirect_url = $redirect->getRedirectUrl();
 Redirect is now done, we can move onto the launch.
 
 ### LTI Message Launches
-Now that we have done the OIDC log the platform will launch back to the tool. To handle this request, first we need to create a new `LTI\LtiMessageLaunch` object.
+Now that we have done the OIDC log the platform will launch back to the tool. To handle this request, first we need to create a new `Packback\Lti1p3\LtiMessageLaunch` object.
 ```php
-$launch = LTI\LtiMessageLaunch::new(new Example_Database());
+$launch = Packback\Lti1p3\LtiMessageLaunch::new(new Example_Database());
 ```
 
 Once we have the message launch, we can validate it. This will check signatures and the presence of a deployment and any required parameters.
@@ -185,9 +185,9 @@ To create a deep link response you will need to get the deep link for the curren
 $dl = $launch->getDeepLink();
 ```
 
-Now we are going to need to create `LTI\LtiDeepLinkResource` to return.
+Now we are going to need to create `Packback\Lti1p3\LtiDeepLinkResource` to return.
 ```php
-$resource = LTI\LtiDeepLinkResource::new()
+$resource = Packback\Lti1p3\LtiDeepLinkResource::new()
     ->setUrl("https://my.tool/launch")
     ->setCustomParams(['my_param' => $my_param])
     ->setTitle('My Resource');
@@ -238,9 +238,9 @@ Once we know we can access it, we can get an instance of the service from the la
 $ags = $launch->getAgs();
 ```
 
-To pass a grade back to the platform, you will need to create an `LTI\LtiGrade` object and populate it with the necessary information.
+To pass a grade back to the platform, you will need to create an `Packback\Lti1p3\LtiGrade` object and populate it with the necessary information.
 ```php
-$grade = LTI\LtiGrade::new()
+$grade = Packback\Lti1p3\LtiGrade::new()
     ->setScoreGiven($grade)
     ->setScoreMaximum(100)
     ->setTimestamp(date(DateTime::ISO8601))
@@ -255,9 +255,9 @@ $ags->putGrade($grade);
 ```
 This will put the grade into the default provided lineitem. If no default lineitem exists it will create one.
 
-If you want to send multiple types of grade back, that can be done by specifying an `LTI\LtiLineitem`.
+If you want to send multiple types of grade back, that can be done by specifying an `Packback\Lti1p3\LtiLineitem`.
 ```php
-$lineitem = LTI\LtiLineitem::new()
+$lineitem = Packback\Lti1p3\LtiLineitem::new()
     ->setTag('grade')
     ->setScoreMaximum(100)
     ->setLabel('Grade');

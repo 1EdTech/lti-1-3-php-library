@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-use LTI\MessageValidators\SubmissionReviewMessageValidator;
+use Packback\Lti1p3\MessageValidators\SubmissionReviewMessageValidator;
 
 class SubmissionReviewMessageValidatorTest extends TestCase
 {

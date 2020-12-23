@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-use LTI\LtiDeepLinkResource;
+use Packback\Lti1p3\LtiDeepLinkResource;
 
 class LtiDeepLinkResourceTest extends TestCase
 {

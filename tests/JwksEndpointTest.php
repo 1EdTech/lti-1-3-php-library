@@ -3,9 +3,9 @@
 use PHPUnit\Framework\TestCase;
 use Mockery;
 
-use LTI\Interfaces\Database;
-use LTI\Interfaces\LtiRegistrationInterface;
-use LTI\JwksEndpoint;
+use Packback\Lti1p3\Interfaces\Database;
+use Packback\Lti1p3\Interfaces\LtiRegistrationInterface;
+use Packback\Lti1p3\JwksEndpoint;
 
 class JwksEndpointTest extends TestCase
 {

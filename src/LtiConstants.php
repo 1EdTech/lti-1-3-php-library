@@ -1,6 +1,6 @@
 <?php
 
-namespace LTI;
+namespace Packback\Lti1p3;
 
 class LtiConstants
 {
@@ -23,16 +23,16 @@ class LtiConstants
     public const LIS = 'https://purl.imsglobal.org/spec/lti/claim/lis';
     public const CUSTOM = 'https://purl.imsglobal.org/spec/lti/claim/custom';
 
-    // LTI DL
+    // Packback\Lti1p3 DL
     public const DL_CONTENT_ITEMS = 'https://purl.imsglobal.org/spec/lti-dl/claim/content_items';
     public const DL_DATA = 'https://purl.imsglobal.org/spec/lti-dl/claim/data';
     public const DL_DEEP_LINK_SETTINGS = 'https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings';
 
-    // LTI NRPS
+    // Packback\Lti1p3 NRPS
     public const NRPS_CLAIM_SERVICE = 'https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice';
     public const NRPS_SCOPE_MEMBERSHIP_READONLY = 'https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly';
 
-    // LTI AGS
+    // Packback\Lti1p3 AGS
     public const AGS_CLAIM_ENDPOINT = 'https://purl.imsglobal.org/spec/lti-ags/claim/endpoint';
     public const AGS_SCOPE_LINEITEM = 'https://purl.imsglobal.org/spec/lti-ags/scope/lineitem';
     public const AGS_SCOPE_LINEITEM_READONLY = 'https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly';

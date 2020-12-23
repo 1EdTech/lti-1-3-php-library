@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-use LTI\MessageValidators\ResourceMessageValidator;
+use Packback\Lti1p3\MessageValidators\ResourceMessageValidator;
 
 class ResourceMessageValidatorTest extends TestCase
 {

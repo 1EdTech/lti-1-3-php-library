@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-use LTI\LtiGrade;
+use Packback\Lti1p3\LtiGrade;
 
 class LtiGradeTest extends TestCase
 {

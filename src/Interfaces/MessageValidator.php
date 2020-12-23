@@ -1,5 +1,5 @@
 <?php
-namespace LTI\Interfaces;
+namespace Packback\Lti1p3\Interfaces;
 
 interface MessageValidator
 {

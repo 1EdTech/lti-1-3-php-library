@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-use LTI\LtiLineitem;
+use Packback\Lti1p3\LtiLineitem;
 
 class LtiLineitemTest extends TestCase
 {

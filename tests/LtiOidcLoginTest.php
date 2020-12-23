@@ -3,10 +3,10 @@
 use Mockery;
 use PHPUnit\Framework\TestCase;
 
-use LTI\Interfaces\Cache;
-use LTI\Interfaces\Cookie;
-use LTI\Interfaces\Database;
-use LTI\LtiOidcLogin;
+use Packback\Lti1p3\Interfaces\Cache;
+use Packback\Lti1p3\Interfaces\Cookie;
+use Packback\Lti1p3\Interfaces\Database;
+use Packback\Lti1p3\LtiOidcLogin;
 
 class LtiOidcLoginTest extends TestCase
 {

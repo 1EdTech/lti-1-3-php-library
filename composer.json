@@ -29,7 +29,7 @@
     },
     "autoload": {
         "psr-4": {
-            "LTI\\": "src"
+            "Packback\\Lti1p3\\": "src"
         }
     },
     "autoload-dev": {

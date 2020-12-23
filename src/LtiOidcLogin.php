@@ -1,9 +1,9 @@
 <?php
-namespace LTI;
+namespace Packback\Lti1p3;
 
-use LTI\Interfaces\Cache;
-use LTI\Interfaces\Cookie;
-use LTI\Interfaces\Database;
+use Packback\Lti1p3\Interfaces\Cache;
+use Packback\Lti1p3\Interfaces\Cookie;
+use Packback\Lti1p3\Interfaces\Database;
 
 class LtiOidcLogin
 {
@@ -89,9 +89,9 @@ class LtiOidcLogin
             'login_hint'    => $request['login_hint'] // Login hint to identify platform session.
         ];
 
-        // Pass back LTI message hint if we have it.
+        // Pass back Packback\Lti1p3 message hint if we have it.
         if (isset($request['lti_message_hint'])) {
-            // LTI message hint to identify LTI context within the platform.
+            // Packback\Lti1p3 message hint to identify Packback\Lti1p3 context within the platform.
             $auth_params['lti_message_hint'] = $request['lti_message_hint'];
         }
 

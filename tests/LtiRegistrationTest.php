@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-use LTI\LtiRegistration;
+use Packback\Lti1p3\LtiRegistration;
 
 class LtiRegistrationTest extends TestCase
 {

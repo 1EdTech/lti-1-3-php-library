@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-use LTI\LtiDeployment;
+use Packback\Lti1p3\LtiDeployment;
 
 class LtiDeploymentTest extends TestCase
 {

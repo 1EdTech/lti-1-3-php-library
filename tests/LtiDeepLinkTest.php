@@ -3,8 +3,8 @@
 use PHPUnit\Framework\TestCase;
 use Mockery;
 
-use LTI\Interfaces\LtiRegistrationInterface;
-use LTI\LtiDeepLink;
+use Packback\Lti1p3\Interfaces\LtiRegistrationInterface;
+use Packback\Lti1p3\LtiDeepLink;
 
 class LtiDeepLinkTest extends TestCase
 {

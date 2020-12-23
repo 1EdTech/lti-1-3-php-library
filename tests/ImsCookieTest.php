@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-use LTI\ImsCookie;
+use Packback\Lti1p3\ImsCookie;
 
 class ImsCookieTest extends TestCase
 {
