@@ -13,4 +13,8 @@ class LtiRegistrationTest extends TestCase
 
         $this->assertInstanceOf(LtiRegistration::class, $registration);
     }
+
+    /**
+     * TODO: Finish testing
+     */
 }

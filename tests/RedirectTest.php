@@ -13,4 +13,8 @@ class RedirectTest extends TestCase
 
         $this->assertInstanceOf(Redirect::class, $redirect);
     }
+
+    /**
+     * TODO: Finish testing
+     */
 }
