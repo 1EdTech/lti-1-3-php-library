@@ -1,7 +1,8 @@
 <?php
 namespace LTI;
 
-use \Firebase\JWT\JWT;
+use Firebase\JWT\JWT;
+
 class LtiDeepLink
 {
 

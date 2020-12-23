@@ -5,5 +5,4 @@ use \Exception;
 
 class OidcException extends Exception
 {
-
 }

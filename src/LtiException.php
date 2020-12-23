@@ -5,5 +5,4 @@ use \Exception;
 
 class LtiException extends Exception
 {
-
 }
