@@ -48,12 +48,12 @@ class LtiGradeSubmissionReview
         return $this;
     }
 
-    public function get_custom()
+    public function getCustom()
     {
         return $this->custom;
     }
 
-    public function set_custom($value)
+    public function setCustom($value)
     {
         $this->custom = $value;
         return $this;
