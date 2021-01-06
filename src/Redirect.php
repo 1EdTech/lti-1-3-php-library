@@ -8,7 +8,7 @@ class Redirect
 
     private $location;
     private $referer_query;
-    private static $CAN_302_COOKIE = 'Packback\Lti1p31p3_302_Redirect';
+    private static $CAN_302_COOKIE = 'LTI_302_Redirect';
 
     public function __construct(string $location, string $referer_query = null)
     {

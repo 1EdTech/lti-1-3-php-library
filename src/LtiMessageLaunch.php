@@ -267,7 +267,7 @@ class LtiMessageLaunch
 
     private function validateState() {
         // Check State for OIDC.
-        if ($this->cookie->getCookie('lti1p3_' . $this->request['state']) !== $this->request['state']) {
+        if ($this->cookie->getCookie(LtiOidcLogin::COOKIE_PREFIX . $this->request['state']) !== $this->request['state']) {
             // Error if state doesn't match
             throw new LtiException("State not found", 1);
         }

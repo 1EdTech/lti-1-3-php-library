@@ -14,6 +14,16 @@ class RedirectTest extends TestCase
         $this->assertInstanceOf(Redirect::class, $redirect);
     }
 
+    public function testItGetsRedirectUrl()
+    {
+        $expected = 'expected';
+        $redirect = new Redirect($expected);
+
+        $result = $redirect->getRedirectUrl();
+
+        $this->assertEquals($expected, $result);
+    }
+
     /**
      * TODO: Finish testing
      */
