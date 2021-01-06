@@ -69,7 +69,7 @@ class LtiMessageLaunch
     }
 
     /**
-     * Validates all aspects of an incoming Packback\Lti1p3 message launch and caches the launch if successful.
+     * Validates all aspects of an incoming LTI message launch and caches the launch if successful.
      *
      * @param array|string  $request    An array of post request parameters. If not set will default to $_POST.
      *
