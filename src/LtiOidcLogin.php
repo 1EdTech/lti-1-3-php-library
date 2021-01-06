@@ -7,8 +7,12 @@ use Packback\Lti1p3\Interfaces\Database;
 
 class LtiOidcLogin
 {
-
     public const COOKIE_PREFIX = 'lti1p3_';
+
+    public const ERROR_MSG_LAUNCH_URL = 'No launch URL configured';
+    public const ERROR_MSG_ISSUER = 'Could not find issuer';
+    public const ERROR_MSG_LOGIN_HINT = 'Could not find login hint';
+    public const ERROR_MSG_REGISTRATION = 'Could not find registration details';
 
     private $db;
     private $cache;
@@ -21,7 +25,8 @@ class LtiOidcLogin
      * @param Cache     $cache      Instance of the Cache interface used to loading and storing launches. If non is provided launch data will be store in $_SESSION.
      * @param Cookie    $cookie     Instance of the Cookie interface used to set and read cookies. Will default to using $_COOKIE and setcookie.
      */
-    function __construct(Database $database, Cache $cache = null, Cookie $cookie = null) {
+    function __construct(Database $database, Cache $cache = null, Cookie $cookie = null)
+    {
         $this->db = $database;
         if ($cache === null) {
             $cache = new ImsCache();
@@ -37,7 +42,8 @@ class LtiOidcLogin
     /**
      * Static function to allow for method chaining without having to assign to a variable first.
      */
-    public static function new(Database $database, Cache $cache = null, Cookie $cookie = null) {
+    public static function new(Database $database, Cache $cache = null, Cookie $cookie = null)
+    {
         return new LtiOidcLogin($database, $cache, $cookie);
     }
 
@@ -57,7 +63,7 @@ class LtiOidcLogin
         }
 
         if (empty($launch_url)) {
-            throw new OidcException("No launch URL configured", 1);
+            throw new OidcException(static::ERROR_MSG_LAUNCH_URL, 1);
         }
 
         // Validate Request Data.
@@ -89,29 +95,30 @@ class LtiOidcLogin
             'login_hint'    => $request['login_hint'] // Login hint to identify platform session.
         ];
 
-        // Pass back Packback\Lti1p3 message hint if we have it.
+        // Pass back LTI message hint if we have it.
         if (isset($request['lti_message_hint'])) {
-            // Packback\Lti1p3 message hint to identify Packback\Lti1p3 context within the platform.
+            // LTI message hint to identify LTI context within the platform.
             $auth_params['lti_message_hint'] = $request['lti_message_hint'];
         }
 
-        $auth_login_return_url = $registration->getAuthLoginUrl() . "?" . http_build_query($auth_params);
+        $auth_login_return_url = $registration->getAuthLoginUrl() . '?' . http_build_query($auth_params);
 
         // Return auth redirect.
         return new Redirect($auth_login_return_url, http_build_query($request));
 
     }
 
-    protected function validateOidcLogin($request) {
+    public function validateOidcLogin($request)
+    {
 
         // Validate Issuer.
         if (empty($request['iss'])) {
-            throw new OidcException("Could not find issuer", 1);
+            throw new OidcException(static::ERROR_MSG_ISSUER, 1);
         }
 
         // Validate Login Hint.
         if (empty($request['login_hint'])) {
-            throw new OidcException("Could not find login hint", 1);
+            throw new OidcException(static::ERROR_MSG_LOGIN_HINT, 1);
         }
 
         // Fetch Registration Details.
@@ -119,7 +126,7 @@ class LtiOidcLogin
 
         // Check we got something.
         if (empty($registration)) {
-            throw new OidcException("Could not find registration details", 1);
+            throw new OidcException(static::ERROR_MSG_REGISTRATION, 1);
         }
 
         // Return Registration.

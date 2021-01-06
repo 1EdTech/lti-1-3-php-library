@@ -17,14 +17,13 @@ class LtiNamesRolesProvisioningService
 
     public function getMembers()
     {
-
         $members = [];
 
         $next_page = $this->service_data['context_memberships_url'];
 
         while ($next_page) {
             $page = $this->service_connector->makeServiceRequest(
-                [LtiConstants::NRPS_CONTEXT_MEMBERSHIP_READ_ONLY],
+                [LtiConstants::NRPS_SCOPE_MEMBERSHIP_READONLY],
                 LtiServiceConnector::METHOD_GET,
                 $next_page,
                 null,
@@ -42,7 +41,7 @@ class LtiNamesRolesProvisioningService
                 }
             }
         }
-        return $members;
 
+        return $members;
     }
 }

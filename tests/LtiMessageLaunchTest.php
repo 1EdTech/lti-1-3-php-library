@@ -10,14 +10,31 @@ use Packback\Lti1p3\LtiMessageLaunch;
 
 class LtiMessageLaunchTest extends TestCase
 {
+    public function setUp(): void
+    {
+        $this->cache = Mockery::mock(Cache::class);
+        $this->cookie = Mockery::mock(Cookie::class);
+        $this->database = Mockery::mock(Database::class);
+
+        $this->messageLaunch = new LtiMessageLaunch(
+            $this->database,
+            $this->cache,
+            $this->cookie
+        );
+    }
 
     public function testItInstantiates()
     {
-        $cache = Mockery::mock(Cache::class);
-        $cookie = Mockery::mock(Cookie::class);
-        $database = Mockery::mock(Database::class);
+        $this->assertInstanceOf(LtiMessageLaunch::class, $this->messageLaunch);
+    }
 
-        $messageLaunch = new LtiMessageLaunch($database, $cache, $cookie);
+    public function testItCreatesANewInstance()
+    {
+        $messageLaunch = LtiMessageLaunch::new(
+            $this->database,
+            $this->cache,
+            $this->cookie
+        );
 
         $this->assertInstanceOf(LtiMessageLaunch::class, $messageLaunch);
     }
