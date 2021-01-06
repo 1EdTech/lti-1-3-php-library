@@ -150,4 +150,34 @@ class LtiGradeTest extends TestCase
 
         $this->assertEquals($expected, $this->grade->getSubmissionReview());
     }
+
+    public function testItCastsFullObjectToString()
+    {
+        $expected = [
+            'scoreGiven' => 5,
+            'scoreMaximum' => 10,
+            'comment' => 'Comment',
+            'activityProgress' => 'ActivityProgress',
+            'gradingProgress' => 'GradingProgress',
+            'timestamp' => 'Timestamp',
+            'userId' => 'UserId',
+            'submissionReview' => 'SubmissionReview',
+        ];
+
+        $this->grade->setScoreGiven($expected['scoreGiven'])
+            ->setScoreMaximum($expected['scoreMaximum'])
+            ->setComment($expected['comment'])
+            ->setActivityProgress($expected['activityProgress'])
+            ->setGradingProgress($expected['gradingProgress'])
+            ->setTimestamp($expected['timestamp'])
+            ->setUserId($expected['userId'])
+            ->setSubmissionReview($expected['submissionReview']);
+
+        $this->assertEquals(json_encode($expected), (string) $this->grade);
+    }
+
+    public function testItCastsEmptyObjectToString()
+    {
+        $this->assertEquals('[]', (string) $this->grade);
+    }
 }

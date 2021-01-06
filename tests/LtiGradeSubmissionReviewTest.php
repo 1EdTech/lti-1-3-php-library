@@ -83,16 +83,16 @@ class LtiGradeSubmissionReviewTest extends TestCase
     public function testItCastsFullObjectToString()
     {
         $expected = [
-            "reviewableStatus" => 'ReviewableStatus',
-            "label" => 'Label',
-            "url" => 'Url',
-            "custom" => 'Custom',
+            'reviewableStatus' => 'ReviewableStatus',
+            'label' => 'Label',
+            'url' => 'Url',
+            'custom' => 'Custom',
         ];
 
-        $this->gradeReview->setReviewableStatus($expected['reviewableStatus']);
-        $this->gradeReview->setLabel($expected['label']);
-        $this->gradeReview->setUrl($expected['url']);
-        $this->gradeReview->setCustom($expected['custom']);
+        $this->gradeReview->setReviewableStatus($expected['reviewableStatus'])
+            ->setLabel($expected['label'])
+            ->setUrl($expected['url'])
+            ->setCustom($expected['custom']);
 
         $this->assertEquals(json_encode($expected), (string) $this->gradeReview);
     }

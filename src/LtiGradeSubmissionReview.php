@@ -62,10 +62,10 @@ class LtiGradeSubmissionReview
     public function __toString()
     {
         return json_encode(array_filter([
-            "reviewableStatus" => $this->reviewable_status,
-            "label" => $this->label,
-            "url" => $this->url,
-            "custom" => $this->custom,
+            'reviewableStatus' => $this->reviewable_status,
+            'label' => $this->label,
+            'url' => $this->url,
+            'custom' => $this->custom,
         ]));
     }
 }
