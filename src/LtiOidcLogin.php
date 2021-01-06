@@ -28,14 +28,7 @@ class LtiOidcLogin
     function __construct(Database $database, Cache $cache = null, Cookie $cookie = null)
     {
         $this->db = $database;
-        if ($cache === null) {
-            $cache = new ImsCache();
-        }
         $this->cache = $cache;
-
-        if ($cookie === null) {
-            $cookie = new ImsCookie();
-        }
         $this->cookie = $cookie;
     }
 

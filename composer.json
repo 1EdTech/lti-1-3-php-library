@@ -25,7 +25,8 @@
     },
     "require-dev": {
         "mockery/mockery": "^1.4",
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^9.5",
+        "nesbot/carbon": "^2.43"
     },
     "autoload": {
         "psr-4": {

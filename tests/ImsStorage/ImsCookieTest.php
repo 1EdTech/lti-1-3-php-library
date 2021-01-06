@@ -1,8 +1,8 @@
-<?php namespace Tests;
+<?php namespace Tests\ImsStorage;
 
 use PHPUnit\Framework\TestCase;
 
-use Packback\Lti1p3\ImsCookie;
+use Packback\Lti1p3\ImsStorage\ImsCookie;
 
 class ImsCookieTest extends TestCase
 {

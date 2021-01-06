@@ -1,7 +1,9 @@
 <?php
-namespace Packback\Lti1p3;
+namespace Packback\Lti1p3\ImsStorage;
 
-class ImsCache
+use Packback\Lti1p3\Interfaces\Cache;
+
+class ImsCache implements Cache
 {
 
     private $cache;

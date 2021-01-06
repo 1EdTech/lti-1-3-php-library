@@ -1,8 +1,8 @@
-<?php namespace Tests;
+<?php namespace Tests\ImsStorage;
 
 use PHPUnit\Framework\TestCase;
 
-use Packback\Lti1p3\ImsCache;
+use Packback\Lti1p3\ImsStorage\ImsCache;
 
 class ImsCacheTest extends TestCase
 {

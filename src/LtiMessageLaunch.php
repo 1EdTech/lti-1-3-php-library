@@ -40,14 +40,7 @@ class LtiMessageLaunch
 
         $this->launch_id = uniqid("lti1p3_launch_", true);
 
-        if ($cache === null) {
-            $cache = new ImsCache();
-        }
         $this->cache = $cache;
-
-        if ($cookie === null) {
-            $cookie = new ImsCookie();
-        }
         $this->cookie = $cookie;
     }
 
@@ -299,7 +292,7 @@ class LtiMessageLaunch
 
     private function validateNonce() {
         if (!isset($this->jwt['body']['nonce'])) {
-            throw new LtiException("Missing Nonce");
+            throw new LtiException('Missing Nonce');
         }
         if (!$this->cache->checkNonce($this->jwt['body']['nonce'])) {
             //throw new LtiException("Invalid Nonce");
