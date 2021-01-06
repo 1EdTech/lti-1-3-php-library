@@ -25,9 +25,12 @@ class LtiGradeTest extends TestCase
 
     public function testItGetsScoreGiven()
     {
-        $result = $this->grade->getScoreGiven();
+        $expected = 'expected';
+        $grade = new LtiGrade([ 'scoreGiven' => $expected ]);
 
-        $this->assertNull($result);
+        $result = $grade->getScoreGiven();
+
+        $this->assertEquals($expected, $result);
     }
 
     public function testItSetsScoreGiven()
@@ -41,9 +44,12 @@ class LtiGradeTest extends TestCase
 
     public function testItGetsScoreMaximum()
     {
-        $result = $this->grade->getScoreMaximum();
+        $expected = 'expected';
+        $grade = new LtiGrade([ 'scoreMaximum' => $expected ]);
 
-        $this->assertNull($result);
+        $result = $grade->getScoreMaximum();
+
+        $this->assertEquals($expected, $result);
     }
 
     public function testItSetsScoreMaximum()
@@ -57,9 +63,12 @@ class LtiGradeTest extends TestCase
 
     public function testItGetsComment()
     {
-        $result = $this->grade->getComment();
+        $expected = 'expected';
+        $grade = new LtiGrade([ 'comment' => $expected ]);
 
-        $this->assertNull($result);
+        $result = $grade->getComment();
+
+        $this->assertEquals($expected, $result);
     }
 
     public function testItSetsComment()
@@ -73,9 +82,12 @@ class LtiGradeTest extends TestCase
 
     public function testItGetsActivityProgress()
     {
-        $result = $this->grade->getActivityProgress();
+        $expected = 'expected';
+        $grade = new LtiGrade([ 'activityProgress' => $expected ]);
 
-        $this->assertNull($result);
+        $result = $grade->getActivityProgress();
+
+        $this->assertEquals($expected, $result);
     }
 
     public function testItSetsActivityProgress()
@@ -89,9 +101,12 @@ class LtiGradeTest extends TestCase
 
     public function testItGetsGradingProgress()
     {
-        $result = $this->grade->getGradingProgress();
+        $expected = 'expected';
+        $grade = new LtiGrade([ 'gradingProgress' => $expected ]);
 
-        $this->assertNull($result);
+        $result = $grade->getGradingProgress();
+
+        $this->assertEquals($expected, $result);
     }
 
     public function testItSetsGradingProgress()
@@ -105,9 +120,12 @@ class LtiGradeTest extends TestCase
 
     public function testItGetsTimestamp()
     {
-        $result = $this->grade->getTimestamp();
+        $expected = 'expected';
+        $grade = new LtiGrade([ 'timestamp' => $expected ]);
 
-        $this->assertNull($result);
+        $result = $grade->getTimestamp();
+
+        $this->assertEquals($expected, $result);
     }
 
     public function testItSetsTimestamp()
@@ -121,9 +139,12 @@ class LtiGradeTest extends TestCase
 
     public function testItGetsUserId()
     {
-        $result = $this->grade->getUserId();
+        $expected = 'expected';
+        $grade = new LtiGrade([ 'userId' => $expected ]);
 
-        $this->assertNull($result);
+        $result = $grade->getUserId();
+
+        $this->assertEquals($expected, $result);
     }
 
     public function testItSetsUserId()
@@ -137,9 +158,12 @@ class LtiGradeTest extends TestCase
 
     public function testItGetsSubmissionReview()
     {
-        $result = $this->grade->getSubmissionReview();
+        $expected = 'expected';
+        $grade = new LtiGrade([ 'submissionReview' => $expected ]);
 
-        $this->assertNull($result);
+        $result = $grade->getSubmissionReview();
+
+        $this->assertEquals($expected, $result);
     }
 
     public function testItSetsSubmissionReview()
@@ -164,16 +188,9 @@ class LtiGradeTest extends TestCase
             'submissionReview' => 'SubmissionReview',
         ];
 
-        $this->grade->setScoreGiven($expected['scoreGiven'])
-            ->setScoreMaximum($expected['scoreMaximum'])
-            ->setComment($expected['comment'])
-            ->setActivityProgress($expected['activityProgress'])
-            ->setGradingProgress($expected['gradingProgress'])
-            ->setTimestamp($expected['timestamp'])
-            ->setUserId($expected['userId'])
-            ->setSubmissionReview($expected['submissionReview']);
+        $grade = new LtiGrade($expected);
 
-        $this->assertEquals(json_encode($expected), (string) $this->grade);
+        $this->assertEquals(json_encode($expected), (string) $grade);
     }
 
     public function testItCastsEmptyObjectToString()

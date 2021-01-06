@@ -12,6 +12,18 @@ class LtiGrade
     private $user_id;
     private $submission_review;
 
+    public function __construct(array $grade = null)
+    {
+        $this->score_given = $grade['scoreGiven'] ?? null;
+        $this->score_maximum = $grade['scoreMaximum'] ?? null;
+        $this->comment = $grade['comment'] ?? null;
+        $this->activity_progress = $grade['activityProgress'] ?? null;
+        $this->grading_progress = $grade['gradingProgress'] ?? null;
+        $this->timestamp = $grade['timestamp'] ?? null;
+        $this->user_id = $grade['userId'] ?? null;
+        $this->submission_review = $grade['submissionReview'] ?? null;
+    }
+
     /**
      * Static function to allow for method chaining without having to assign to a variable first.
      */

@@ -14,17 +14,14 @@ class LtiLineitem
 
     public function __construct(array $lineitem = null)
     {
-        if (empty($lineitem)) {
-            return;
-        }
-        $this->id = $lineitem["id"];
-        $this->score_maximum = $lineitem["scoreMaximum"];
-        $this->label = $lineitem["label"];
-        $this->resource_id = $lineitem["resourceId"] ?? null;
-        $this->resource_link_id = $lineitem["resourceLinkId"] ?? null;
-        $this->tag = $lineitem["tag"] ?? null;
-        $this->start_date_time = $lineitem["startDateTime"] ?? null;
-        $this->end_date_time = $lineitem["endDateTime"] ?? null;
+        $this->id = $lineitem['id'] ?? null;
+        $this->score_maximum = $lineitem['scoreMaximum'] ?? null;
+        $this->label = $lineitem['label'] ?? null;
+        $this->resource_id = $lineitem['resourceId'] ?? null;
+        $this->resource_link_id = $lineitem['resourceLinkId'] ?? null;
+        $this->tag = $lineitem['tag'] ?? null;
+        $this->start_date_time = $lineitem['startDateTime'] ?? null;
+        $this->end_date_time = $lineitem['endDateTime'] ?? null;
     }
 
     /**
@@ -125,13 +122,13 @@ class LtiLineitem
     public function __toString()
     {
         return json_encode(array_filter([
-            "id" => $this->id,
-            "scoreMaximum" => $this->score_maximum,
-            "label" => $this->label,
-            "resourceId" => $this->resource_id,
-            "tag" => $this->tag,
-            "startDateTime" => $this->start_date_time,
-            "endDateTime" => $this->end_date_time,
+            'id' => $this->id,
+            'scoreMaximum' => $this->score_maximum,
+            'label' => $this->label,
+            'resourceId' => $this->resource_id,
+            'tag' => $this->tag,
+            'startDateTime' => $this->start_date_time,
+            'endDateTime' => $this->end_date_time,
         ]));
     }
 }

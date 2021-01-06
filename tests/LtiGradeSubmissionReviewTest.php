@@ -18,9 +18,12 @@ class LtiGradeSubmissionReviewTest extends TestCase
 
     public function testItGetsReviewableStatus()
     {
-        $result = $this->gradeReview->getReviewableStatus();
+        $expected = 'ReviewableStatus';
+        $gradeReview = new LtiGradeSubmissionReview(['reviewableStatus' => 'ReviewableStatus']);
 
-        $this->assertNull($result);
+        $result = $gradeReview->getReviewableStatus();
+
+        $this->assertEquals($expected, $result);
     }
 
     public function testItSetsReviewableStatus()
@@ -34,9 +37,12 @@ class LtiGradeSubmissionReviewTest extends TestCase
 
     public function testItGetsLabel()
     {
-        $result = $this->gradeReview->getLabel();
+        $expected = 'Label';
+        $gradeReview = new LtiGradeSubmissionReview(['label' => 'Label']);
 
-        $this->assertNull($result);
+        $result = $gradeReview->getLabel();
+
+        $this->assertEquals($expected, $result);
     }
 
     public function testItSetsLabel()
@@ -50,9 +56,12 @@ class LtiGradeSubmissionReviewTest extends TestCase
 
     public function testItGetsUrl()
     {
-        $result = $this->gradeReview->getUrl();
+        $expected = 'Url';
+        $gradeReview = new LtiGradeSubmissionReview(['url' => 'Url']);
 
-        $this->assertNull($result);
+        $result = $gradeReview->getUrl();
+
+        $this->assertEquals($expected, $result);
     }
 
     public function testItSetsUrl()
@@ -66,9 +75,12 @@ class LtiGradeSubmissionReviewTest extends TestCase
 
     public function testItGetsCustom()
     {
-        $result = $this->gradeReview->getCustom();
+        $expected = 'Custom';
+        $gradeReview = new LtiGradeSubmissionReview(['custom' => 'Custom']);
 
-        $this->assertNull($result);
+        $result = $gradeReview->getCustom();
+
+        $this->assertEquals($expected, $result);
     }
 
     public function testItSetsCustom()
@@ -89,12 +101,9 @@ class LtiGradeSubmissionReviewTest extends TestCase
             'custom' => 'Custom',
         ];
 
-        $this->gradeReview->setReviewableStatus($expected['reviewableStatus'])
-            ->setLabel($expected['label'])
-            ->setUrl($expected['url'])
-            ->setCustom($expected['custom']);
+        $gradeReview = new LtiGradeSubmissionReview($expected);
 
-        $this->assertEquals(json_encode($expected), (string) $this->gradeReview);
+        $this->assertEquals(json_encode($expected), (string) $gradeReview);
     }
 
     public function testItCastsEmptyObjectToString()

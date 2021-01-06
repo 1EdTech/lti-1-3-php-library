@@ -8,6 +8,15 @@ class LtiGradeSubmissionReview
     private $url;
     private $custom;
 
+    public function __construct(array $gradeSubmission = null)
+    {
+        $this->reviewable_status = $gradeSubmission['reviewableStatus'] ?? null;
+        $this->label = $gradeSubmission['label'] ?? null;
+        $this->url = $gradeSubmission['url'] ?? null;
+        $this->custom = $gradeSubmission['custom'] ?? null;
+    }
+
+
     /**
      * Static function to allow for method chaining without having to assign to a variable first.
      */
