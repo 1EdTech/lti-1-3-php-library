@@ -15,8 +15,20 @@ class LtiRegistration implements LtiRegistrationInterface
     private $tool_private_key;
     private $kid;
 
-    public static function new() {
-        return new LtiRegistration();
+    public function __construct(array $registration = [])
+    {
+        $this->issuer = $registration['issuer'] ?? null;
+        $this->client_id = $registration['clientId'] ?? null;
+        $this->key_set_url = $registration['keySetUrl'] ?? null;
+        $this->auth_token_url = $registration['authTokenUrl'] ?? null;
+        $this->auth_login_url = $registration['authLoginUrl'] ?? null;
+        $this->auth_server = $registration['authServer'] ?? null;
+        $this->tool_private_key = $registration['toolPrivateKey'] ?? null;
+        $this->kid = $registration['kid'] ?? null;
+    }
+
+    public static function new(array $registration = []) {
+        return new LtiRegistration($registration);
     }
 
     public function getIssuer()
@@ -98,7 +110,7 @@ class LtiRegistration implements LtiRegistrationInterface
 
     public function getKid()
     {
-        return empty($this->kid) ? hash('sha256', trim($this->issuer . $this->client_id)) : $this->kid;
+        return $this->kid ?? hash('sha256', trim($this->issuer . $this->client_id));
     }
 
     public function setKid($kid)
