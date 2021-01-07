@@ -27,8 +27,8 @@ class LtiMessageLaunch
      * Constructor
      *
      * @param Database  $database   Instance of the database interface used for looking up registrations and deployments.
-     * @param Cache     $cache      Instance of the Cache interface used to loading and storing launches. If non is provided launch data will be store in $_SESSION.
-     * @param Cookie    $cookie     Instance of the Cookie interface used to set and read cookies. Will default to using $_COOKIE and setcookie.
+     * @param Cache     $cache      Instance of the Cache interface used to loading and storing launches.
+     * @param Cookie    $cookie     Instance of the Cookie interface used to set and read cookies.
      */
     function __construct(Database $database, Cache $cache = null, Cookie $cookie = null) {
         $this->db = $database;
