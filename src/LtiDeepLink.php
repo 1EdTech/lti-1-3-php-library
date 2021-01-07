@@ -40,7 +40,7 @@ class LtiDeepLink
     {
         $jwt = $this->getResponseJwt($resources);
         /**
-         * TODO: Fix this
+         * @todo Fix this
          */
         ?>
         <form id="auto_submit" action="<?= $this->deep_link_settings['deep_link_return_url']; ?>" method="POST">

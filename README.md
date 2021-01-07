@@ -1,6 +1,6 @@
 # LTI 1.3 Advantage Library
 
-A used for building IMS-certified LTI 1.3 tool providers in PHP.
+A library used for building IMS-certified LTI 1.3 tool providers in PHP.
 
 ## Installation
 
@@ -467,7 +467,7 @@ class Lti13Database implements Database
 
 For improvements, suggestions or bug fixes, make a pull request or an issue. Before opening a pull request, add automated tests for your changes and ensure that all tests pass.
 
-This library was initially created by @MartinLenord from Turnitin to help prove out the LTI 1.3 specification and accelerate tool development. It has been updated by @dbhynds and @EricTendian to add automate tests and bring it into compliance with the standards set out by the PHP-FIG and the IMS LTI 1.3 Certification process.
+This library was initially created by @MartinLenord from Turnitin to help prove out the LTI 1.3 specification and accelerate tool development. It has been updated by @dbhynds and @EricTendian to add automate tests and bring it into compliance with the standards set out by the PHP-FIG and the IMS LTI 1.3 Certification process. Packback actively uses and maintains this library.
 
 ### Testing
 

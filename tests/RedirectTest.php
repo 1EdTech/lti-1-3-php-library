@@ -25,6 +25,6 @@ class RedirectTest extends TestCase
     }
 
     /**
-     * TODO: Finish testing
+     * @todo Finish testing
      */
 }

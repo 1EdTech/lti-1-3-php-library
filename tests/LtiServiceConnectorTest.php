@@ -19,6 +19,6 @@ class LtiServiceConnectorTest extends TestCase
     }
 
     /**
-     * TODO: Finish testing
+     * @todo Finish testing
      */
 }

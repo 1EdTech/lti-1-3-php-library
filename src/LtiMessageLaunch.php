@@ -356,7 +356,7 @@ class LtiMessageLaunch
         }
 
         /**
-         * @TODO Fix this nonsense
+         * @todo Fix this nonsense
          */
 
         // Create instances of all validators

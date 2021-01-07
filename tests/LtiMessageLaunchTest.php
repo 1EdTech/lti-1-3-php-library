@@ -40,6 +40,6 @@ class LtiMessageLaunchTest extends TestCase
     }
 
     /**
-     * TODO: Finish testing
+     * @todo Finish testing
      */
 }

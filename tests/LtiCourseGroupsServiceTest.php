@@ -19,6 +19,6 @@ class LtiCourseGroupsServiceTest extends TestCase
     }
 
     /**
-     * TODO: Test this
+     * @todo Test this
      */
 }

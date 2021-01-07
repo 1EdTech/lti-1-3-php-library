@@ -19,6 +19,6 @@ class LtiAssignmentsGradesServiceTest extends TestCase
     }
 
     /**
-     * TODO: Test this
+     * @todo Test this
      */
 }

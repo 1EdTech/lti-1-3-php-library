@@ -19,7 +19,7 @@ class LtiDeepLinkTest extends TestCase
     }
 
     /**
-     * TODO: Figure out how to test this
+     * @todo Figure out how to test this
      */
     // public function testItGetsJwtResponse()
     // {
