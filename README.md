@@ -1,36 +1,18 @@
-
-| **Note** : If you are looking for the example tool that uses this library, it has been moved into its own repo https://github.com/IMSGlobal/lti-1-3-php-example-tool |
-| --- |
-
 # LTI 1.3 Advantage Library
 
-This code consists of a library for creating LTI tool providers in PHP.
+This library can be used to create IMS-certified LTI 1.3 tool providers in PHP.
 
-# Library Documentation
+## Installation
 
-## Importing the library
+Run:
 
-### Using Composer
-
-Add the following to your `composer.json` file
-
-```json
-"repositories": [
-    {
-        "type": "vcs",
-        "url": "https://github.com/packbackbooks/lti-1-3-php-library"
-    }
-],
-"require": {
-    "packbackbooks/lti-1p3-tool": "dev-master"
-}
+```bash
+composer require packbackbooks/lti-1p3-tool
 ```
-
-Run `composer install` or `composer update`
 
 In your code, you will now be able to use classes in the `Packback\Lti1p3` namespace to access the library.
 
-## Accessing Registration Data
+## Database for Accessing LTI Registrations
 
 To allow for launches to be validated and to allow the tool to know where it has to make calls to, registration data must be stored.
 
@@ -39,7 +21,7 @@ Rather than dictating how this is store, the library instead provides an interfa
 The `Packback\Lti1p3\Database` interface must be fully implemented for this to work.
 
 ```php
-class Example_Database implements Packback\Lti1p3\Database
+class ExampleDatabase implements Packback\Lti1p3\Interfaces\Database
 {
     public function findRegistrationByIssuer($iss)
     {
@@ -52,7 +34,7 @@ class Example_Database implements Packback\Lti1p3\Database
 }
 ```
 
-The `find_registration_by_issuer` method must return an `Packback\Lti1p3\LtiRegistration`.
+The `findRegistrationByIssuer` method must return an `Packback\Lti1p3\LtiRegistration`.
 
 ```php
 return Packback\Lti1p3\LtiRegistration::new()
@@ -65,14 +47,12 @@ return Packback\Lti1p3\LtiRegistration::new()
     ->setToolPrivateKey($private_key);
 ```
 
-The `find_deployment` method must return an `Packback\Lti1p3\LtiDeployment` if it exists within the database.
+The `findDeployment` method must return an `Packback\Lti1p3\LtiDeployment` if it exists within the database.
 
 ```php
 return Packback\Lti1p3\LtiDeployment::new()
     ->setDeploymentId($deployment_id);
 ```
-
-Calls into the Library will require an instance of `Packback\Lti1p3\Database` to be passed into them.
 
 ### Creating a JWKS endpoint
 
@@ -80,7 +60,7 @@ A JWKS (JSON Web Key Set) endpoint can be generated for either an individual reg
 
 ```php
 // From issuer
-Packback\Lti1p3\JwksEndpoint::fromIssuer(new Example_Database(), 'http://example.com')->outputJwks();
+Packback\Lti1p3\JwksEndpoint::fromIssuer($database, 'http://example.com')->outputJwks();
 // From registration
 Packback\Lti1p3\JwksEndpoint::fromRegistration($registration)->outputJwks();
 // From array
@@ -96,7 +76,7 @@ LTI 1.3 uses a modified version of the OpenId Connect third party initiate login
 To handle this request, you must first create a new `Packback\Lti1p3\LtiOidcLogin` object.
 
 ```php
-$login = LtiOidcLogin::new(new Example_Database());
+$login = LtiOidcLogin::new($database);
 ```
 
 Now you must configure your login request with a return url (this must be preconfigured and white-listed on the tool).
@@ -111,26 +91,19 @@ try {
 }
 ```
 
-With the redirect, we can now redirect the user back to the tool.
-
-There are three ways to do this:
-
-This will add a 302 location header and then exit.
-
-```php
-$redirect->doRedirect();
-```
-
-This will echo out some javascript to do the redirect instead of using a 302.
-
-```php
-$redirect->doJsRedirect();
-```
-
-You can also get the url you need to redirect to, with all the necessary query parameters, if you would prefer to redirect in a custom way.
+With the redirect, we can now redirect the user back to the tool.  From there you can get the url you need to redirect to, with all the necessary query parameters.
 
 ```php
 $redirect_url = $redirect->getRedirectUrl();
+```
+
+Alternatively you can redirect using a 302 location header, or javascript.
+
+```php
+// Location header
+$redirect->doRedirect();
+// Javascript
+$redirect->doJsRedirect();
 ```
 
 Redirect is now done, we can move onto the launch.
@@ -140,8 +113,10 @@ Redirect is now done, we can move onto the launch.
 Now that we have done the OIDC log the platform will launch back to the tool. To handle this request, first we need to create a new `Packback\Lti1p3\LtiMessageLaunch` object.
 
 ```php
-$launch = Packback\Lti1p3\LtiMessageLaunch::new(new Example_Database());
+$launch = Packback\Lti1p3\LtiMessageLaunch::new($database);
 ```
+
+#### Validating a Launch
 
 Once we have the message launch, we can validate it. This will check signatures and the presence of a deployment and any required parameters.
 
@@ -151,9 +126,11 @@ If the validation fails an exception will be thrown.
 try {
     $launch->validate();
 } catch (Exception $e) {
-    echo 'Launch validation failed';
+    // Handle failed launch
 }
 ```
+
+#### Accessing Launch Information
 
 Now we know the launch is valid we can find out more information about the launch.
 
@@ -195,7 +172,7 @@ Once you have the launch id, you can link it to your session and pass it along a
 Retrieving a launch using the launch id can be done using:
 
 ```php
-$launch = LtiMessageLaunch::fromCache($launch_id, new Example_Database());
+$launch = LtiMessageLaunch::fromCache($launch_id, $database);
 ```
 
 Once retrieved, you can call any of the methods on the launch object as normal, e.g.
@@ -312,12 +289,16 @@ $ags->putGrade($grade, $lineitem);
 
 If a lineitem with the same `tag` exists, that lineitem will be used, otherwise a new lineitem will be created.
 
-# Contributing
+## Testing
 
-If you have improvements, suggestions or bug fixes, feel free to make a pull request or issue and someone will take a look at it.
+Automated tests can be run using the command:
 
-You do not need to be an IMS Member to use or contribute to this library, however it is recommended for better access to support resources and certification.
+```bash
+composer test
+```
 
-This library was initially created by @MartinLenord from Turnitin to help prove out the LTI 1.3 specification and accelerate tool development.
+## Contributing
 
-**Note:** This library is for IMS LTI 1.3 based specifications only. Requests to include custom, off-spec or vendor-specific changes will be declined.
+For improvements, suggestions or bug fixes, make a pull request or an issue. Before opening a pull request, add automated tests for your changes and ensure that all tests pass.
+
+This library was initially created by @MartinLenord from Turnitin to help prove out the LTI 1.3 specification and accelerate tool development. It has been updated by @dbhynds and @EricTendian to add automate tests and bring it into compliance with the standards set out by the PHP-FIG and the IMS LTI 1.3 Certification process.
