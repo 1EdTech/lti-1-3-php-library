@@ -1,6 +1,6 @@
 # LTI 1.3 Advantage Library
 
-This library can be used to create IMS-certified LTI 1.3 tool providers in PHP.
+A used for building IMS-certified LTI 1.3 tool providers in PHP.
 
 ## Installation
 
