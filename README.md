@@ -2,6 +2,8 @@
 
 A library used for building IMS-certified LTI 1.3 tool providers in PHP.
 
+This library allows a tool provider (your app) to receive LTI launches from a tool consumer (i.e. LMS). It allows LTI launches to be validated and lets an application interact with services like the Names Roles Provisioning Service (to fetch a roster for an LMS course) and Assignment Grades Service (to update grades for students in a course in the LMS).
+
 ## Installation
 
 Run:
