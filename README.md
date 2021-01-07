@@ -12,46 +12,56 @@ composer require packbackbooks/lti-1p3-tool
 
 In your code, you will now be able to use classes in the `Packback\Lti1p3` namespace to access the library.
 
-## Database for Accessing LTI Registrations
+### Configuring JWT
+
+Add the following when bootstrapping your app.
+
+```php
+use Firebase\JWT\JWT;
+
+JWT::$leeway = 5;
+```
+
+### Data Storage
+
+This library uses three methods for storing and accessing data: cache, cookie, and database. All three must be implemented in order for the library to work. You may create your own custom implementations so long as they adhere to the following interfaces:
+
+- Packback\Lti1p3\Interfaces\Cache
+- Packback\Lti1p3\Interfaces\Cookie
+- Packback\Lti1p3\Interfaces\Database
+
+Cache and Cookie storage have legacy implementations at Packback\Lti1p3\ImsStorage if you do not wish to implement your own. However you must implement your own database.
+
+#### Database
 
 To allow for launches to be validated and to allow the tool to know where it has to make calls to, registration data must be stored.
-
-Rather than dictating how this is store, the library instead provides an interface that must be implemented to allow it to access registration data.
 
 The `Packback\Lti1p3\Database` interface must be fully implemented for this to work.
 
 ```php
 class ExampleDatabase implements Packback\Lti1p3\Interfaces\Database
 {
-    public function findRegistrationByIssuer($iss)
+    public function findRegistrationByIssuer($iss): Packback\Lti1p3\LtiRegistration
     {
-        ...
+        $issuer = Issuer::find($iss);
+        return Packback\Lti1p3\LtiRegistration::new()
+            ->setAuthLoginUrl($issuer->auth_login_url)
+            ->setAuthTokenUrl($issuer->auth_token_url)
+            ->setClientId($issuer->client_id)
+            ->setKeySetUrl($issuer->key_set_url)
+            ->setKid($issuer->kid)
+            ->setIssuer($issuer->issuer)
+            ->setToolPrivateKey($issuer->private_key);
     }
-    public function findDeployment($iss, $deployment_id)
+    public function findDeployment($iss, $deployment_id): Packback\Lti1p3\LtiDeployment
     {
-        ...
+        $issuer = Issuer::where('issuer', $issuer_url)
+            ->where('client_id', $deployment_id)
+            ->first();
+        return Packback\Lti1p3\LtiDeployment::new()
+            ->setDeploymentId($issuer->deployment_id);
     }
 }
-```
-
-The `findRegistrationByIssuer` method must return an `Packback\Lti1p3\LtiRegistration`.
-
-```php
-return Packback\Lti1p3\LtiRegistration::new()
-    ->setAuthLoginUrl($auth_login_url)
-    ->setAuthTokenUrl($auth_token_url)
-    ->setClientId($client_id)
-    ->setKeySetUrl($key_set_url)
-    ->setKid($kid)
-    ->setIssuer($issuer)
-    ->setToolPrivateKey($private_key);
-```
-
-The `findDeployment` method must return an `Packback\Lti1p3\LtiDeployment` if it exists within the database.
-
-```php
-return Packback\Lti1p3\LtiDeployment::new()
-    ->setDeploymentId($deployment_id);
 ```
 
 ### Creating a JWKS endpoint
@@ -59,12 +69,14 @@ return Packback\Lti1p3\LtiDeployment::new()
 A JWKS (JSON Web Key Set) endpoint can be generated for either an individual registration or from an array of `KID`s and private keys.
 
 ```php
+use Packback\Lti1p3\JwksEndpoint;
+
 // From issuer
-Packback\Lti1p3\JwksEndpoint::fromIssuer($database, 'http://example.com')->outputJwks();
+JwksEndpoint::fromIssuer($database, 'http://example.com')->outputJwks();
 // From registration
-Packback\Lti1p3\JwksEndpoint::fromRegistration($registration)->outputJwks();
+JwksEndpoint::fromRegistration($registration)->outputJwks();
 // From array
-Packback\Lti1p3\JwksEndpoint::new(['a_unique_KID' => file_get_contents('/path/to/private/key.pem')])->outputJwks();
+JwksEndpoint::new(['a_unique_KID' => file_get_contents('/path/to/private/key.pem')])->outputJwks();
 ```
 
 ## Handling Requests
@@ -87,7 +99,7 @@ If a redirect url is not given or the registration does not exist an `Packback\L
 try {
     $redirect = $login->doOidcLoginRedirect("https://my.tool/launch");
 } catch (Packback\Lti1p3\OidcException $e) {
-    echo 'Error doing OIDC login';
+    // handle the error
 }
 ```
 
@@ -289,12 +301,166 @@ $ags->putGrade($grade, $lineitem);
 
 If a lineitem with the same `tag` exists, that lineitem will be used, otherwise a new lineitem will be created.
 
-## Testing
+## Laravel Implementation Guide
 
-Automated tests can be run using the command:
+### Installation
 
-```bash
-composer test
+Install the library with composer. Open up the AppServiceProvider and set the `JWT::$leeway` `boot()` method. (Both of these steps are described in the installation section above).
+
+In the `register()` method, bind your implementation of the data Cache, Cookie, and Database to their interfaces:
+
+```php
+use App\Lti13Cache;
+use App\Lti13Cookie;
+use App\Lti13Database;
+use Firebase\JWT\JWT;
+use Illuminate\Support\ServiceProvider;
+use Packback\Lti1p3\Interfaces\Cache;
+use Packback\Lti1p3\Interfaces\Cookie;
+use Packback\Lti1p3\Interfaces\Database;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function boot()
+    {
+        JWT::$leeway = 5;
+    }
+
+    public function register()
+    {
+        $this->app->bind(Cache::class, Lti13Cache::class);
+        $this->app->bind(Cookie::class, Lti13Cookie::class);
+        $this->app->bind(Database::class, Lti13Database::class);
+    }
+}
+```
+
+Once this is done, you can begin building the endpoints necessary to handle an LTI 1.3 launch, such as:
+
+- Login
+- Launch
+- JWKs
+
+### Sample Data Store Implementations
+
+Below are examples of how to get the library's data store interfaces to work with Laravel's facades.
+
+#### Cache
+
+```php
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
+use Packback\Lti1p3\Interfaces\Cache as Lti1p3Cache;
+
+class Lti13Cache implements Lti1p3Cache
+{
+    public const NONCE_PREFIX = 'nonce_';
+
+    public function getLaunchData($key)
+    {
+        return Cache::get($key);
+    }
+
+    public function cacheLaunchData($key, $jwt_body)
+    {
+        $duration = Config::get('cache.duration.default');
+        Cache::put($key, $jwt_body, $duration);
+        return $this;
+    }
+
+    public function cacheNonce($nonce)
+    {
+        $duration = Config::get('cache.duration.default');
+        Cache::put(static::NONCE_PREFIX . $nonce, true, $duration);
+        return $this;
+    }
+
+    public function checkNonce($nonce)
+    {
+        return Cache::get(static::NONCE_PREFIX . $nonce, false);
+    }
+}
+```
+
+#### Cookie
+
+```php
+use Illuminate\Support\Facades\Cookie;
+use Packback\Lti1p3\Interfaces\Cookie as Lti1p3Cookie;
+
+class Lti13Cookie implements Lti1p3Cookie
+{
+    public function getCookie($name)
+    {
+        return Cookie::get($name, false);
+    }
+
+    public function setCookie($name, $value, $exp = 3600, $options = []): self
+    {
+        Cookie::queue($name, $value, $exp);
+        return $this;
+    }
+}
+```
+
+#### Database
+
+For this data store you will need to models to store the issuer and deployment in the database.
+
+```php
+use App\Models\Issuer;
+use App\Models\Deployment;
+use Packback\Lti1p3\Interfaces\Database;
+use Packback\Lti1p3\LtiRegistration;
+use Packback\Lti1p3\LtiDeployment;
+use Packback\Lti1p3\OidcException;
+
+class Lti13Database implements Database
+{
+    public static function findIssuer($issuer_url, $client_id = null)
+    {
+        $query = Issuer::where('issuer', $issuer_url);
+        if ($client_id) {
+            $query = $query->where('client_id', $client_id);
+        }
+        if ($query->count() > 1) {
+            throw new OidcException('Found multiple registrations for the given issuer, ensure a client_id is specified on login (contact your LMS administrator)', 1);
+        }
+        return $query->first();
+    }
+
+    public function findRegistrationByIssuer($issuer, $client_id = null)
+    {
+        $issuer = self::findIssuer($issuer, $client_id);
+        if (!$issuer) {
+            return false;
+        }
+
+        return LtiRegistration::new()
+            ->setAuthTokenUrl($issuer->auth_token_url)
+            ->setAuthLoginUrl($issuer->auth_login_url)
+            ->setClientId($issuer->client_id)
+            ->setKeySetUrl($issuer->key_set_url)
+            ->setKid($issuer->kid)
+            ->setIssuer($issuer->issuer)
+            ->setToolPrivateKey($issuer->tool_private_key);
+    }
+
+    public function findDeployment($issuer, $deployment_id, $client_id = null)
+    {
+        $issuerModel = self::findIssuer($issuer, $client_id);
+        if (!$issuerModel) {
+            return false;
+        }
+        $deployment = $issuerModel->deployments()->where('deployment_id', $deployment_id)->first();
+        if (!$deployment) {
+            return false;
+        }
+
+        return LtiDeployment::new()
+            ->setDeploymentId($deployment->id);
+    }
+}
 ```
 
 ## Contributing
@@ -302,3 +468,11 @@ composer test
 For improvements, suggestions or bug fixes, make a pull request or an issue. Before opening a pull request, add automated tests for your changes and ensure that all tests pass.
 
 This library was initially created by @MartinLenord from Turnitin to help prove out the LTI 1.3 specification and accelerate tool development. It has been updated by @dbhynds and @EricTendian to add automate tests and bring it into compliance with the standards set out by the PHP-FIG and the IMS LTI 1.3 Certification process.
+
+### Testing
+
+Automated tests can be run using the command:
+
+```bash
+composer test
+```

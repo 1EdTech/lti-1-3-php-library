@@ -12,11 +12,6 @@ use Packback\Lti1p3\Interfaces\Cache;
 use Packback\Lti1p3\Interfaces\Cookie;
 use Packback\Lti1p3\Interfaces\Database;
 
-/**
- * TODO: Fix this
- */
-JWT::$leeway = 5;
-
 class LtiMessageLaunch
 {
 
