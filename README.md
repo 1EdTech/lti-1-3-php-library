@@ -1,8 +1,10 @@
-# LTI 1.3 Advantage Library
+# LTI 1.3 Tool Library
 
 A library used for building IMS-certified LTI 1.3 tool providers in PHP.
 
-This library allows a tool provider (your app) to receive LTI launches from a tool consumer (i.e. LMS). It allows LTI launches to be validated and lets an application interact with services like the Names Roles Provisioning Service (to fetch a roster for an LMS course) and Assignment Grades Service (to update grades for students in a course in the LMS).
+This library allows a tool provider (your app) to receive LTI launches from a tool consumer (i.e. LMS). It validates LTI launches and lets an application interact with services like the Names Roles Provisioning Service (to fetch a roster for an LMS course) and Assignment Grades Service (to update grades for students in a course in the LMS).
+
+This library was forked from [IMSGlobal/lti-1-3-php-library](https://github.com/IMSGlobal/lti-1-3-php-library), initially created by @MartinLenord. It has been rewritten by @dbhynds and @EricTendian to bring it into compliance with the standards set out by the PHP-FIG and the IMS LTI 1.3 Certification process. [Packback](https://packback.co) actively uses and maintains this library.
 
 ## Installation
 
@@ -28,11 +30,11 @@ JWT::$leeway = 5;
 
 This library uses three methods for storing and accessing data: cache, cookie, and database. All three must be implemented in order for the library to work. You may create your own custom implementations so long as they adhere to the following interfaces:
 
-- Packback\Lti1p3\Interfaces\Cache
-- Packback\Lti1p3\Interfaces\Cookie
-- Packback\Lti1p3\Interfaces\Database
+- `Packback\Lti1p3\Interfaces\Cache`
+- `Packback\Lti1p3\Interfaces\Cookie`
+- `Packback\Lti1p3\Interfaces\Database`
 
-Cache and Cookie storage have legacy implementations at Packback\Lti1p3\ImsStorage if you do not wish to implement your own. However you must implement your own database.
+Cache and Cookie storage have legacy implementations at `Packback\Lti1p3\ImsStorage\` if you do not wish to implement your own. However you must implement your own database.
 
 #### Database
 
@@ -407,7 +409,7 @@ class Lti13Cookie implements Lti1p3Cookie
 
 #### Database
 
-For this data store you will need to models to store the issuer and deployment in the database.
+For this data store you will need to create models to store the issuer and deployment in the database.
 
 ```php
 use App\Models\Issuer;
@@ -465,11 +467,13 @@ class Lti13Database implements Database
 }
 ```
 
+## Sample Legacy Implementation
+
+This library was forked and rewritten from [IMSGlobal/lti-1-3-php-library](https://github.com/IMSGlobal/lti-1-3-php-library). That repo provides an [example implementation](https://github.com/IMSGlobal/lti-1-3-php-example-tool) that may be helpful.
+
 ## Contributing
 
 For improvements, suggestions or bug fixes, make a pull request or an issue. Before opening a pull request, add automated tests for your changes and ensure that all tests pass.
-
-This library was initially created by @MartinLenord from Turnitin to help prove out the LTI 1.3 specification and accelerate tool development. It has been updated by @dbhynds and @EricTendian to add automate tests and bring it into compliance with the standards set out by the PHP-FIG and the IMS LTI 1.3 Certification process. Packback actively uses and maintains this library.
 
 ### Testing
 
