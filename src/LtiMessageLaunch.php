@@ -118,7 +118,7 @@ class LtiMessageLaunch
      */
     public function hasGs()
     {
-        return !empty($this->jwt['body']['https://purl.imsglobal.org/spec/lti-gs/claim/groupsservice']['context_groups_url']);
+        return !empty($this->jwt['body'][LtiConstants::GS_CLAIM_SERVICE]['context_groups_url']);
     }
 
     /**
@@ -130,7 +130,7 @@ class LtiMessageLaunch
     {
         return new LtiCourseGroupsService(
             new LtiServiceConnector($this->registration),
-            $this->jwt['body']['https://purl.imsglobal.org/spec/lti-gs/claim/groupsservice']);
+            $this->jwt['body'][LtiConstants::GS_CLAIM_SERVICE]);
     }
 
     /**
