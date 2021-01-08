@@ -4,7 +4,7 @@ A library used for building IMS-certified LTI 1.3 tool providers in PHP.
 
 This library allows a tool provider (your app) to receive LTI launches from a tool consumer (i.e. LMS). It validates LTI launches and lets an application interact with services like the Names Roles Provisioning Service (to fetch a roster for an LMS course) and Assignment Grades Service (to update grades for students in a course in the LMS).
 
-This library was forked from [IMSGlobal/lti-1-3-php-library](https://github.com/IMSGlobal/lti-1-3-php-library), initially created by @MartinLenord. It has been rewritten by @dbhynds and @EricTendian to bring it into compliance with the standards set out by the PHP-FIG and the IMS LTI 1.3 Certification process. [Packback](https://packback.co) actively uses and maintains this library.
+This library was forked from [IMSGlobal/lti-1-3-php-library](https://github.com/IMSGlobal/lti-1-3-php-library), initially created by @MartinLenord. [Packback](https://packback.co) found the library immensely helpful and extended it over the years. It has been rewritten by Packback to bring it into compliance with the standards set out by the PHP-FIG and the IMS LTI 1.3 Certification process. Packback actively uses and maintains this library.
 
 ## Installation
 
