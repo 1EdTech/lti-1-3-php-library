@@ -6,17 +6,17 @@ interface LtiRegistrationInterface
     public function getIssuer();
     public function setIssuer($issuer);
     public function getClientId();
-    public function setClientId($client_id);
+    public function setClientId($clientId);
     public function getKeySetUrl();
-    public function setKeySetUrl($key_set_url);
+    public function setKeySetUrl($keySetUrl);
     public function getAuthTokenUrl();
-    public function setAuthTokenUrl($auth_token_url);
+    public function setAuthTokenUrl($authTokenUrl);
     public function getAuthLoginUrl();
-    public function setAuthLoginUrl($auth_login_url);
+    public function setAuthLoginUrl($authLoginUrl);
     public function getAuthServer();
-    public function setAuthServer($auth_server);
+    public function setAuthServer($authServer);
     public function getToolPrivateKey();
-    public function setToolPrivateKey($tool_private_key);
+    public function setToolPrivateKey($toolPrivateKey);
     public function getKid();
     public function setKid($kid);
 }

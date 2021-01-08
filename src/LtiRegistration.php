@@ -7,23 +7,23 @@ class LtiRegistration implements LtiRegistrationInterface
 {
 
     private $issuer;
-    private $client_id;
-    private $key_set_url;
-    private $auth_token_url;
-    private $auth_login_url;
-    private $auth_server;
-    private $tool_private_key;
+    private $clientId;
+    private $keySetUrl;
+    private $authTokenUrl;
+    private $authLoginUrl;
+    private $authServer;
+    private $toolPrivateKey;
     private $kid;
 
     public function __construct(array $registration = [])
     {
         $this->issuer = $registration['issuer'] ?? null;
-        $this->client_id = $registration['clientId'] ?? null;
-        $this->key_set_url = $registration['keySetUrl'] ?? null;
-        $this->auth_token_url = $registration['authTokenUrl'] ?? null;
-        $this->auth_login_url = $registration['authLoginUrl'] ?? null;
-        $this->auth_server = $registration['authServer'] ?? null;
-        $this->tool_private_key = $registration['toolPrivateKey'] ?? null;
+        $this->clientId = $registration['clientId'] ?? null;
+        $this->keySetUrl = $registration['keySetUrl'] ?? null;
+        $this->authTokenUrl = $registration['authTokenUrl'] ?? null;
+        $this->authLoginUrl = $registration['authLoginUrl'] ?? null;
+        $this->authServer = $registration['authServer'] ?? null;
+        $this->toolPrivateKey = $registration['toolPrivateKey'] ?? null;
         $this->kid = $registration['kid'] ?? null;
     }
 
@@ -44,73 +44,73 @@ class LtiRegistration implements LtiRegistrationInterface
 
     public function getClientId()
     {
-        return $this->client_id;
+        return $this->clientId;
     }
 
-    public function setClientId($client_id)
+    public function setClientId($clientId)
     {
-        $this->client_id = $client_id;
+        $this->clientId = $clientId;
         return $this;
     }
 
     public function getKeySetUrl()
     {
-        return $this->key_set_url;
+        return $this->keySetUrl;
     }
 
-    public function setKeySetUrl($key_set_url)
+    public function setKeySetUrl($keySetUrl)
     {
-        $this->key_set_url = $key_set_url;
+        $this->keySetUrl = $keySetUrl;
         return $this;
     }
 
     public function getAuthTokenUrl()
     {
-        return $this->auth_token_url;
+        return $this->authTokenUrl;
     }
 
-    public function setAuthTokenUrl($auth_token_url)
+    public function setAuthTokenUrl($authTokenUrl)
     {
-        $this->auth_token_url = $auth_token_url;
+        $this->authTokenUrl = $authTokenUrl;
         return $this;
     }
 
     public function getAuthLoginUrl()
     {
-        return $this->auth_login_url;
+        return $this->authLoginUrl;
     }
 
-    public function setAuthLoginUrl($auth_login_url)
+    public function setAuthLoginUrl($authLoginUrl)
     {
-        $this->auth_login_url = $auth_login_url;
+        $this->authLoginUrl = $authLoginUrl;
         return $this;
     }
 
     public function getAuthServer()
     {
-        return empty($this->auth_server) ? $this->auth_token_url : $this->auth_server;
+        return empty($this->authServer) ? $this->authTokenUrl : $this->authServer;
     }
 
-    public function setAuthServer($auth_server)
+    public function setAuthServer($authServer)
     {
-        $this->auth_server = $auth_server;
+        $this->authServer = $authServer;
         return $this;
     }
 
     public function getToolPrivateKey()
     {
-        return $this->tool_private_key;
+        return $this->toolPrivateKey;
     }
 
-    public function setToolPrivateKey($tool_private_key)
+    public function setToolPrivateKey($toolPrivateKey)
     {
-        $this->tool_private_key = $tool_private_key;
+        $this->toolPrivateKey = $toolPrivateKey;
         return $this;
     }
 
     public function getKid()
     {
-        return $this->kid ?? hash('sha256', trim($this->issuer . $this->client_id));
+        return $this->kid ?? hash('sha256', trim($this->issuer . $this->clientId));
     }
 
     public function setKid($kid)

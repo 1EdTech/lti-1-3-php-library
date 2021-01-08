@@ -96,7 +96,7 @@ class LtiMessageLaunch
      */
     public function hasNrps()
     {
-        return !empty($this->jwt['body'][LtiConstants::NRPS_NAMESROLESPROVISIONINGSERVICE]['context_memberships_url']);
+        return !empty($this->jwt['body'][LtiConstants::NRPS_CLAIM_SERVICE]['context_memberships_url']);
     }
 
     /**
@@ -108,7 +108,7 @@ class LtiMessageLaunch
     {
         return new LtiNamesRolesProvisioningService(
             new LtiServiceConnector($this->registration),
-            $this->jwt['body'][LtiConstants::NRPS_NAMESROLESPROVISIONINGSERVICE]);
+            $this->jwt['body'][LtiConstants::NRPS_CLAIM_SERVICE]);
     }
 
     /**
@@ -140,7 +140,7 @@ class LtiMessageLaunch
      */
     public function hasAgs()
     {
-        return !empty($this->jwt['body'][LtiConstants::AGS_ENDPOINT]);
+        return !empty($this->jwt['body'][LtiConstants::AGS_CLAIM_ENDPOINT]);
     }
 
     /**
@@ -152,7 +152,7 @@ class LtiMessageLaunch
     {
         return new LtiAssignmentsGradesService(
             new LtiServiceConnector($this->registration),
-            $this->jwt['body'][LtiConstants::AGS_ENDPOINT]);
+            $this->jwt['body'][LtiConstants::AGS_CLAIM_ENDPOINT]);
     }
 
     /**
@@ -185,7 +185,7 @@ class LtiMessageLaunch
      */
     public function isSubmissionReviewLaunch()
     {
-        return $this->jwt['body']['https://purl.imsglobal.org/spec/lti/claim/message_type'] === 'LtiSubmissionReviewRequest';
+        return $this->jwt['body'][LtiConstants::MESSAGE_TYPE] === 'LtiSubmissionReviewRequest';
     }
 
     /**

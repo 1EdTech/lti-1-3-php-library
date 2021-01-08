@@ -19,7 +19,6 @@ class LtiAssignmentsGradesService
         if (!in_array(LtiConstants::AGS_SCORE, $this->service_data['scope'])) {
             throw new LtiException('Missing required scope', 1);
         }
-        $score_url = '';
         if ($lineitem !== null && empty($lineitem->getId())) {
             $lineitem = $this->findOrCreateLineitem($lineitem);
             $score_url = $lineitem->getId();

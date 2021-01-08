@@ -7,26 +7,26 @@ use Packback\Lti1p3\Interfaces\MessageValidator;
 
 class SubmissionReviewMessageValidator implements MessageValidator
 {
-    public function canValidate(array $jwt_body)
+    public function canValidate(array $jwtBody)
     {
-        return $jwt_body[LtiConstants::MESSAGE_TYPE] === 'LtiSubmissionReviewRequest';
+        return $jwtBody[LtiConstants::MESSAGE_TYPE] === 'LtiSubmissionReviewRequest';
     }
 
-    public function validate(array $jwt_body)
+    public function validate(array $jwtBody)
     {
-        if (empty($jwt_body['sub'])) {
+        if (empty($jwtBody['sub'])) {
             throw new LtiException('Must have a user (sub)');
         }
-        if ($jwt_body[LtiConstants::VERSION] !== LtiConstants::V1_3) {
+        if ($jwtBody[LtiConstants::VERSION] !== LtiConstants::V1_3) {
             throw new LtiException('Incorrect version, expected 1.3.0');
         }
-        if (!isset($jwt_body[LtiConstants::ROLES])) {
+        if (!isset($jwtBody[LtiConstants::ROLES])) {
             throw new LtiException('Missing Roles Claim');
         }
-        if (empty($jwt_body[LtiConstants::RESOURCE_LINK]['id'])) {
+        if (empty($jwtBody[LtiConstants::RESOURCE_LINK]['id'])) {
             throw new LtiException('Missing Resource Link Id');
         }
-        if (empty($jwt_body[LtiConstants::FOR_USER])) {
+        if (empty($jwtBody[LtiConstants::FOR_USER])) {
             throw new LtiException('Missing For User');
         }
 

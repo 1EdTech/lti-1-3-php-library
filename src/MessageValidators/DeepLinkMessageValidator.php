@@ -7,26 +7,26 @@ use Packback\Lti1p3\Interfaces\MessageValidator;
 
 class DeepLinkMessageValidator implements MessageValidator
 {
-    public function canValidate(array $jwt_body)
+    public function canValidate(array $jwtBody)
     {
-        return $jwt_body[LtiConstants::MESSAGE_TYPE] === 'LtiDeepLinkingRequest';
+        return $jwtBody[LtiConstants::MESSAGE_TYPE] === 'LtiDeepLinkingRequest';
     }
 
-    public function validate(array $jwt_body)
+    public function validate(array $jwtBody)
     {
-        if (empty($jwt_body['sub'])) {
+        if (empty($jwtBody['sub'])) {
             throw new LtiException('Must have a user (sub)');
         }
-        if ($jwt_body[LtiConstants::VERSION] !== LtiConstants::V1_3) {
+        if ($jwtBody[LtiConstants::VERSION] !== LtiConstants::V1_3) {
             throw new LtiException('Incorrect version, expected 1.3.0');
         }
-        if (!isset($jwt_body[LtiConstants::ROLES])) {
+        if (!isset($jwtBody[LtiConstants::ROLES])) {
             throw new LtiException('Missing Roles Claim');
         }
-        if (empty($jwt_body[LtiConstants::DL_DEEP_LINK_SETTINGS])) {
+        if (empty($jwtBody[LtiConstants::DL_DEEP_LINK_SETTINGS])) {
             throw new LtiException('Missing Deep Linking Settings');
         }
-        $deep_link_settings = $jwt_body[LtiConstants::DL_DEEP_LINK_SETTINGS];
+        $deep_link_settings = $jwtBody[LtiConstants::DL_DEEP_LINK_SETTINGS];
         if (empty($deep_link_settings['deep_link_return_url'])) {
             throw new LtiException('Missing Deep Linking Return URL');
         }

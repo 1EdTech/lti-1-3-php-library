@@ -17,7 +17,6 @@ class LtiCourseGroupsService
 
     public function getGroups()
     {
-
         $groups = [];
 
         $next_page = $this->service_data['context_groups_url'];

@@ -21,7 +21,7 @@ class LtiServiceConnector implements LtiServiceConnectorInterface
         $this->registration = $registration;
     }
 
-    public function getAccessToken($scopes)
+    public function getAccessToken(array $scopes)
     {
 
         // Don't fetch the same key more than once.
@@ -67,7 +67,7 @@ class LtiServiceConnector implements LtiServiceConnectorInterface
         return $this->access_tokens[$scope_key] = $token_data['access_token'];
     }
 
-    public function makeServiceRequest($scopes, $method, $url, $body = null, $content_type = 'application/json', $accept = 'application/json')
+    public function makeServiceRequest(array $scopes, $method, $url, $body = null, $contentType = 'application/json', $accept = 'application/json')
     {
         $ch = curl_init();
         $headers = [
@@ -81,7 +81,7 @@ class LtiServiceConnector implements LtiServiceConnectorInterface
         if ($method === 'POST') {
             curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, strval($body));
-            $headers[] = 'Content-Type: ' . $content_type;
+            $headers[] = 'Content-Type: ' . $contentType;
         }
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         $response = curl_exec($ch);
