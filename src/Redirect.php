@@ -22,11 +22,8 @@ class Redirect
         die;
     }
 
-    public function doHybridRedirect(Cookie $cookie = null)
+    public function doHybridRedirect(Cookie $cookie)
     {
-        if ($cookie == null) {
-            $cookie = new ImsCookie();
-        }
         if (!empty($cookie->getCookie(self::$CAN_302_COOKIE))) {
             return $this->doRedirect();
         }

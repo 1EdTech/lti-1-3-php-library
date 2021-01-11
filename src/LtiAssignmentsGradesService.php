@@ -16,7 +16,7 @@ class LtiAssignmentsGradesService
 
     public function putGrade(LtiGrade $grade, LtiLineitem $lineitem = null)
     {
-        if (!in_array(LtiConstants::AGS_SCORE, $this->service_data['scope'])) {
+        if (!in_array(LtiConstants::AGS_SCOPE_SCORE, $this->service_data['scope'])) {
             throw new LtiException('Missing required scope', 1);
         }
         if ($lineitem !== null && empty($lineitem->getId())) {
@@ -46,7 +46,7 @@ class LtiAssignmentsGradesService
 
     public function findOrCreateLineitem(LtiLineitem $new_line_item)
     {
-        if (!in_array(LtiConstants::AGS_LINEITEM, $this->service_data['scope'])) {
+        if (!in_array(LtiConstants::AGS_SCOPE_LINEITEM, $this->service_data['scope'])) {
             throw new LtiException('Missing required scope', 1);
         }
         $line_items = $this->service_connector->makeServiceRequest(
