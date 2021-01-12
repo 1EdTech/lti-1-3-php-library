@@ -229,6 +229,9 @@ class Lti13CertificationTest extends TestCase
     private function launch($payload)
     {
         $jwt = $this->buildJWT($payload, $this->issuer);
+        if (isset($payload['nonce'])) {
+            $this->cache->cacheNonce($payload['nonce']);
+        }
 
         $params = [
             'utf8' => '✓',
@@ -378,6 +381,9 @@ class Lti13CertificationTest extends TestCase
             echo PHP_EOL."--> TESTING INVALID TEST CASE: $testCase";
 
             $jwt = $this->buildJWT($payload, $this->issuer, $jwtHeader);
+            if (isset($payload['nonce'])) {
+                $this->cache->cacheNonce($payload['nonce']);
+            }
 
             $params = [
                 'utf8' => '✓',
@@ -427,6 +433,7 @@ class Lti13CertificationTest extends TestCase
             echo PHP_EOL."--> TESTING VALID TEST CASE: $testCase";
 
             $jwt = $this->buildJWT($payload, $this->issuer);
+            $this->cache->cacheNonce($payload['nonce']);
 
             $params = [
                 'utf8' => '✓',
