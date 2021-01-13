@@ -1,146 +1,161 @@
+# LTI 1.3 Tool Library
 
-| **Note** : If you are looking for the example tool that uses this library, it has been moved into its own repo https://github.com/IMSGlobal/lti-1-3-php-example-tool |
-| --- |
+A library used for building IMS-certified LTI 1.3 tool providers in PHP.
 
-# LTI 1.3 Advantage Library
-This code consists of a library for creating LTI tool providers in PHP.
+This library allows a tool provider (your app) to receive LTI launches from a tool consumer (i.e. LMS). It validates LTI launches and lets an application interact with services like the Names Roles Provisioning Service (to fetch a roster for an LMS course) and Assignment Grades Service (to update grades for students in a course in the LMS).
 
-# Library Documentation
+This library was forked from [IMSGlobal/lti-1-3-php-library](https://github.com/IMSGlobal/lti-1-3-php-library), initially created by @MartinLenord. [Packback](https://packback.co) found the library immensely helpful and extended it over the years. It has been rewritten by Packback to bring it into compliance with the standards set out by the PHP-FIG and the IMS LTI 1.3 Certification process. Packback actively uses and maintains this library.
 
-## Importing the library
-### Using Composer
-Add the following to your `composer.json` file
-```json
-"repositories": [
-    {
-        "type": "vcs",
-        "url": "https://github.com/IMSGlobal/lti-1-3-php-library"
-    }
-],
-"require": {
-    "imsglobal/lti-1p3-tool": "dev-master"
-}
+## Installation
+
+Run:
+
+```bash
+composer require packbackbooks/lti-1p3-tool
 ```
-Run `composer install` or `composer update`
-In your code, you will now be able to use classes in the `\IMSGlobal\LTI` namespace to access the library.
 
-### Manually
-To import the library, copy the `lti` folder inside `src` into your project and use the following code at the beginning of execution:
+In your code, you will now be able to use classes in the `Packback\Lti1p3` namespace to access the library.
+
+### Configuring JWT
+
+Add the following when bootstrapping your app.
+
 ```php
-require_once('lti/lti.php');
-use \IMSGlobal\LTI;
+use Firebase\JWT\JWT;
+
+JWT::$leeway = 5;
 ```
 
-## Accessing Registration Data
+### Data Storage
+
+This library uses three methods for storing and accessing data: cache, cookie, and database. All three must be implemented in order for the library to work. You may create your own custom implementations so long as they adhere to the following interfaces:
+
+- `Packback\Lti1p3\Interfaces\Cache`
+- `Packback\Lti1p3\Interfaces\Cookie`
+- `Packback\Lti1p3\Interfaces\Database`
+
+Cache and Cookie storage have legacy implementations at `Packback\Lti1p3\ImsStorage\` if you do not wish to implement your own. However you must implement your own database.
+
+#### Database
 
 To allow for launches to be validated and to allow the tool to know where it has to make calls to, registration data must be stored.
-Rather than dictating how this is store, the library instead provides an interface that must be implemented to allow it to access registration data.
-The `LTI\Database` interface must be fully implemented for this to work.
+
+The `Packback\Lti1p3\Database` interface must be fully implemented for this to work.
+
 ```php
-class Example_Database implements LTI\Database {
-    public function find_registration_by_issuer($iss) {
-        ...
+class ExampleDatabase implements Packback\Lti1p3\Interfaces\Database
+{
+    public function findRegistrationByIssuer($iss): Packback\Lti1p3\LtiRegistration
+    {
+        $issuer = Issuer::find($iss);
+        return Packback\Lti1p3\LtiRegistration::new()
+            ->setAuthLoginUrl($issuer->auth_login_url)
+            ->setAuthTokenUrl($issuer->auth_token_url)
+            ->setClientId($issuer->client_id)
+            ->setKeySetUrl($issuer->key_set_url)
+            ->setKid($issuer->kid)
+            ->setIssuer($issuer->issuer)
+            ->setToolPrivateKey($issuer->private_key);
     }
-    public function find_deployment($iss, $deployment_id) {
-        ...
+    public function findDeployment($iss, $deployment_id): Packback\Lti1p3\LtiDeployment
+    {
+        $issuer = Issuer::where('issuer', $issuer_url)
+            ->where('client_id', $deployment_id)
+            ->first();
+        return Packback\Lti1p3\LtiDeployment::new()
+            ->setDeploymentId($issuer->deployment_id);
     }
 }
 ```
 
-The `find_registration_by_issuer` method must return an `LTI\LTI_Registration`.
-```php
-return LTI\LTI_Registration::new()
-    ->set_auth_login_url($auth_login_url)
-    ->set_auth_token_url($auth_token_url)
-    ->set_client_id($client_id)
-    ->set_key_set_url($key_set_url)
-    ->set_kid($kid)
-    ->set_issuer($issuer)
-    ->set_tool_private_key($private_key);
-```
-
-The `find_deployment` method must return an `LTI\LTI_Deployment` if it exists within the database.
-```php
-return LTI\LTI_Deployment::new()
-    ->set_deployment_id($deployment_id);
-```
-
-Calls into the Library will require an instance of `LTI\Database` to be passed into them.
-
 ### Creating a JWKS endpoint
+
 A JWKS (JSON Web Key Set) endpoint can be generated for either an individual registration or from an array of `KID`s and private keys.
+
 ```php
+use Packback\Lti1p3\JwksEndpoint;
+
 // From issuer
-LTI\JWKS_Endpoint::from_issuer(new Example_Database(), 'http://example.com')->output_jwks();
+JwksEndpoint::fromIssuer($database, 'http://example.com')->outputJwks();
 // From registration
-LTI\JWKS_Endpoint::from_registration($registration)->output_jwks();
+JwksEndpoint::fromRegistration($registration)->outputJwks();
 // From array
-LTI\JWKS_Endpoint::new(['a_unique_KID' => file_get_contents('/path/to/private/key.pem')])->output_jwks();
+JwksEndpoint::new(['a_unique_KID' => file_get_contents('/path/to/private/key.pem')])->outputJwks();
 ```
 
 ## Handling Requests
 
 ### Open Id Connect Login Request
+
 LTI 1.3 uses a modified version of the OpenId Connect third party initiate login flow. This means that to do an LTI 1.3 launch, you must first receive a login initialization request and return to the platform.
 
-To handle this request, you must first create a new `LTI\LTI_OIDC_Login` object.
+To handle this request, you must first create a new `Packback\Lti1p3\LtiOidcLogin` object.
+
 ```php
-$login = LTI_OIDC_Login::new(new Example_Database());
+$login = LtiOidcLogin::new($database);
 ```
 
 Now you must configure your login request with a return url (this must be preconfigured and white-listed on the tool).
-If a redirect url is not given or the registration does not exist an `LTI\OIDC_Exception` will be thrown.
+
+If a redirect url is not given or the registration does not exist an `Packback\Lti1p3\OidcException` will be thrown.
+
 ```php
 try {
-    $redirect = $login->do_oidc_login_redirect("https://my.tool/launch");
-} catch (LTI\OIDC_Exception $e) {
-    echo 'Error doing OIDC login';
+    $redirect = $login->doOidcLoginRedirect("https://my.tool/launch");
+} catch (Packback\Lti1p3\OidcException $e) {
+    // handle the error
 }
 ```
 
-With the redirect, we can now redirect the user back to the tool.
-There are three ways to do this:
+With the redirect, we can now redirect the user back to the tool.  From there you can get the url you need to redirect to, with all the necessary query parameters.
 
-This will add a 302 location header and then exit.
 ```php
-$redirect->do_redirect();
+$redirect_url = $redirect->getRedirectUrl();
 ```
 
-This will echo out some javascript to do the redirect instead of using a 302.
-```php
-$redirect->do_js_redirect();
-```
+Alternatively you can redirect using a 302 location header, or javascript.
 
-You can also get the url you need to redirect to, with all the necessary query parameters, if you would prefer to redirect in a custom way.
 ```php
-$redirect_url = $redirect->get_redirect_url();
+// Location header
+$redirect->doRedirect();
+// Javascript
+$redirect->doJsRedirect();
 ```
 
 Redirect is now done, we can move onto the launch.
 
 ### LTI Message Launches
-Now that we have done the OIDC log the platform will launch back to the tool. To handle this request, first we need to create a new `LTI\LTI_Message_Launch` object.
+
+Now that we have done the OIDC log the platform will launch back to the tool. To handle this request, first we need to create a new `Packback\Lti1p3\LtiMessageLaunch` object.
+
 ```php
-$launch = LTI\LTI_Message_Launch::new(new Example_Database());
+$launch = Packback\Lti1p3\LtiMessageLaunch::new($database);
 ```
 
+#### Validating a Launch
+
 Once we have the message launch, we can validate it. This will check signatures and the presence of a deployment and any required parameters.
+
 If the validation fails an exception will be thrown.
+
 ```php
 try {
     $launch->validate();
 } catch (Exception $e) {
-    echo 'Launch validation failed';
+    // Handle failed launch
 }
 ```
+
+#### Accessing Launch Information
 
 Now we know the launch is valid we can find out more information about the launch.
 
 Check if we have a resource launch or a deep linking launch.
+
 ```php
-if ($launch->is_resource_launch()) {
+if ($launch->isResourceLaunch()) {
     echo 'Resource Launch!';
-} else if ($launch->is_deep_link_launch()) {
+} else if ($launch->isDeepLinkLaunch()) {
     echo 'Deep Linking Launch!';
 } else {
     echo 'Unknown launch type';
@@ -148,11 +163,12 @@ if ($launch->is_resource_launch()) {
 ```
 
 Check which services we have access to.
+
 ```php
-if ($launch->has_ags()) {
+if ($launch->hasAgs()) {
     echo 'Has Assignments and Grades Service';
 }
-if ($launch->has_nrps()) {
+if ($launch->hasNrps()) {
     echo 'Has Names and Roles Service';
 }
 ```
@@ -160,8 +176,9 @@ if ($launch->has_nrps()) {
 ### Accessing Cached Launch Requests
 
 It is likely that you will want to refer back to a launch later during subsequent requests. This is done using the launch id to identify a cached request. The launch id can be found using:
+
 ```php
-$launch_id = $launch->get_launch_id().
+$launch_id = $launch->getLaunchId().
 ```
 
 Once you have the launch id, you can link it to your session and pass it along as a query parameter.
@@ -169,13 +186,15 @@ Once you have the launch id, you can link it to your session and pass it along a
 **Make sure you check the launch id against the user session to prevent someone from making actions on another person's launch.**
 
 Retrieving a launch using the launch id can be done using:
+
 ```php
-$launch = LTI_Message_Launch::from_cache($launch_id, new Example_Database());
+$launch = LtiMessageLaunch::fromCache($launch_id, $database);
 ```
 
 Once retrieved, you can call any of the methods on the launch object as normal, e.g.
+
 ```php
-if ($launch->has_ags()) {
+if ($launch->hasAgs()) {
     echo 'Has Assignments and Grades Service';
 }
 ```
@@ -185,101 +204,281 @@ if ($launch->has_ags()) {
 If you receive a deep linking launch, it is very likely that you are going to want to respond to the deep linking request with resources for the platform.
 
 To create a deep link response you will need to get the deep link for the current launch.
+
 ```php
-$dl = $launch->get_deep_link();
+$dl = $launch->getDeepLink();
 ```
 
-Now we are going to need to create `LTI\LTI_Deep_Link_Resource` to return.
+Now we are going to need to create `Packback\Lti1p3\LtiDeepLinkResource` to return.
+
 ```php
-$resource = LTI\LTI_Deep_Link_Resource::new()
-    ->set_url("https://my.tool/launch")
-    ->set_custom_params(['my_param' => $my_param])
-    ->set_title('My Resource');
+$resource = Packback\Lti1p3\LtiDeepLinkResource::new()
+    ->setUrl("https://my.tool/launch")
+    ->setCustomParams(['my_param' => $my_param])
+    ->setTitle('My Resource');
 ```
 
 Everything is set to return the resource to the platform. There are two methods of doing this.
 
 The following method will output the html for an aut-posting form for you.
+
 ```php
-$dl->output_response_form([$resource]);
+$dl->outputResponseForm([$resource]);
 ```
 
 Alternatively you can just request the signed JWT that will need posting back to the platform by calling.
+
 ```php
-$dl->get_response_jwt([$resource]);
+$dl->getResponseJwt([$resource]);
 ```
 
 ## Calling Services
+
 ### Names and Roles Service
 
 Before using names and roles you should check that you have access to it.
+
 ```php
-if (!$launch->has_nrps()) {
+if (!$launch->hasNrps()) {
     throw new Exception("Don't have names and roles!");
 }
 ```
 
 Once we know we can access it, we can get an instance of the service from the launch.
+
 ```php
-$nrps = $launch->get_nrps();
+$nrps = $launch->getNrps();
 ```
 
 From the service we can get an array of all the members by calling:
+
 ```php
-$members = $nrps->get_members();
+$members = $nrps->getMembers();
 ```
 
 ### Assignments and Grades Service
+
 Before using assignments and grades you should check that you have access to it.
+
 ```php
-if (!$launch->has_ags()) {
+if (!$launch->hasAgs()) {
     throw new Exception("Don't have assignments and grades!");
 }
 ```
 
 Once we know we can access it, we can get an instance of the service from the launch.
+
 ```php
-$ags = $launch->get_ags();
+$ags = $launch->getAgs();
 ```
 
-To pass a grade back to the platform, you will need to create an `LTI\LTI_Grade` object and populate it with the necessary information.
+To pass a grade back to the platform, you will need to create an `Packback\Lti1p3\LtiGrade` object and populate it with the necessary information.
+
 ```php
-$grade = LTI\LTI_Grade::new()
-    ->set_score_given($grade)
-    ->set_score_maximum(100)
-    ->set_timestamp(date(DateTime::ISO8601))
-    ->set_activity_progress('Completed')
-    ->set_grading_progress('FullyGraded')
-    ->set_user_id($external_user_id);
+$grade = Packback\Lti1p3\LtiGrade::new()
+    ->setScoreGiven($grade)
+    ->setScoreMaximum(100)
+    ->setTimestamp(date(DateTime::ISO8601))
+    ->setActivityProgress('Completed')
+    ->setGradingProgress('FullyGraded')
+    ->setUserId($external_user_id);
 ```
 
 To send the grade to the platform we can call:
+
 ```php
-$ags->put_grade($grade);
+$ags->putGrade($grade);
 ```
+
 This will put the grade into the default provided lineitem. If no default lineitem exists it will create one.
 
-If you want to send multiple types of grade back, that can be done by specifying an `LTI\LTI_Lineitem`.
-```php
-$lineitem = LTI\LTI_Lineitem::new()
-    ->set_tag('grade')
-    ->set_score_maximum(100)
-    ->set_label('Grade');
+If you want to send multiple types of grade back, that can be done by specifying an `Packback\Lti1p3\LtiLineitem`.
 
-$ags->put_grade($grade, $lineitem);
+```php
+$lineitem = Packback\Lti1p3\LtiLineitem::new()
+    ->setTag('grade')
+    ->setScoreMaximum(100)
+    ->setLabel('Grade');
+
+$ags->putGrade($grade, $lineitem);
 ```
 
 If a lineitem with the same `tag` exists, that lineitem will be used, otherwise a new lineitem will be created.
 
+## Laravel Implementation Guide
 
-# Contributing
-If you have improvements, suggestions or bug fixes, feel free to make a pull request or issue and someone will take a look at it.
+### Installation
 
-You do not need to be an IMS Member to use or contribute to this library, however it is recommended for better access to support resources and certification.
+Install the library with composer. Open up the AppServiceProvider and set the `JWT::$leeway` `boot()` method. (Both of these steps are described in the installation section above).
 
-This library was initially created by @MartinLenord from Turnitin to help prove out the LTI 1.3 specification and accelerate tool development.
+In the `register()` method, bind your implementation of the data Cache, Cookie, and Database to their interfaces:
 
-**Note:** This library is for IMS LTI 1.3 based specifications only. Requests to include custom, off-spec or vendor-specific changes will be declined.
+```php
+use App\Lti13Cache;
+use App\Lti13Cookie;
+use App\Lti13Database;
+use Firebase\JWT\JWT;
+use Illuminate\Support\ServiceProvider;
+use Packback\Lti1p3\Interfaces\Cache;
+use Packback\Lti1p3\Interfaces\Cookie;
+use Packback\Lti1p3\Interfaces\Database;
 
-## Don't like PHP?
-If you don't like PHP and have a favorite language that you would like to make a library for, we'd love to hear about it!
+class AppServiceProvider extends ServiceProvider
+{
+    public function boot()
+    {
+        JWT::$leeway = 5;
+    }
+
+    public function register()
+    {
+        $this->app->bind(Cache::class, Lti13Cache::class);
+        $this->app->bind(Cookie::class, Lti13Cookie::class);
+        $this->app->bind(Database::class, Lti13Database::class);
+    }
+}
+```
+
+Once this is done, you can begin building the endpoints necessary to handle an LTI 1.3 launch, such as:
+
+- Login
+- Launch
+- JWKs
+
+### Sample Data Store Implementations
+
+Below are examples of how to get the library's data store interfaces to work with Laravel's facades.
+
+#### Cache
+
+```php
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
+use Packback\Lti1p3\Interfaces\Cache as Lti1p3Cache;
+
+class Lti13Cache implements Lti1p3Cache
+{
+    public const NONCE_PREFIX = 'nonce_';
+
+    public function getLaunchData($key)
+    {
+        return Cache::get($key);
+    }
+
+    public function cacheLaunchData($key, $jwt_body)
+    {
+        $duration = Config::get('cache.duration.default');
+        Cache::put($key, $jwt_body, $duration);
+        return $this;
+    }
+
+    public function cacheNonce($nonce)
+    {
+        $duration = Config::get('cache.duration.default');
+        Cache::put(static::NONCE_PREFIX . $nonce, true, $duration);
+        return $this;
+    }
+
+    public function checkNonce($nonce)
+    {
+        return Cache::get(static::NONCE_PREFIX . $nonce, false);
+    }
+}
+```
+
+#### Cookie
+
+```php
+use Illuminate\Support\Facades\Cookie;
+use Packback\Lti1p3\Interfaces\Cookie as Lti1p3Cookie;
+
+class Lti13Cookie implements Lti1p3Cookie
+{
+    public function getCookie($name)
+    {
+        return Cookie::get($name, false);
+    }
+
+    public function setCookie($name, $value, $exp = 3600, $options = []): self
+    {
+        Cookie::queue($name, $value, $exp);
+        return $this;
+    }
+}
+```
+
+#### Database
+
+For this data store you will need to create models to store the issuer and deployment in the database.
+
+```php
+use App\Models\Issuer;
+use App\Models\Deployment;
+use Packback\Lti1p3\Interfaces\Database;
+use Packback\Lti1p3\LtiRegistration;
+use Packback\Lti1p3\LtiDeployment;
+use Packback\Lti1p3\OidcException;
+
+class Lti13Database implements Database
+{
+    public static function findIssuer($issuer_url, $client_id = null)
+    {
+        $query = Issuer::where('issuer', $issuer_url);
+        if ($client_id) {
+            $query = $query->where('client_id', $client_id);
+        }
+        if ($query->count() > 1) {
+            throw new OidcException('Found multiple registrations for the given issuer, ensure a client_id is specified on login (contact your LMS administrator)', 1);
+        }
+        return $query->first();
+    }
+
+    public function findRegistrationByIssuer($issuer, $client_id = null)
+    {
+        $issuer = self::findIssuer($issuer, $client_id);
+        if (!$issuer) {
+            return false;
+        }
+
+        return LtiRegistration::new()
+            ->setAuthTokenUrl($issuer->auth_token_url)
+            ->setAuthLoginUrl($issuer->auth_login_url)
+            ->setClientId($issuer->client_id)
+            ->setKeySetUrl($issuer->key_set_url)
+            ->setKid($issuer->kid)
+            ->setIssuer($issuer->issuer)
+            ->setToolPrivateKey($issuer->tool_private_key);
+    }
+
+    public function findDeployment($issuer, $deployment_id, $client_id = null)
+    {
+        $issuerModel = self::findIssuer($issuer, $client_id);
+        if (!$issuerModel) {
+            return false;
+        }
+        $deployment = $issuerModel->deployments()->where('deployment_id', $deployment_id)->first();
+        if (!$deployment) {
+            return false;
+        }
+
+        return LtiDeployment::new()
+            ->setDeploymentId($deployment->id);
+    }
+}
+```
+
+## Sample Legacy Implementation
+
+This library was forked and rewritten from [IMSGlobal/lti-1-3-php-library](https://github.com/IMSGlobal/lti-1-3-php-library). That repo provides an [example implementation](https://github.com/IMSGlobal/lti-1-3-php-example-tool) that may be helpful.
+
+## Contributing
+
+For improvements, suggestions or bug fixes, make a pull request or an issue. Before opening a pull request, add automated tests for your changes and ensure that all tests pass.
+
+### Testing
+
+Automated tests can be run using the command:
+
+```bash
+composer test
+```
