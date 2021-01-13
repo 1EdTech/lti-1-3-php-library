@@ -14,9 +14,9 @@ class ImsCache implements Cache
         return $this->cache[$key];
     }
 
-    public function cacheLaunchData($key, $jwtbody)
+    public function cacheLaunchData($key, $jwtBody)
     {
-        $this->cache[$key] = $jwtbody;
+        $this->cache[$key] = $jwtBody;
         $this->saveCache();
         return $this;
     }
