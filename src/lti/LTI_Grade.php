@@ -10,6 +10,7 @@ class LTI_Grade {
     private $timestamp;
     private $user_id;
     private $submission_review;
+    private $custom = [];
 
     /**
      * Static function to allow for method chaining without having to assign to a variable first.
@@ -90,8 +91,17 @@ class LTI_Grade {
         return $this;
     }
 
+    public function set_custom(array $value) {
+        $this->custom = $value;
+        return $this;
+    }
+
+    public function get_custom():array {
+        return $this->custom;
+    }
+
     public function __toString() {
-        return json_encode(array_filter([
+        return json_encode(array_merge(array_filter([
             "scoreGiven" => 0 + $this->score_given,
             "scoreMaximum" => 0 + $this->score_maximum,
             "comment" => $this->comment,
@@ -100,7 +110,7 @@ class LTI_Grade {
             "timestamp" => $this->timestamp,
             "userId" => $this->user_id,
             "submissionReview" => $this->submission_review,
-        ]));
+        ]), $this->custom));
     }
 }
 ?>
