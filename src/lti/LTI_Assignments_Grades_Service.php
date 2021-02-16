@@ -19,6 +19,8 @@ class LTI_Assignments_Grades_Service {
         if ($lineitem !== null && empty($lineitem->get_id())) {
             $lineitem = $this->find_or_create_lineitem($lineitem);
             $score_url = $lineitem->get_id();
+        } else if($lineitem !== null && !empty($lineitem->get_id())) {
+            $score_url = $lineitem->get_id();
         } else if ($lineitem === null && !empty($this->service_data['lineitem'])) {
             $score_url = $this->service_data['lineitem'] ;
         } else {
