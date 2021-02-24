@@ -205,6 +205,7 @@ class LtiGradeTest extends TestCase
             'timestamp' => 'Timestamp',
             'userId' => 'UserId',
             'submissionReview' => 'SubmissionReview',
+            'https://canvas.instructure.com/lti/submission' => 'CanvasExtension'
         ];
 
         $grade = new LtiGrade($expected);
