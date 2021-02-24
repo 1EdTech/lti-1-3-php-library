@@ -22,7 +22,7 @@ class LtiGrade
         $this->timestamp = $grade['timestamp'] ?? null;
         $this->user_id = $grade['userId'] ?? null;
         $this->submission_review = $grade['submissionReview'] ?? null;
-        $this->canvasExtension = $grade['https://canvas.instructure.com/lti/submission'] ?? null;
+        $this->canvas_extension = $grade['https://canvas.instructure.com/lti/submission'] ?? null;
     }
 
     /**
@@ -120,12 +120,16 @@ class LtiGrade
         return $this;
     }
 
-    // Custom Extension for Canvas. Currently this will only add the
-    // submitted_at param.
+    public function getCanvasExtension()
+    {
+        return $this->canvas_extension;
+    }
+
+    // Custom Extension for Canvas.
     // https://documentation.instructure.com/doc/api/score.html
     public function setCanvasExtension($value)
     {
-        $this->canvasExtension = ['submitted_at' => $value];
+        $this->canvas_extension = $value;
         return $this;
     }
 
@@ -140,7 +144,7 @@ class LtiGrade
             'timestamp' => $this->timestamp,
             'userId' => $this->user_id,
             'submissionReview' => $this->submission_review,
-            'https://canvas.instructure.com/lti/submission' => $this->canvasExtension
+            'https://canvas.instructure.com/lti/submission' => $this->canvas_extension
         ]));
     }
 }
