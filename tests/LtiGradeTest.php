@@ -175,6 +175,25 @@ class LtiGradeTest extends TestCase
         $this->assertEquals($expected, $this->grade->getSubmissionReview());
     }
 
+    public function testItGetsCanvasExtension()
+    {
+        $expected = 'expected';
+        $grade = new LtiGrade([ 'https://canvas.instructure.com/lti/submission' => $expected ]);
+
+        $result = $grade->getCanvasExtension();
+
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testItSetsCanvasExtension()
+    {
+        $expected = 'expected';
+
+        $this->grade->setCanvasExtension($expected);
+
+        $this->assertEquals($expected, $this->grade->getCanvasExtension());
+    }
+
     public function testItCastsFullObjectToString()
     {
         $expected = [
@@ -186,6 +205,7 @@ class LtiGradeTest extends TestCase
             'timestamp' => 'Timestamp',
             'userId' => 'UserId',
             'submissionReview' => 'SubmissionReview',
+            'https://canvas.instructure.com/lti/submission' => 'CanvasExtension'
         ];
 
         $grade = new LtiGrade($expected);
