@@ -6,6 +6,7 @@ class LtiDeepLinkResource
 
     private $type = 'ltiResourceLink';
     private $title;
+    private $text;
     private $url;
     private $lineitem;
     private $custom_params = [];
@@ -34,6 +35,17 @@ class LtiDeepLinkResource
     public function setTitle($value)
     {
         $this->title = $value;
+        return $this;
+    }
+
+    public function getText()
+    {
+        return $this->text;
+    }
+
+    public function setText($value)
+    {
+        $this->text = $value;
         return $this;
     }
 
@@ -86,6 +98,7 @@ class LtiDeepLinkResource
         $resource = [
             "type" => $this->type,
             "title" => $this->title,
+            "text" => $this->text,
             "url" => $this->url,
             "presentation" => [
                 "documentTarget" => $this->target,

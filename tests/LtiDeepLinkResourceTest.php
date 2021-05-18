@@ -57,6 +57,22 @@ class LtiDeepLinkResourceTest extends TestCase
         $this->assertEquals($expected, $this->deepLinkResource->getTitle());
     }
 
+    public function testItGetsText()
+    {
+        $result = $this->deepLinkResource->getText();
+
+        $this->assertNull($result);
+    }
+
+    public function testItSetsText()
+    {
+        $expected = 'expected';
+
+        $this->deepLinkResource->setText($expected);
+
+        $this->assertEquals($expected, $this->deepLinkResource->getText());
+    }
+
     public function testItGetsUrl()
     {
         $result = $this->deepLinkResource->getUrl();
@@ -126,6 +142,7 @@ class LtiDeepLinkResourceTest extends TestCase
         $expected = [
             "type" => 'ltiResourceLink',
             "title" => 'a_title',
+            "text" => 'a_text',
             "url" => 'a_url',
             "presentation" => [
                 "documentTarget" => 'iframe',
@@ -143,6 +160,7 @@ class LtiDeepLinkResourceTest extends TestCase
             ->once()->andReturn($expected['lineItem']['label']);
 
         $this->deepLinkResource->setTitle($expected['title']);
+        $this->deepLinkResource->setText($expected['text']);
         $this->deepLinkResource->setUrl($expected['url']);
         $this->deepLinkResource->setLineitem($lineitem);
 
