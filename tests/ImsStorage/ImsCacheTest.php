@@ -1,12 +1,12 @@
-<?php namespace Tests\ImsStorage;
+<?php
 
-use PHPUnit\Framework\TestCase;
+namespace Tests\ImsStorage;
 
 use Packback\Lti1p3\ImsStorage\ImsCache;
+use PHPUnit\Framework\TestCase;
 
 class ImsCacheTest extends TestCase
 {
-
     public function testItInstantiates()
     {
         $cache = new ImsCache();

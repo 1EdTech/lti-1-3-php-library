@@ -1,9 +1,9 @@
 <?php
+
 namespace Packback\Lti1p3;
 
 class LtiDeepLinkResource
 {
-
     private $type = 'ltiResourceLink';
     private $title;
     private $text;
@@ -12,7 +12,8 @@ class LtiDeepLinkResource
     private $custom_params = [];
     private $target = 'iframe';
 
-    public static function new() {
+    public static function new()
+    {
         return new LtiDeepLinkResource();
     }
 
@@ -24,6 +25,7 @@ class LtiDeepLinkResource
     public function setType($value)
     {
         $this->type = $value;
+
         return $this;
     }
 
@@ -35,6 +37,7 @@ class LtiDeepLinkResource
     public function setTitle($value)
     {
         $this->title = $value;
+
         return $this;
     }
 
@@ -46,6 +49,7 @@ class LtiDeepLinkResource
     public function setText($value)
     {
         $this->text = $value;
+
         return $this;
     }
 
@@ -57,6 +61,7 @@ class LtiDeepLinkResource
     public function setUrl($value)
     {
         $this->url = $value;
+
         return $this;
     }
 
@@ -68,6 +73,7 @@ class LtiDeepLinkResource
     public function setLineitem(LtiLineitem $value)
     {
         $this->lineitem = $value;
+
         return $this;
     }
 
@@ -79,6 +85,7 @@ class LtiDeepLinkResource
     public function setCustomParams($value)
     {
         $this->custom_params = $value;
+
         return $this;
     }
 
@@ -90,28 +97,29 @@ class LtiDeepLinkResource
     public function setTarget($value)
     {
         $this->target = $value;
+
         return $this;
     }
 
     public function toArray()
     {
         $resource = [
-            "type" => $this->type,
-            "title" => $this->title,
-            "text" => $this->text,
-            "url" => $this->url,
-            "presentation" => [
-                "documentTarget" => $this->target,
+            'type' => $this->type,
+            'title' => $this->title,
+            'text' => $this->text,
+            'url' => $this->url,
+            'presentation' => [
+                'documentTarget' => $this->target,
             ],
-            "custom" => $this->custom_params,
+            'custom' => $this->custom_params,
         ];
         if ($this->lineitem !== null) {
-            $resource["lineItem"] = [
-                "scoreMaximum" => $this->lineitem->getScoreMaximum(),
-                "label" => $this->lineitem->getLabel(),
+            $resource['lineItem'] = [
+                'scoreMaximum' => $this->lineitem->getScoreMaximum(),
+                'label' => $this->lineitem->getLabel(),
             ];
         }
+
         return $resource;
     }
 }
-

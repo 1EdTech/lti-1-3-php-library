@@ -1,11 +1,11 @@
 <?php
+
 namespace Packback\Lti1p3;
 
 use Packback\Lti1p3\Interfaces\LtiServiceConnectorInterface;
 
 class LtiNamesRolesProvisioningService
 {
-
     private $service_connector;
     private $service_data;
 
@@ -34,7 +34,7 @@ class LtiNamesRolesProvisioningService
             $members = array_merge($members, $page['body']['members']);
 
             $next_page = false;
-            foreach($page['headers'] as $header) {
+            foreach ($page['headers'] as $header) {
                 if (preg_match(LtiServiceConnector::NEXT_PAGE_REGEX, $header, $matches)) {
                     $next_page = $matches[1];
                     break;

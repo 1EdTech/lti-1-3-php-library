@@ -1,4 +1,5 @@
 <?php
+
 namespace Packback\Lti1p3;
 
 class LtiLineitem
@@ -24,101 +25,6 @@ class LtiLineitem
         $this->end_date_time = $lineitem['endDateTime'] ?? null;
     }
 
-    /**
-     * Static function to allow for method chaining without having to assign to a variable first.
-     */
-    public static function new() {
-        return new LtiLineitem();
-    }
-
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function setId($value)
-    {
-        $this->id = $value;
-        return $this;
-    }
-
-    public function getLabel()
-    {
-        return $this->label;
-    }
-
-    public function setLabel($value)
-    {
-        $this->label = $value;
-        return $this;
-    }
-
-    public function getScoreMaximum()
-    {
-        return $this->score_maximum;
-    }
-
-    public function setScoreMaximum($value)
-    {
-        $this->score_maximum = $value;
-        return $this;
-    }
-
-    public function getResourceId()
-    {
-        return $this->resource_id;
-    }
-
-    public function setResourceId($value)
-    {
-        $this->resource_id = $value;
-        return $this;
-    }
-
-    public function getResourceLinkId()
-    {
-        return $this->resource_link_id;
-    }
-
-    public function setResourceLinkId($value)
-    {
-        $this->resource_link_id = $value;
-        return $this;
-    }
-
-    public function getTag()
-    {
-        return $this->tag;
-    }
-
-    public function setTag($value)
-    {
-        $this->tag = $value;
-        return $this;
-    }
-
-    public function getStartDateTime()
-    {
-        return $this->start_date_time;
-    }
-
-    public function setStartDateTime($value)
-    {
-        $this->start_date_time = $value;
-        return $this;
-    }
-
-    public function getEndDateTime()
-    {
-        return $this->end_date_time;
-    }
-
-    public function setEndDateTime($value)
-    {
-        $this->end_date_time = $value;
-        return $this;
-    }
-
     public function __toString()
     {
         return json_encode(array_filter([
@@ -130,5 +36,109 @@ class LtiLineitem
             'startDateTime' => $this->start_date_time,
             'endDateTime' => $this->end_date_time,
         ]));
+    }
+
+    /**
+     * Static function to allow for method chaining without having to assign to a variable first.
+     */
+    public static function new()
+    {
+        return new LtiLineitem();
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function setId($value)
+    {
+        $this->id = $value;
+
+        return $this;
+    }
+
+    public function getLabel()
+    {
+        return $this->label;
+    }
+
+    public function setLabel($value)
+    {
+        $this->label = $value;
+
+        return $this;
+    }
+
+    public function getScoreMaximum()
+    {
+        return $this->score_maximum;
+    }
+
+    public function setScoreMaximum($value)
+    {
+        $this->score_maximum = $value;
+
+        return $this;
+    }
+
+    public function getResourceId()
+    {
+        return $this->resource_id;
+    }
+
+    public function setResourceId($value)
+    {
+        $this->resource_id = $value;
+
+        return $this;
+    }
+
+    public function getResourceLinkId()
+    {
+        return $this->resource_link_id;
+    }
+
+    public function setResourceLinkId($value)
+    {
+        $this->resource_link_id = $value;
+
+        return $this;
+    }
+
+    public function getTag()
+    {
+        return $this->tag;
+    }
+
+    public function setTag($value)
+    {
+        $this->tag = $value;
+
+        return $this;
+    }
+
+    public function getStartDateTime()
+    {
+        return $this->start_date_time;
+    }
+
+    public function setStartDateTime($value)
+    {
+        $this->start_date_time = $value;
+
+        return $this;
+    }
+
+    public function getEndDateTime()
+    {
+        return $this->end_date_time;
+    }
+
+    public function setEndDateTime($value)
+    {
+        $this->end_date_time = $value;
+
+        return $this;
     }
 }
