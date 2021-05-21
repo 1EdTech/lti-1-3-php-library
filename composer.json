@@ -40,6 +40,8 @@
         }
     },
     "scripts": {
-        "test": "phpunit"
+        "test": "phpunit",
+        "lint": "php-cs-fixer fix -v --dry-run",
+        "lint-fix": "php-cs-fixer fix -v"
     }
 }

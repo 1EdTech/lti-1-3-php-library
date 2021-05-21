@@ -473,7 +473,7 @@ This library was forked and rewritten from [IMSGlobal/lti-1-3-php-library](https
 
 ## Contributing
 
-For improvements, suggestions or bug fixes, make a pull request or an issue. Before opening a pull request, add automated tests for your changes and ensure that all tests pass.
+For improvements, suggestions or bug fixes, make a pull request or an issue. Before opening a pull request, add automated tests for your changes, ensure that all tests pass, and any linting errors are fixed.
 
 ### Testing
 
@@ -481,4 +481,13 @@ Automated tests can be run using the command:
 
 ```bash
 composer test
+```
+
+Linting can be run using
+
+```bash
+# Display linting errors
+composer lint
+# Automatically fix linting errors
+composer lint-fix
 ```
