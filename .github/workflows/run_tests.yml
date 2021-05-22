@@ -1,11 +1,11 @@
-name: Pull Request Workflow
-
+name: Run tests on library
 on:
   pull_request:
+  push:
     branches:
       - master
 jobs:
-  app-tests:
+  run-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -13,6 +13,7 @@ jobs:
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
       - name: Run tests
         run: composer test
-      - name: Check style
-        run: composer lint-file
+# Uncomment once the linting PR is merged
+#      - name: Check style
+#        run: composer lint-file
         
