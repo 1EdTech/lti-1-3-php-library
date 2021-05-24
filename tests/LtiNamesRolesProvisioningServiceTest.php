@@ -1,10 +1,11 @@
-<?php namespace Tests;
+<?php
 
-use PHPUnit\Framework\TestCase;
+namespace Tests;
+
 use Mockery;
-
 use Packback\Lti1p3\Interfaces\LtiServiceConnectorInterface;
 use Packback\Lti1p3\LtiNamesRolesProvisioningService;
+use PHPUnit\Framework\TestCase;
 
 class LtiNamesRolesProvisioningServiceTest extends TestCase
 {
@@ -22,15 +23,15 @@ class LtiNamesRolesProvisioningServiceTest extends TestCase
 
     public function testItGetsMembers()
     {
-        $expected = [ 'members' ];
+        $expected = ['members'];
 
         $nrps = new LtiNamesRolesProvisioningService($this->connector, [
-            'context_memberships_url' => 'url'
+            'context_memberships_url' => 'url',
         ]);
         $this->connector->shouldReceive('makeServiceRequest')
             ->once()->andReturn([
                 'headers' => [],
-                'body' => [ 'members' => $expected ]
+                'body' => ['members' => $expected],
             ]);
 
         $result = $nrps->getMembers();
@@ -40,23 +41,23 @@ class LtiNamesRolesProvisioningServiceTest extends TestCase
 
     public function testItGetsMembersIteratively()
     {
-        $response = [ 'members' ];
+        $response = ['members'];
         $expected = array_merge($response, $response);
 
         $nrps = new LtiNamesRolesProvisioningService($this->connector, [
-            'context_memberships_url' => 'url'
+            'context_memberships_url' => 'url',
         ]);
         // First response
         $this->connector->shouldReceive('makeServiceRequest')
             ->once()->andReturn([
-                'headers' => [ 'Link:Something<else>;rel="next"' ],
-                'body' => [ 'members' => $response ]
+                'headers' => ['Link:Something<else>;rel="next"'],
+                'body' => ['members' => $response],
             ]);
         // Second response
         $this->connector->shouldReceive('makeServiceRequest')
             ->once()->andReturn([
                 'headers' => [],
-                'body' => [ 'members' => $response ]
+                'body' => ['members' => $response],
             ]);
 
         $result = $nrps->getMembers();

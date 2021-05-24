@@ -1,14 +1,15 @@
-<?php namespace Tests;
+<?php
 
-use PHPUnit\Framework\TestCase;
+namespace Tests;
 
 use Packback\Lti1p3\LtiRegistration;
+use PHPUnit\Framework\TestCase;
 
 class LtiRegistrationTest extends TestCase
 {
     public function setUp(): void
     {
-        $this->registration = new LtiRegistration;
+        $this->registration = new LtiRegistration();
     }
 
     public function testItInstantiates()
@@ -26,7 +27,7 @@ class LtiRegistrationTest extends TestCase
     public function testItGetsIssuer()
     {
         $expected = 'expected';
-        $registration = new LtiRegistration([ 'issuer' => $expected ]);
+        $registration = new LtiRegistration(['issuer' => $expected]);
 
         $result = $registration->getIssuer();
 
@@ -45,7 +46,7 @@ class LtiRegistrationTest extends TestCase
     public function testItGetsClientId()
     {
         $expected = 'expected';
-        $registration = new LtiRegistration([ 'clientId' => $expected ]);
+        $registration = new LtiRegistration(['clientId' => $expected]);
 
         $result = $registration->getClientId();
 
@@ -64,7 +65,7 @@ class LtiRegistrationTest extends TestCase
     public function testItGetsKeySetUrl()
     {
         $expected = 'expected';
-        $registration = new LtiRegistration([ 'keySetUrl' => $expected ]);
+        $registration = new LtiRegistration(['keySetUrl' => $expected]);
 
         $result = $registration->getKeySetUrl();
 
@@ -83,7 +84,7 @@ class LtiRegistrationTest extends TestCase
     public function testItGetsAuthTokenUrl()
     {
         $expected = 'expected';
-        $registration = new LtiRegistration([ 'authTokenUrl' => $expected ]);
+        $registration = new LtiRegistration(['authTokenUrl' => $expected]);
 
         $result = $registration->getAuthTokenUrl();
 
@@ -102,7 +103,7 @@ class LtiRegistrationTest extends TestCase
     public function testItGetsAuthLoginUrl()
     {
         $expected = 'expected';
-        $registration = new LtiRegistration([ 'authLoginUrl' => $expected ]);
+        $registration = new LtiRegistration(['authLoginUrl' => $expected]);
 
         $result = $registration->getAuthLoginUrl();
 
@@ -121,7 +122,7 @@ class LtiRegistrationTest extends TestCase
     public function testItGetsAuthServer()
     {
         $expected = 'expected';
-        $registration = new LtiRegistration([ 'authServer' => $expected ]);
+        $registration = new LtiRegistration(['authServer' => $expected]);
 
         $result = $registration->getAuthServer();
 
@@ -140,7 +141,7 @@ class LtiRegistrationTest extends TestCase
     public function testItGetsToolPrivateKey()
     {
         $expected = 'expected';
-        $registration = new LtiRegistration([ 'toolPrivateKey' => $expected ]);
+        $registration = new LtiRegistration(['toolPrivateKey' => $expected]);
 
         $result = $registration->getToolPrivateKey();
 
@@ -159,7 +160,7 @@ class LtiRegistrationTest extends TestCase
     public function testItGetsKid()
     {
         $expected = 'expected';
-        $registration = new LtiRegistration([ 'kid' => $expected ]);
+        $registration = new LtiRegistration(['kid' => $expected]);
 
         $result = $registration->getKid();
 
@@ -171,7 +172,7 @@ class LtiRegistrationTest extends TestCase
         $expected = '39e02c46a08382b7b352b4f1a9d38698b8fe7c8eb74ead609c804b25eeb1db52';
         $registration = new LtiRegistration([
             'issuer' => 'Issuer',
-            'client_id' => 'ClientId'
+            'client_id' => 'ClientId',
         ]);
 
         $result = $registration->getKid();

@@ -1,11 +1,11 @@
 <?php
+
 namespace Packback\Lti1p3;
 
 use Packback\Lti1p3\Interfaces\LtiServiceConnectorInterface;
 
 class LtiCourseGroupsService
 {
-
     private $service_connector;
     private $service_data;
 
@@ -34,20 +34,19 @@ class LtiCourseGroupsService
             $groups = array_merge($groups, $page['body']['groups']);
 
             $next_page = false;
-            foreach($page['headers'] as $header) {
+            foreach ($page['headers'] as $header) {
                 if (preg_match(LtiServiceConnector::NEXT_PAGE_REGEX, $header, $matches)) {
                     $next_page = $matches[1];
                     break;
                 }
             }
         }
-        return $groups;
 
+        return $groups;
     }
 
     public function getSets()
     {
-
         $sets = [];
 
         // Sets are optional.
@@ -70,15 +69,15 @@ class LtiCourseGroupsService
             $sets = array_merge($sets, $page['body']['sets']);
 
             $next_page = false;
-            foreach($page['headers'] as $header) {
+            foreach ($page['headers'] as $header) {
                 if (preg_match(LtiServiceConnector::NEXT_PAGE_REGEX, $header, $matches)) {
                     $next_page = $matches[1];
                     break;
                 }
             }
         }
-        return $sets;
 
+        return $sets;
     }
 
     public function getGroupsBySet()
@@ -104,13 +103,12 @@ class LtiCourseGroupsService
 
         if (!empty($unsetted)) {
             $groups_by_set['none'] = [
-                "name" => "None",
-                "id" => "none",
-                "groups" => $unsetted,
+                'name' => 'None',
+                'id' => 'none',
+                'groups' => $unsetted,
             ];
         }
 
         return $groups_by_set;
     }
 }
-?>

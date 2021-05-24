@@ -1,7 +1,8 @@
 <?php
+
 namespace Packback\Lti1p3;
 
-use \Exception;
+use Exception;
 
 class OidcException extends Exception
 {
