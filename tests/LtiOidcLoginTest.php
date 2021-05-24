@@ -1,13 +1,14 @@
-<?php namespace Tests;
+<?php
+
+namespace Tests;
 
 use Mockery;
-use PHPUnit\Framework\TestCase;
-
 use Packback\Lti1p3\Interfaces\Cache;
 use Packback\Lti1p3\Interfaces\Cookie;
 use Packback\Lti1p3\Interfaces\Database;
 use Packback\Lti1p3\LtiOidcLogin;
 use Packback\Lti1p3\OidcException;
+use PHPUnit\Framework\TestCase;
 
 class LtiOidcLoginTest extends TestCase
 {
@@ -46,7 +47,7 @@ class LtiOidcLoginTest extends TestCase
         $request = [
             'iss' => 'Issuer',
             'login_hint' => 'LoginHint',
-            'client_id' => 'ClientId'
+            'client_id' => 'ClientId',
         ];
 
         $this->database->shouldReceive('findRegistrationByIssuer')
@@ -62,7 +63,7 @@ class LtiOidcLoginTest extends TestCase
     {
         $request = [
             'login_hint' => 'LoginHint',
-            'client_id' => 'ClientId'
+            'client_id' => 'ClientId',
         ];
 
         $this->expectException(OidcException::class);
@@ -75,7 +76,7 @@ class LtiOidcLoginTest extends TestCase
     {
         $request = [
             'iss' => 'Issuer',
-            'client_id' => 'ClientId'
+            'client_id' => 'ClientId',
         ];
 
         $this->expectException(OidcException::class);
@@ -99,7 +100,7 @@ class LtiOidcLoginTest extends TestCase
         $this->oidcLogin->validateOidcLogin($request);
     }
 
-    /**
+    /*
      * @todo Finish testing
      */
 }

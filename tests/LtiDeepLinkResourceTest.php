@@ -1,10 +1,11 @@
-<?php namespace Tests;
+<?php
 
-use PHPUnit\Framework\TestCase;
+namespace Tests;
+
 use Mockery;
-
-use Packback\Lti1p3\LtiLineitem;
 use Packback\Lti1p3\LtiDeepLinkResource;
+use Packback\Lti1p3\LtiLineitem;
+use PHPUnit\Framework\TestCase;
 
 class LtiDeepLinkResourceTest extends TestCase
 {
@@ -140,18 +141,18 @@ class LtiDeepLinkResourceTest extends TestCase
     public function testItCastsToArray()
     {
         $expected = [
-            "type" => 'ltiResourceLink',
-            "title" => 'a_title',
-            "text" => 'a_text',
-            "url" => 'a_url',
-            "presentation" => [
-                "documentTarget" => 'iframe',
+            'type' => 'ltiResourceLink',
+            'title' => 'a_title',
+            'text' => 'a_text',
+            'url' => 'a_url',
+            'presentation' => [
+                'documentTarget' => 'iframe',
             ],
-            "custom" => [],
-            "lineItem" => [
-                "scoreMaximum" => 80,
-                "label" => 'lineitem_label',
-            ]
+            'custom' => [],
+            'lineItem' => [
+                'scoreMaximum' => 80,
+                'label' => 'lineitem_label',
+            ],
         ];
         $lineitem = Mockery::mock(LtiLineitem::class);
         $lineitem->shouldReceive('getScoreMaximum')

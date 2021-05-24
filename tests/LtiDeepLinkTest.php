@@ -1,11 +1,11 @@
-<?php namespace Tests;
+<?php
 
-use PHPUnit\Framework\TestCase;
+namespace Tests;
+
 use Mockery;
-
 use Packback\Lti1p3\Interfaces\LtiRegistrationInterface;
 use Packback\Lti1p3\LtiDeepLink;
-use Packback\Lti1p3\Nonce;
+use PHPUnit\Framework\TestCase;
 
 class LtiDeepLinkTest extends TestCase
 {
@@ -18,7 +18,7 @@ class LtiDeepLinkTest extends TestCase
         $this->assertInstanceOf(LtiDeepLink::class, $deepLink);
     }
 
-    /**
+    /*
      * @todo Figure out how to test this
      */
     // public function testItGetsJwtResponse()

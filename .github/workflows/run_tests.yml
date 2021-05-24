@@ -1,4 +1,4 @@
-name: Tests and code style
+name: Tests & style checks
 on:
   # Trigger on any PR being opened, or on a merge to master (to update the badge)
   pull_request:
@@ -16,7 +16,5 @@ jobs:
             --no-progress --prefer-dist
       - name: Run tests
         run: composer test
-# Uncomment once the linting PR is merged
-#      - name: Check style
-#        run: composer lint-file
-        
+      - name: Check style
+        run: composer lint

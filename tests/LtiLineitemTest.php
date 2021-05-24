@@ -1,14 +1,15 @@
-<?php namespace Tests;
+<?php
 
-use PHPUnit\Framework\TestCase;
+namespace Tests;
 
 use Packback\Lti1p3\LtiLineitem;
+use PHPUnit\Framework\TestCase;
 
 class LtiLineitemTest extends TestCase
 {
     public function setUp(): void
     {
-        $this->lineItem = new LtiLineitem;
+        $this->lineItem = new LtiLineitem();
     }
 
     public function testItInstantiates()
@@ -26,7 +27,7 @@ class LtiLineitemTest extends TestCase
     public function testItGetsId()
     {
         $expected = 'expected';
-        $grade = new LtiLineitem([ 'id' => $expected ]);
+        $grade = new LtiLineitem(['id' => $expected]);
 
         $result = $grade->getId();
 
@@ -45,7 +46,7 @@ class LtiLineitemTest extends TestCase
     public function testItGetsScoreMaximum()
     {
         $expected = 'expected';
-        $grade = new LtiLineitem([ 'scoreMaximum' => $expected ]);
+        $grade = new LtiLineitem(['scoreMaximum' => $expected]);
 
         $result = $grade->getScoreMaximum();
 
@@ -64,7 +65,7 @@ class LtiLineitemTest extends TestCase
     public function testItGetsLabel()
     {
         $expected = 'expected';
-        $grade = new LtiLineitem([ 'label' => $expected ]);
+        $grade = new LtiLineitem(['label' => $expected]);
 
         $result = $grade->getLabel();
 
@@ -83,7 +84,7 @@ class LtiLineitemTest extends TestCase
     public function testItGetsResourceId()
     {
         $expected = 'expected';
-        $grade = new LtiLineitem([ 'resourceId' => $expected ]);
+        $grade = new LtiLineitem(['resourceId' => $expected]);
 
         $result = $grade->getResourceId();
 
@@ -102,7 +103,7 @@ class LtiLineitemTest extends TestCase
     public function testItGetsResourceLinkId()
     {
         $expected = 'expected';
-        $grade = new LtiLineitem([ 'resourceLinkId' => $expected ]);
+        $grade = new LtiLineitem(['resourceLinkId' => $expected]);
 
         $result = $grade->getResourceLinkId();
 
@@ -121,7 +122,7 @@ class LtiLineitemTest extends TestCase
     public function testItGetsTag()
     {
         $expected = 'expected';
-        $grade = new LtiLineitem([ 'tag' => $expected ]);
+        $grade = new LtiLineitem(['tag' => $expected]);
 
         $result = $grade->getTag();
 
@@ -140,7 +141,7 @@ class LtiLineitemTest extends TestCase
     public function testItGetsStartDateTime()
     {
         $expected = 'expected';
-        $grade = new LtiLineitem([ 'startDateTime' => $expected ]);
+        $grade = new LtiLineitem(['startDateTime' => $expected]);
 
         $result = $grade->getStartDateTime();
 
@@ -159,7 +160,7 @@ class LtiLineitemTest extends TestCase
     public function testItGetsEndDateTime()
     {
         $expected = 'expected';
-        $grade = new LtiLineitem([ 'endDateTime' => $expected ]);
+        $grade = new LtiLineitem(['endDateTime' => $expected]);
 
         $result = $grade->getEndDateTime();
 
@@ -174,7 +175,6 @@ class LtiLineitemTest extends TestCase
 
         $this->assertEquals($expected, $this->lineItem->getEndDateTime());
     }
-
 
     public function testItCastsFullObjectToString()
     {

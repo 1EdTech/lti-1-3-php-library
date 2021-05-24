@@ -1,12 +1,12 @@
-<?php namespace Tests\MessageValidators;
+<?php
 
-use PHPUnit\Framework\TestCase;
+namespace Tests\MessageValidators;
 
 use Packback\Lti1p3\MessageValidators\SubmissionReviewMessageValidator;
+use PHPUnit\Framework\TestCase;
 
 class SubmissionReviewMessageValidatorTest extends TestCase
 {
-
     public function testItInstantiates()
     {
         $validator = new SubmissionReviewMessageValidator([]);

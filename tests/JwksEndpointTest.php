@@ -1,15 +1,15 @@
-<?php namespace Tests;
+<?php
 
-use PHPUnit\Framework\TestCase;
+namespace Tests;
+
 use Mockery;
-
 use Packback\Lti1p3\Interfaces\Database;
 use Packback\Lti1p3\Interfaces\LtiRegistrationInterface;
 use Packback\Lti1p3\JwksEndpoint;
+use PHPUnit\Framework\TestCase;
 
 class JwksEndpointTest extends TestCase
 {
-
     public function testItInstantiates()
     {
         $jwks = new JwksEndpoint([]);
@@ -61,7 +61,7 @@ class JwksEndpointTest extends TestCase
     public function testItGetsJwksForTheProvidedKeys()
     {
         $jwks = new JwksEndpoint([
-            'kid' => file_get_contents(__DIR__.'/data/private.key')
+            'kid' => file_get_contents(__DIR__.'/data/private.key'),
         ]);
 
         $result = $jwks->getPublicJwks();

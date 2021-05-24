@@ -1,12 +1,12 @@
-<?php namespace Tests\MessageValidators;
+<?php
 
-use PHPUnit\Framework\TestCase;
+namespace Tests\MessageValidators;
 
 use Packback\Lti1p3\MessageValidators\ResourceMessageValidator;
+use PHPUnit\Framework\TestCase;
 
 class ResourceMessageValidatorTest extends TestCase
 {
-
     public function testItInstantiates()
     {
         $validator = new ResourceMessageValidator([]);

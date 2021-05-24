@@ -1,11 +1,11 @@
 <?php
+
 namespace Packback\Lti1p3;
 
 use Packback\Lti1p3\Interfaces\LtiRegistrationInterface;
 
 class LtiRegistration implements LtiRegistrationInterface
 {
-
     private $issuer;
     private $clientId;
     private $keySetUrl;
@@ -27,7 +27,8 @@ class LtiRegistration implements LtiRegistrationInterface
         $this->kid = $registration['kid'] ?? null;
     }
 
-    public static function new(array $registration = []) {
+    public static function new(array $registration = [])
+    {
         return new LtiRegistration($registration);
     }
 
@@ -39,6 +40,7 @@ class LtiRegistration implements LtiRegistrationInterface
     public function setIssuer($issuer)
     {
         $this->issuer = $issuer;
+
         return $this;
     }
 
@@ -50,6 +52,7 @@ class LtiRegistration implements LtiRegistrationInterface
     public function setClientId($clientId)
     {
         $this->clientId = $clientId;
+
         return $this;
     }
 
@@ -61,6 +64,7 @@ class LtiRegistration implements LtiRegistrationInterface
     public function setKeySetUrl($keySetUrl)
     {
         $this->keySetUrl = $keySetUrl;
+
         return $this;
     }
 
@@ -72,6 +76,7 @@ class LtiRegistration implements LtiRegistrationInterface
     public function setAuthTokenUrl($authTokenUrl)
     {
         $this->authTokenUrl = $authTokenUrl;
+
         return $this;
     }
 
@@ -83,6 +88,7 @@ class LtiRegistration implements LtiRegistrationInterface
     public function setAuthLoginUrl($authLoginUrl)
     {
         $this->authLoginUrl = $authLoginUrl;
+
         return $this;
     }
 
@@ -94,6 +100,7 @@ class LtiRegistration implements LtiRegistrationInterface
     public function setAuthServer($authServer)
     {
         $this->authServer = $authServer;
+
         return $this;
     }
 
@@ -105,19 +112,19 @@ class LtiRegistration implements LtiRegistrationInterface
     public function setToolPrivateKey($toolPrivateKey)
     {
         $this->toolPrivateKey = $toolPrivateKey;
+
         return $this;
     }
 
     public function getKid()
     {
-        return $this->kid ?? hash('sha256', trim($this->issuer . $this->clientId));
+        return $this->kid ?? hash('sha256', trim($this->issuer.$this->clientId));
     }
 
     public function setKid($kid)
     {
         $this->kid = $kid;
+
         return $this;
     }
-
 }
-

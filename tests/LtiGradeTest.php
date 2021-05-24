@@ -1,14 +1,15 @@
-<?php namespace Tests;
+<?php
 
-use PHPUnit\Framework\TestCase;
+namespace Tests;
 
 use Packback\Lti1p3\LtiGrade;
+use PHPUnit\Framework\TestCase;
 
 class LtiGradeTest extends TestCase
 {
     public function setUp(): void
     {
-        $this->grade = new LtiGrade;
+        $this->grade = new LtiGrade();
     }
 
     public function testItInstantiates()
@@ -26,7 +27,7 @@ class LtiGradeTest extends TestCase
     public function testItGetsScoreGiven()
     {
         $expected = 'expected';
-        $grade = new LtiGrade([ 'scoreGiven' => $expected ]);
+        $grade = new LtiGrade(['scoreGiven' => $expected]);
 
         $result = $grade->getScoreGiven();
 
@@ -45,7 +46,7 @@ class LtiGradeTest extends TestCase
     public function testItGetsScoreMaximum()
     {
         $expected = 'expected';
-        $grade = new LtiGrade([ 'scoreMaximum' => $expected ]);
+        $grade = new LtiGrade(['scoreMaximum' => $expected]);
 
         $result = $grade->getScoreMaximum();
 
@@ -64,7 +65,7 @@ class LtiGradeTest extends TestCase
     public function testItGetsComment()
     {
         $expected = 'expected';
-        $grade = new LtiGrade([ 'comment' => $expected ]);
+        $grade = new LtiGrade(['comment' => $expected]);
 
         $result = $grade->getComment();
 
@@ -83,7 +84,7 @@ class LtiGradeTest extends TestCase
     public function testItGetsActivityProgress()
     {
         $expected = 'expected';
-        $grade = new LtiGrade([ 'activityProgress' => $expected ]);
+        $grade = new LtiGrade(['activityProgress' => $expected]);
 
         $result = $grade->getActivityProgress();
 
@@ -102,7 +103,7 @@ class LtiGradeTest extends TestCase
     public function testItGetsGradingProgress()
     {
         $expected = 'expected';
-        $grade = new LtiGrade([ 'gradingProgress' => $expected ]);
+        $grade = new LtiGrade(['gradingProgress' => $expected]);
 
         $result = $grade->getGradingProgress();
 
@@ -121,7 +122,7 @@ class LtiGradeTest extends TestCase
     public function testItGetsTimestamp()
     {
         $expected = 'expected';
-        $grade = new LtiGrade([ 'timestamp' => $expected ]);
+        $grade = new LtiGrade(['timestamp' => $expected]);
 
         $result = $grade->getTimestamp();
 
@@ -140,7 +141,7 @@ class LtiGradeTest extends TestCase
     public function testItGetsUserId()
     {
         $expected = 'expected';
-        $grade = new LtiGrade([ 'userId' => $expected ]);
+        $grade = new LtiGrade(['userId' => $expected]);
 
         $result = $grade->getUserId();
 
@@ -159,7 +160,7 @@ class LtiGradeTest extends TestCase
     public function testItGetsSubmissionReview()
     {
         $expected = 'expected';
-        $grade = new LtiGrade([ 'submissionReview' => $expected ]);
+        $grade = new LtiGrade(['submissionReview' => $expected]);
 
         $result = $grade->getSubmissionReview();
 
@@ -178,7 +179,7 @@ class LtiGradeTest extends TestCase
     public function testItGetsCanvasExtension()
     {
         $expected = 'expected';
-        $grade = new LtiGrade([ 'https://canvas.instructure.com/lti/submission' => $expected ]);
+        $grade = new LtiGrade(['https://canvas.instructure.com/lti/submission' => $expected]);
 
         $result = $grade->getCanvasExtension();
 
@@ -205,7 +206,7 @@ class LtiGradeTest extends TestCase
             'timestamp' => 'Timestamp',
             'userId' => 'UserId',
             'submissionReview' => 'SubmissionReview',
-            'https://canvas.instructure.com/lti/submission' => 'CanvasExtension'
+            'https://canvas.instructure.com/lti/submission' => 'CanvasExtension',
         ];
 
         $grade = new LtiGrade($expected);
