@@ -11,4 +11,6 @@ interface Cache
     public function cacheNonce($nonce);
 
     public function checkNonce($nonce);
+
+    public function cacheAccessToken($key, $accessToken);
 }

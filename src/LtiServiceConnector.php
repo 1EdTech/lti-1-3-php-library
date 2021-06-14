@@ -3,6 +3,7 @@
 namespace Packback\Lti1p3;
 
 use Firebase\JWT\JWT;
+use Packback\Lti1p3\Interfaces\Cache;
 use Packback\Lti1p3\Interfaces\LtiRegistrationInterface;
 use Packback\Lti1p3\Interfaces\LtiServiceConnectorInterface;
 
@@ -13,12 +14,14 @@ class LtiServiceConnector implements LtiServiceConnectorInterface
     const METHOD_GET = 'GET';
     const METHOD_POST = 'POST';
 
+    private $cache;
     private $registration;
     private $access_tokens = [];
 
-    public function __construct(LtiRegistrationInterface $registration)
+    public function __construct(LtiRegistrationInterface $registration, Cache $cache = null)
     {
         $this->registration = $registration;
+        $this->cache = $cache;
     }
 
     public function getAccessToken(array $scopes)
@@ -26,19 +29,30 @@ class LtiServiceConnector implements LtiServiceConnectorInterface
         // Don't fetch the same key more than once.
         sort($scopes);
         $scope_key = md5(implode('|', $scopes));
-        if (isset($this->access_tokens[$scope_key])) {
-            return $this->access_tokens[$scope_key];
+
+        // Original Code
+        // if (isset($this->access_tokens[$scope_key])) {
+        //     return $this->access_tokens[$scope_key];
+        // }
+
+        // Davo's quick cache
+        // if (\Cache::get($scope_key)) {
+        //     return \Cache::get($scope_key);
+        // }
+
+        if ($this->cache->getLaunchData($scope_key)) {
+            return $this->cache->getLaunchData($scope_key);
         }
 
         // Build up JWT to exchange for an auth token
         $client_id = $this->registration->getClientId();
         $jwt_claim = [
-                'iss' => $client_id,
-                'sub' => $client_id,
-                'aud' => $this->registration->getAuthServer(),
-                'iat' => time() - 5,
-                'exp' => time() + 60,
-                'jti' => 'lti-service-token'.hash('sha256', random_bytes(64)),
+                "iss" => $client_id,
+                "sub" => $client_id,
+                "aud" => $this->registration->getAuthServer(),
+                "iat" => time() - 5,
+                "exp" => time() + 60,
+                "jti" => 'lti-service-token' . hash('sha256', random_bytes(64))
         ];
 
         // Sign the JWT with our private key (given by the platform on registration)
@@ -49,7 +63,7 @@ class LtiServiceConnector implements LtiServiceConnectorInterface
             'grant_type' => 'client_credentials',
             'client_assertion_type' => 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
             'client_assertion' => $jwt,
-            'scope' => implode(' ', $scopes),
+            'scope' => implode(' ', $scopes)
         ];
 
         // Make request to get auth token
@@ -61,9 +75,15 @@ class LtiServiceConnector implements LtiServiceConnectorInterface
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         $resp = curl_exec($ch);
         $token_data = json_decode($resp, true);
-        curl_close($ch);
+        curl_close ($ch);
 
-        return $this->access_tokens[$scope_key] = $token_data['access_token'];
+        // Davo's quick cache
+        // \Cache::put($scope_key, $token_data['access_token']);
+        $this->cache->cacheAccessToken($scope_key, $token_data['access_token']);
+
+        // Original Code
+        // return $this->access_tokens[$scope_key] = $token_data['access_token'];
+        return $token_data['access_token'];
     }
 
     public function makeServiceRequest(array $scopes, $method, $url, $body = null, $contentType = 'application/json', $accept = 'application/json')
