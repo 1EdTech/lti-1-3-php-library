@@ -33,23 +33,17 @@ class LtiServiceConnector implements LtiServiceConnectorInterface
         sort($scopes);
         $scope_key = md5(implode('|', $scopes));
 
-        // Original Code
-        // if (isset($this->access_tokens[$scope_key])) {
-        //     return $this->access_tokens[$scope_key];
-        // }
-
-        // Davo's cache method
-        // if (\Cache::get($scope_key)) {
-        //     return \Cache::get($scope_key);
-        // }
-
-        // New Caching Method
-        if ($this->cache->getAccessToken($scope_key)) {
-            return $this->cache->getAccessToken($scope_key);
-        }
-
         // Build up JWT to exchange for an auth token
         $client_id = $this->registration->getClientId();
+
+        // Needs to be a unique key
+        $accessTokenKey = $scope_key.'-'.$client_id;
+
+        // Get Access Token from cache if it exists
+        if ($this->cache->getAccessToken($accessTokenKey)) {
+            return $this->cache->getAccessToken($accessTokenKey);
+        }
+
         $jwt_claim = [
                 "iss" => $client_id,
                 "sub" => $client_id,
@@ -70,7 +64,6 @@ class LtiServiceConnector implements LtiServiceConnectorInterface
             'scope' => implode(' ', $scopes)
         ];
 
-        // Curl 
         // Make request to get auth token
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $this->registration->getAuthTokenUrl());
@@ -82,51 +75,22 @@ class LtiServiceConnector implements LtiServiceConnectorInterface
         $token_data = json_decode($resp, true);
         curl_close ($ch);
 
-        // Guzzle OAuth
-        // $url = $this->registration->getAuthTokenUrl()
-        // $stack = HandlerStack::create();
-
-        // $middleware = new Oauth1([
-        //     'consumer_key'    => 'my_key',
-        //     'consumer_secret' => 'my_secret',
-        //     'token'           => 'my_token',
-        //     'token_secret'    => 'my_token_secret'
-        // ]);
-        // $stack->push($middleware);
-
-        // $client = new Client([
-        //     'base_uri' => $url,
-        //     'handler' => $stack,
-        //     'auth' => 'oauth'
-        // ]);
-
-        // // $res = $client->get($url);
-
+        // // Guzzle OAuth
+        // $url = $this->registration->getAuthTokenUrl();
+        // $client = new Client();
         // $response = $client->post($url, [
-        //     'headers' => [
-        //         "authorization" => "Client-ID " . $client_id
-        //         'Content-Type' => 'application/json',
-        //     ],
-        //     // This will add the necessary Authorization header
-        //     'auth' => 'oauth',
         //     'timeout' => 10,
-        //     'body' => $auth_request
-        //     // 'form_params' => $auth_request
+        //     'form_params' => $auth_request
         // ]);
+
+        // \Log::info(json_encode($response));
 
         // // Do I need this?
         // $token_data = json_decode($response, true);
 
-        // Davo's cache method
-        // \Cache::put($scope_key, $token_data['access_token']);
+        // Cache access token
+        $this->cache->cacheAccessToken($accessTokenKey, $token_data['access_token']);
 
-        // New Caching 
-        $this->cache->cacheAccessToken($scope_key, $token_data['access_token']);
-
-        // Original Code
-        // return $this->access_tokens[$scope_key] = $token_data['access_token'];
-
-        // Davo's cache method
         return $token_data['access_token'];
     }
 
