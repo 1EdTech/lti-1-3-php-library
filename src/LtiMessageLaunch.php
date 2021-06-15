@@ -273,6 +273,7 @@ class LtiMessageLaunch
 
     private function validateJwtFormat()
     {
+        \Log::info($this->request);
         $jwt = $this->request['id_token'];
 
         if (empty($jwt)) {
