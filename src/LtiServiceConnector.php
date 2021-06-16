@@ -77,21 +77,15 @@ class LtiServiceConnector implements LtiServiceConnectorInterface
 
         // Guzzle OAuth
         $url = $this->registration->getAuthTokenUrl();
-        $stack = HandlerStack::create();
-        $auth = new Oauth1();
 
-        $stack->push($auth);
+        $this->client = new Client();
 
-        $this->client = new Client([
-            'base_uri' => $url,
-            'handler' => $stack,
-            'auth' => 'oauth'
-        ]);
-
-        $response = $client->post($url, [
+        $response = $this->client->post($url, [
             'timeout' => 10,
-            'form_params' => $auth_request
+            'form_params' => $auth_request,
         ]);
+
+        \Log::info(json_encode($response));
 
         $token_data = json_decode($response, true);
 
