@@ -85,11 +85,9 @@ class LtiServiceConnector implements LtiServiceConnectorInterface
             'form_params' => $auth_request,
         ]);
 
-        \Log::info(json_encode($response));
+        \Log::info($response->getBody()->__toString());
 
-        $token_data = json_decode($response, true);
-
-        \Log::info($token_data['access_token']);
+        $token_data = json_decode($response->getBody()->__toString(), true);
 
         // Cache access token
         $this->cache->cacheAccessToken($accessTokenKey, $token_data['access_token']);
