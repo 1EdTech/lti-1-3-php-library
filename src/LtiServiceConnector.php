@@ -65,28 +65,37 @@ class LtiServiceConnector implements LtiServiceConnectorInterface
         ];
 
         // Make request to get auth token
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->registration->getAuthTokenUrl());
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($auth_request));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        $resp = curl_exec($ch);
-        $token_data = json_decode($resp, true);
-        curl_close ($ch);
+        // $ch = curl_init();
+        // curl_setopt($ch, CURLOPT_URL, $this->registration->getAuthTokenUrl());
+        // curl_setopt($ch, CURLOPT_POST, 1);
+        // curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($auth_request));
+        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        // curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        // $resp = curl_exec($ch);
+        // $token_data = json_decode($resp, true);
+        // curl_close ($ch);
 
-        // // Guzzle OAuth
-        // $url = $this->registration->getAuthTokenUrl();
-        // $client = new Client();
-        // $response = $client->post($url, [
-        //     'timeout' => 10,
-        //     'form_params' => $auth_request
-        // ]);
+        // Guzzle OAuth
+        $url = $this->registration->getAuthTokenUrl();
+        $stack = HandlerStack::create();
+        $auth = new Oauth1();
 
-        // \Log::info(json_encode($response));
+        $stack->push($auth);
 
-        // // Do I need this?
-        // $token_data = json_decode($response, true);
+        $this->client = new Client([
+            'base_uri' => $url,
+            'handler' => $stack,
+            'auth' => 'oauth'
+        ]);
+
+        $response = $client->post($url, [
+            'timeout' => 10,
+            'form_params' => $auth_request
+        ]);
+
+        $token_data = json_decode($response, true);
+
+        \Log::info($token_data['access_token']);
 
         // Cache access token
         $this->cache->cacheAccessToken($accessTokenKey, $token_data['access_token']);
