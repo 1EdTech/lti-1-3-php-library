@@ -4,6 +4,8 @@ namespace Packback\Lti1p3;
 
 use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Subscriber\Oauth\Oauth1;
 use GuzzleHttp\TransferStats;
 use Packback\Lti1p3\Interfaces\Cache;
 use Packback\Lti1p3\Interfaces\LtiRegistrationInterface;
@@ -38,6 +40,8 @@ class LtiServiceConnector implements LtiServiceConnectorInterface
         // Store access token with a unique key
         $accessTokenKey = $scope_key.'-'.$client_id;
 
+        // TODO: Refresh TOKEN
+        // https://github.com/oat-sa/lib-lti1p3-core/blob/e294e61742782f557f69ddd73202826516cb8f07/src/Service/Client/LtiServiceClient.php#L132
         // Get Access Token from cache if it exists
         if ($this->cache->getAccessToken($accessTokenKey)) {
             return $this->cache->getAccessToken($accessTokenKey);
@@ -101,30 +105,28 @@ class LtiServiceConnector implements LtiServiceConnectorInterface
     //     curl_setopt($ch, CURLOPT_HEADER, 1);
     //     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
     //     curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-        if ($method === 'POST') {
+        // if ($method === 'POST') {
     //         curl_setopt($ch, CURLOPT_POST, 1);
     //         curl_setopt($ch, CURLOPT_POSTFIELDS, strval($body));
             // $headers[] = 'Content-Type: '.$contentType;
-
-            $headers = array_merge($headers, ['Content-Type' => $contentType]);
-        }
+        // }
 
     //     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     //     $response = curl_exec($ch);
 
     try {
-
-        \Log::info($headers);
-        \Log::info($method);
-        \Log::info($body);
-
         if ($method === 'POST') {
             $headers = array_merge($headers, ['Content-Type' => $contentType]);
 
+            // \Log::info($headers);
+            // \Log::info($method);
+            // \Log::info($body);
+
             $response = $this->client->request($method, $url, [
-                'timeout' => 60,
                 'headers' => $headers,
-                'form_params' => $body,
+                'json' => $body,
+                'timeout' => 60,
+                'http_errors' => true
             ]);
         } else {
             $response = $this->client->request($method, $url, [
@@ -133,18 +135,23 @@ class LtiServiceConnector implements LtiServiceConnectorInterface
             ]);
         }
 
-        \Log::info($response->getBody()->__toString());
+        \Log::info(json_decode($response->getBody()));
 
-        // $resp_headers = substr($response, 0, $header_size);
-        // $resp_body = substr($response, $header_size);
+        // $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
 
-        // return [
-        //     'headers' => array_filter(explode("\r\n", $resp_headers)),
-        //     'body' => json_decode($resp_body, true),
-        // ];
+        $header_size = $response->getHeader('Content-Length');
+
+        $resp_headers = substr($response, 0, $header_size);
+        $resp_body = substr($response, $header_size);
+
+        return [
+            'headers' => array_filter(explode("\r\n", $resp_headers)),
+            'body' => json_decode($resp_body, true),
+        ];
 
     } catch (\Exception $exception) {
-        echo 'Request Error:'.$exception->getMessage();
+        \Log::error($exception->getMessage());
+        // echo 'Request Error:'.$exception->getMessage();
     }
 
     //     if (curl_errno($ch)) {
