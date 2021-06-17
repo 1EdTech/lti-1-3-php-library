@@ -4,8 +4,7 @@ namespace Packback\Lti1p3;
 
 use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Subscriber\Oauth\Oauth1;
+use GuzzleHttp\TransferStats;
 use Packback\Lti1p3\Interfaces\Cache;
 use Packback\Lti1p3\Interfaces\LtiRegistrationInterface;
 use Packback\Lti1p3\Interfaces\LtiServiceConnectorInterface;
@@ -36,7 +35,7 @@ class LtiServiceConnector implements LtiServiceConnectorInterface
         // Build up JWT to exchange for an auth token
         $client_id = $this->registration->getClientId();
 
-        // Needs to be a unique key
+        // Store access token with a unique key
         $accessTokenKey = $scope_key.'-'.$client_id;
 
         // Get Access Token from cache if it exists
@@ -64,28 +63,15 @@ class LtiServiceConnector implements LtiServiceConnectorInterface
             'scope' => implode(' ', $scopes)
         ];
 
-        // Make request to get auth token
-        // $ch = curl_init();
-        // curl_setopt($ch, CURLOPT_URL, $this->registration->getAuthTokenUrl());
-        // curl_setopt($ch, CURLOPT_POST, 1);
-        // curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($auth_request));
-        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        // curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        // $resp = curl_exec($ch);
-        // $token_data = json_decode($resp, true);
-        // curl_close ($ch);
-
-        // Guzzle OAuth
         $url = $this->registration->getAuthTokenUrl();
 
         $this->client = new Client();
 
+        // Get Access
         $response = $this->client->post($url, [
             'timeout' => 10,
             'form_params' => $auth_request,
         ]);
-
-        \Log::info($response->getBody()->__toString());
 
         $token_data = json_decode($response->getBody()->__toString(), true);
 
@@ -97,35 +83,82 @@ class LtiServiceConnector implements LtiServiceConnectorInterface
 
     public function makeServiceRequest(array $scopes, $method, $url, $body = null, $contentType = 'application/json', $accept = 'application/json')
     {
-        $ch = curl_init();
+        // $ch = curl_init();
+        // $headers = [
+        //     'Authorization: Bearer '.$this->getAccessToken($scopes),
+        //     'Accept:'.$accept,
+        // ];
+
         $headers = [
-            'Authorization: Bearer '.$this->getAccessToken($scopes),
-            'Accept:'.$accept,
+            'Authorization' => 'Bearer '.$this->getAccessToken($scopes),
+            'Accept' => $accept,
         ];
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, 1);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+
+        $this->client = new Client();
+
+    //     curl_setopt($ch, CURLOPT_URL, $url);
+    //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    //     curl_setopt($ch, CURLOPT_HEADER, 1);
+    //     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    //     curl_setopt($ch, CURLOPT_TIMEOUT, 60);
         if ($method === 'POST') {
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, strval($body));
-            $headers[] = 'Content-Type: '.$contentType;
-        }
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        $response = curl_exec($ch);
-        if (curl_errno($ch)) {
-            echo 'Request Error:'.curl_error($ch);
-        }
-        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        curl_close($ch);
+    //         curl_setopt($ch, CURLOPT_POST, 1);
+    //         curl_setopt($ch, CURLOPT_POSTFIELDS, strval($body));
+            // $headers[] = 'Content-Type: '.$contentType;
 
-        $resp_headers = substr($response, 0, $header_size);
-        $resp_body = substr($response, $header_size);
+            $headers = array_merge($headers, ['Content-Type' => $contentType]);
+        }
 
-        return [
-            'headers' => array_filter(explode("\r\n", $resp_headers)),
-            'body' => json_decode($resp_body, true),
-        ];
+    //     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    //     $response = curl_exec($ch);
+
+    try {
+
+        \Log::info($headers);
+        \Log::info($method);
+        \Log::info($body);
+
+        if ($method === 'POST') {
+            $headers = array_merge($headers, ['Content-Type' => $contentType]);
+
+            $response = $this->client->request($method, $url, [
+                'timeout' => 60,
+                'headers' => $headers,
+                'form_params' => $body,
+            ]);
+        } else {
+            $response = $this->client->request($method, $url, [
+                'timeout' => 60,
+                'headers' => $headers,
+            ]);
+        }
+
+        \Log::info($response->getBody()->__toString());
+
+        // $resp_headers = substr($response, 0, $header_size);
+        // $resp_body = substr($response, $header_size);
+
+        // return [
+        //     'headers' => array_filter(explode("\r\n", $resp_headers)),
+        //     'body' => json_decode($resp_body, true),
+        // ];
+
+    } catch (\Exception $exception) {
+        echo 'Request Error:'.$exception->getMessage();
+    }
+
+    //     if (curl_errno($ch)) {
+    //         echo 'Request Error:'.curl_error($ch);
+    //     }
+    //     $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+    //     curl_close($ch);
+
+    //     $resp_headers = substr($response, 0, $header_size);
+    //     $resp_body = substr($response, $header_size);
+
+    //     return [
+    //         'headers' => array_filter(explode("\r\n", $resp_headers)),
+    //         'body' => json_decode($resp_body, true),
+    //     ];
     }
 }
