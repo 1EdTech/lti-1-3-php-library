@@ -51,6 +51,10 @@ JwksEndpoint::fromRegistration($registration)->outputJwks();
 JwksEndpoint::new(['a_unique_KID' => file_get_contents('/path/to/private/key.pem')])->outputJwks();
 ```
 
+## Documentation
+
+[The wiki](https://github.com/packbackbooks/lti-1-3-php-library/wiki) provides more detailed information about how to use this library, including a [Laravel Implementation Guide](https://github.com/packbackbooks/lti-1-3-php-library/wiki/Laravel-Implementation-Guide).
+
 ## Contributing
 
 For improvements, suggestions or bug fixes, make a pull request or an issue. Before opening a pull request, add automated tests for your changes, ensure that all tests pass, and any linting errors are fixed.
