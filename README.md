@@ -34,7 +34,7 @@ This library uses three methods for storing and accessing data: cache, cookie, a
 - `Packback\Lti1p3\Interfaces\Cookie`
 - `Packback\Lti1p3\Interfaces\Database`
 
-View the [Laravel Implementation Guide](https://github.com/packbackbooks/lti-1-3-php-library/wiki/Laravel-Implementation-Guide) to see examples. Cache and Cookie storage have legacy implementations at `Packback\Lti1p3\ImsStorage\` if you do not wish to implement your own. However you must implement your own database.
+View the [Laravel Implementation Guide](https://github.com/packbackbooks/lti-1-3-php-library/wiki/Laravel-Implementation-Guide) to see examples (or copy/paste the code outright). Cache and Cookie storage have legacy implementations at `Packback\Lti1p3\ImsStorage\` if you do not wish to implement your own. However you must implement your own database.
 
 ### Create a JWKS endpoint
 
