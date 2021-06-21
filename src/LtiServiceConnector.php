@@ -19,13 +19,15 @@ class LtiServiceConnector implements LtiServiceConnectorInterface
     const METHOD_POST = 'POST';
 
     private $cache;
+    private $client;
     private $registration;
     private $access_tokens = [];
 
-    public function __construct(LtiRegistrationInterface $registration, Cache $cache = null)
+    public function __construct(LtiRegistrationInterface $registration, Cache $cache, Client $client)
     {
         $this->registration = $registration;
         $this->cache = $cache;
+        $this->client = $client;
     }
 
     public function getAccessToken(array $scopes)
@@ -67,8 +69,6 @@ class LtiServiceConnector implements LtiServiceConnectorInterface
 
         $url = $this->registration->getAuthTokenUrl();
 
-        $this->client = new Client();
-
         // Get Access
         $response = $this->client->post($url, [
             'timeout' => 10,
@@ -90,36 +90,19 @@ class LtiServiceConnector implements LtiServiceConnectorInterface
             'Accept' => $accept,
         ];
 
-        $this->client = new Client();
+        if ($method === 'POST') {
+            $headers = array_merge($headers, ['Content-Type' => $contentType]);
 
-        try {
-            if ($method === 'POST') {
-                $headers = array_merge($headers, ['Content-Type' => $contentType]);
-
-                $response = $this->client->request($method, $url, [
-                    'headers' => $headers,
-                    'json' => $body,
-                    'timeout' => 60,
-                ]);
-            } else {
-                $response = $this->client->request($method, $url, [
-                    'timeout' => 60,
-                    'headers' => $headers,
-                ]);
-            }
-
-            // $headerSize = $response->getHeader('Content-Length');
-
-            // $respHeaders = substr($response, 0, $headerSize);
-            // $respBody = substr($response, $headerSize);
-
-            // return [
-            //     'headers' => array_filter(explode("\r\n", $respHeaders)),
-            //     'body' => json_decode($respBody, true),
-            // ];
-
-        } catch (\Exception $exception) {
-            echo 'Request Error:'.$exception->getMessage();
+            $response = $this->client->request($method, $url, [
+                'headers' => $headers,
+                'json' => $body,
+                'timeout' => 60,
+            ]);
+        } else {
+            $response = $this->client->request($method, $url, [
+                'timeout' => 60,
+                'headers' => $headers,
+            ]);
         }
 
         $respHeaders = $response->getHeaders();
