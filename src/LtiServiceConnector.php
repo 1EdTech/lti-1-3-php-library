@@ -108,18 +108,26 @@ class LtiServiceConnector implements LtiServiceConnectorInterface
                 ]);
             }
 
-            $headerSize = $response->getHeader('Content-Length');
+            // $headerSize = $response->getHeader('Content-Length');
 
-            $respHeaders = substr($response, 0, $headerSize);
-            $respBody = substr($response, $headerSize);
+            // $respHeaders = substr($response, 0, $headerSize);
+            // $respBody = substr($response, $headerSize);
 
-            return [
-                'headers' => array_filter(explode("\r\n", $respHeaders)),
-                'body' => json_decode($respBody, true),
-            ];
+            // return [
+            //     'headers' => array_filter(explode("\r\n", $respHeaders)),
+            //     'body' => json_decode($respBody, true),
+            // ];
 
         } catch (\Exception $exception) {
             echo 'Request Error:'.$exception->getMessage();
         }
+
+        $respHeaders = $response->getHeaders();
+        $respBody = $response->getBody();
+
+        return [
+            'headers' => array_filter(explode("\r\n", $respHeaders)),
+            'body' => json_decode($respBody, true),
+        ];
     }
 }
