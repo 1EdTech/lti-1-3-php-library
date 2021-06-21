@@ -50,12 +50,10 @@ class TestCache implements Cache
         return $this;
     }
 
-
     public function getAccessToken($key)
     {
         return $this->launchData[$key] ?? null;
     }
-    
 }
 
 class TestCookie implements Cookie

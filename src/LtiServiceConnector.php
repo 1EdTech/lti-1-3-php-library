@@ -4,9 +4,6 @@ namespace Packback\Lti1p3;
 
 use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Subscriber\Oauth\Oauth1;
-use GuzzleHttp\TransferStats;
 use Packback\Lti1p3\Interfaces\Cache;
 use Packback\Lti1p3\Interfaces\LtiRegistrationInterface;
 use Packback\Lti1p3\Interfaces\LtiServiceConnectorInterface;
@@ -48,12 +45,12 @@ class LtiServiceConnector implements LtiServiceConnectorInterface
         }
 
         $jwtClaim = [
-                "iss" => $clientId,
-                "sub" => $clientId,
-                "aud" => $this->registration->getAuthServer(),
-                "iat" => time() - 5,
-                "exp" => time() + 60,
-                "jti" => 'lti-service-token' . hash('sha256', random_bytes(64))
+                'iss' => $clientId,
+                'sub' => $clientId,
+                'aud' => $this->registration->getAuthServer(),
+                'iat' => time() - 5,
+                'exp' => time() + 60,
+                'jti' => 'lti-service-token'.hash('sha256', random_bytes(64)),
         ];
 
         // Sign the JWT with our private key (given by the platform on registration)
@@ -64,7 +61,7 @@ class LtiServiceConnector implements LtiServiceConnectorInterface
             'grant_type' => 'client_credentials',
             'client_assertion_type' => 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
             'client_assertion' => $jwt,
-            'scope' => implode(' ', $scopes)
+            'scope' => implode(' ', $scopes),
         ];
 
         $url = $this->registration->getAuthTokenUrl();
