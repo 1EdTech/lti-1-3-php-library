@@ -86,19 +86,21 @@ class LtiServiceConnector implements ILtiServiceConnector
             'Accept' => $accept,
         ];
 
-        if ($method === 'POST') {
-            $headers = array_merge($headers, ['Content-Type' => $contentType]);
-
-            $response = $this->client->request($method, $url, [
-                'headers' => $headers,
-                'json' => $body,
-                'timeout' => 60,
-            ]);
-        } else {
-            $response = $this->client->request($method, $url, [
-                'timeout' => 60,
-                'headers' => $headers,
-            ]);
+        switch ($method) {
+            case 'POST':
+                $headers = array_merge($headers, ['Content-Type' => $contentType]);
+                $response = $this->client->request($method, $url, [
+                    'headers' => $headers,
+                    'json' => $body,
+                    'timeout' => 60,
+                ]);
+                break;
+            default:
+                $response = $this->client->request($method, $url, [
+                    'timeout' => 60,
+                    'headers' => $headers,
+                ]);
+                break;
         }
 
         $respHeaders = $response->getHeaders();
