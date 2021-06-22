@@ -31,13 +31,12 @@ class LtiServiceConnector implements ILtiServiceConnector
     {
         // Don't fetch the same key more than once.
         sort($scopes);
-        $scopeKey = md5(implode('|', $scopes));
 
         // Build up JWT to exchange for an auth token
         $clientId = $this->registration->getClientId();
 
         // Store access token with a unique key
-        $accessTokenKey = $scopeKey.'-'.$clientId;
+        $accessTokenKey = $this->getAccessTokenCacheKey($scopes);
 
         // Get Access Token from cache if it exists and is not expired.
         if ($this->cache->getAccessToken($accessTokenKey)) {
@@ -109,5 +108,12 @@ class LtiServiceConnector implements ILtiServiceConnector
             'headers' => array_filter(explode("\r\n", $respHeaders)),
             'body' => json_decode($respBody, true),
         ];
+    }
+
+    private function getAccessTokenCacheKey(array $scopes)
+    {
+        $scopeKey = md5(implode('|', $scopes));
+
+        return $this->registration->getIssuer() . $this->registration->getClientId() . $scopeKey;
     }
 }

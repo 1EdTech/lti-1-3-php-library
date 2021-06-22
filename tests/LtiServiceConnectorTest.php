@@ -11,15 +11,18 @@ use PHPUnit\Framework\TestCase;
 
 class LtiServiceConnectorTest extends TestCase
 {
+    public function setUp(): void
+    {
+        $registration = Mockery::mock(LtiRegistrationInterface::class);
+        $cache = Mockery::mock(Cache::class);
+        $client = Mockery::mock(Client::class);
+
+        $this->connector = new LtiServiceConnector($registration, $cache, $client);
+    }
+
     public function testItInstantiates()
     {
-        $cache = Mockery::mock(ICache::class);
-        $client = Mockery::mock(Client::class);
-        $registration = Mockery::mock(ILtiRegistration::class);
-
-        $connector = new LtiServiceConnector($registration, $cache, $client);
-
-        $this->assertInstanceOf(LtiServiceConnector::class, $connector);
+        $this->assertInstanceOf(LtiServiceConnector::class, $this->connector);
     }
 
     /*
