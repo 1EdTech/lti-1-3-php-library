@@ -25,9 +25,9 @@ class LtiMessageLaunch
     /**
      * Constructor.
      *
-     * @param Database $database instance of the database interface used for looking up registrations and deployments
-     * @param Cache    $cache    instance of the Cache interface used to loading and storing launches
-     * @param Cookie   $cookie   instance of the Cookie interface used to set and read cookies
+     * @param IDatabase $database instance of the database interface used for looking up registrations and deployments
+     * @param ICache    $cache    instance of the Cache interface used to loading and storing launches
+     * @param ICookie   $cookie   instance of the Cookie interface used to set and read cookies
      */
     public function __construct(IDatabase $database, ICache $cache = null, ICookie $cookie = null)
     {
@@ -51,8 +51,8 @@ class LtiMessageLaunch
      * Load an LtiMessageLaunch from a Cache using a launch id.
      *
      * @param string   $launch_id the launch id of the LtiMessageLaunch object that is being pulled from the cache
-     * @param Database $database  instance of the database interface used for looking up registrations and deployments
-     * @param Cache    $cache     Instance of the Cache interface used to loading and storing launches. If non is provided launch data will be store in $_SESSION.
+     * @param IDatabase $database  instance of the database interface used for looking up registrations and deployments
+     * @param ICache    $cache     Instance of the Cache interface used to loading and storing launches. If non is provided launch data will be store in $_SESSION.
      *
      * @throws LtiException will throw an LtiException if validation fails or launch cannot be found
      *

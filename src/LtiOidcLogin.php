@@ -22,9 +22,9 @@ class LtiOidcLogin
     /**
      * Constructor.
      *
-     * @param Database $database instance of the database interface used for looking up registrations and deployments
-     * @param Cache    $cache    Instance of the Cache interface used to loading and storing launches. If non is provided launch data will be store in $_SESSION.
-     * @param Cookie   $cookie   Instance of the Cookie interface used to set and read cookies. Will default to using $_COOKIE and setcookie.
+     * @param IDatabase $database instance of the database interface used for looking up registrations and deployments
+     * @param ICache    $cache    Instance of the Cache interface used to loading and storing launches. If non is provided launch data will be store in $_SESSION.
+     * @param ICookie   $cookie   Instance of the Cookie interface used to set and read cookies. Will default to using $_COOKIE and setcookie.
      */
     public function __construct(IDatabase $database, ICache $cache = null, ICookie $cookie = null)
     {
