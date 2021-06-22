@@ -116,6 +116,6 @@ class LtiServiceConnector implements ILtiServiceConnector
     {
         $scopeKey = md5(implode('|', $scopes));
 
-        return $this->registration->getIssuer() . $this->registration->getClientId() . $scopeKey;
+        return $this->registration->getIssuer().$this->registration->getClientId().$scopeKey;
     }
 }
