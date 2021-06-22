@@ -2,9 +2,9 @@
 
 namespace Packback\Lti1p3\ImsStorage;
 
-use Packback\Lti1p3\Interfaces\Cache;
+use Packback\Lti1p3\Interfaces\ICache;
 
-class ImsCache implements Cache
+class ImsCache implements ICache
 {
     private $cache;
 

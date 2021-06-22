@@ -2,11 +2,11 @@
 
 namespace Packback\Lti1p3\MessageValidators;
 
-use Packback\Lti1p3\Interfaces\MessageValidator;
+use Packback\Lti1p3\Interfaces\IMessageValidator;
 use Packback\Lti1p3\LtiConstants;
 use Packback\Lti1p3\LtiException;
 
-class DeepLinkMessageValidator implements MessageValidator
+class DeepLinkMessageValidator implements IMessageValidator
 {
     public function canValidate(array $jwtBody)
     {

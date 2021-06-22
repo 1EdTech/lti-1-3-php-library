@@ -4,11 +4,11 @@ namespace Packback\Lti1p3;
 
 use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
-use Packback\Lti1p3\Interfaces\Cache;
-use Packback\Lti1p3\Interfaces\LtiRegistrationInterface;
-use Packback\Lti1p3\Interfaces\LtiServiceConnectorInterface;
+use Packback\Lti1p3\Interfaces\ICache;
+use Packback\Lti1p3\Interfaces\ILtiRegistration;
+use Packback\Lti1p3\Interfaces\ILtiServiceConnector;
 
-class LtiServiceConnector implements LtiServiceConnectorInterface
+class LtiServiceConnector implements ILtiServiceConnector
 {
     const NEXT_PAGE_REGEX = '/^Link:.*<([^>]*)>; ?rel="next"/i';
 
@@ -20,7 +20,7 @@ class LtiServiceConnector implements LtiServiceConnectorInterface
     private $registration;
     private $access_tokens = [];
 
-    public function __construct(LtiRegistrationInterface $registration, Cache $cache, Client $client)
+    public function __construct(ILtiRegistration $registration, ICache $cache, Client $client)
     {
         $this->registration = $registration;
         $this->cache = $cache;

@@ -4,9 +4,9 @@ namespace Certification;
 
 use Carbon\Carbon;
 use Firebase\JWT\JWT;
-use Packback\Lti1p3\Interfaces\Cache;
-use Packback\Lti1p3\Interfaces\Cookie;
-use Packback\Lti1p3\Interfaces\Database;
+use Packback\Lti1p3\Interfaces\ICache;
+use Packback\Lti1p3\Interfaces\ICookie;
+use Packback\Lti1p3\Interfaces\IDatabase;
 use Packback\Lti1p3\JwksEndpoint;
 use Packback\Lti1p3\LtiConstants;
 use Packback\Lti1p3\LtiDeployment;
@@ -16,7 +16,7 @@ use Packback\Lti1p3\LtiOidcLogin;
 use Packback\Lti1p3\LtiRegistration;
 use PHPUnit\Framework\TestCase;
 
-class TestCache implements Cache
+class TestCache implements ICache
 {
     private $launchData = [];
     private $nonce;
@@ -56,7 +56,7 @@ class TestCache implements Cache
     }
 }
 
-class TestCookie implements Cookie
+class TestCookie implements ICookie
 {
     private $cookies = [];
 
@@ -73,7 +73,7 @@ class TestCookie implements Cookie
     }
 }
 
-class TestDb implements Database
+class TestDb implements IDatabase
 {
     private $registrations = [];
     private $deplomyments = [];

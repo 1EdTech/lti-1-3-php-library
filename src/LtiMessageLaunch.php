@@ -5,9 +5,9 @@ namespace Packback\Lti1p3;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
-use Packback\Lti1p3\Interfaces\Cache;
-use Packback\Lti1p3\Interfaces\Cookie;
-use Packback\Lti1p3\Interfaces\Database;
+use Packback\Lti1p3\Interfaces\ICache;
+use Packback\Lti1p3\Interfaces\ICookie;
+use Packback\Lti1p3\Interfaces\IDatabase;
 use Packback\Lti1p3\MessageValidators\DeepLinkMessageValidator;
 use Packback\Lti1p3\MessageValidators\ResourceMessageValidator;
 use Packback\Lti1p3\MessageValidators\SubmissionReviewMessageValidator;
@@ -25,11 +25,11 @@ class LtiMessageLaunch
     /**
      * Constructor.
      *
-     * @param Database $database instance of the database interface used for looking up registrations and deployments
-     * @param Cache    $cache    instance of the Cache interface used to loading and storing launches
-     * @param Cookie   $cookie   instance of the Cookie interface used to set and read cookies
+     * @param IDatabase $database instance of the database interface used for looking up registrations and deployments
+     * @param ICache    $cache    instance of the Cache interface used to loading and storing launches
+     * @param ICookie   $cookie   instance of the Cookie interface used to set and read cookies
      */
-    public function __construct(Database $database, Cache $cache = null, Cookie $cookie = null)
+    public function __construct(IDatabase $database, ICache $cache = null, ICookie $cookie = null)
     {
         $this->db = $database;
 
@@ -42,7 +42,7 @@ class LtiMessageLaunch
     /**
      * Static function to allow for method chaining without having to assign to a variable first.
      */
-    public static function new(Database $database, Cache $cache = null, Cookie $cookie = null)
+    public static function new(IDatabase $database, ICache $cache = null, ICookie $cookie = null)
     {
         return new LtiMessageLaunch($database, $cache, $cookie);
     }
@@ -50,15 +50,15 @@ class LtiMessageLaunch
     /**
      * Load an LtiMessageLaunch from a Cache using a launch id.
      *
-     * @param string   $launch_id the launch id of the LtiMessageLaunch object that is being pulled from the cache
-     * @param Database $database  instance of the database interface used for looking up registrations and deployments
-     * @param Cache    $cache     Instance of the Cache interface used to loading and storing launches. If non is provided launch data will be store in $_SESSION.
+     * @param string    $launch_id the launch id of the LtiMessageLaunch object that is being pulled from the cache
+     * @param IDatabase $database  instance of the database interface used for looking up registrations and deployments
+     * @param ICache    $cache     Instance of the Cache interface used to loading and storing launches. If non is provided launch data will be store in $_SESSION.
      *
      * @throws LtiException will throw an LtiException if validation fails or launch cannot be found
      *
      * @return LtiMessageLaunch a populated and validated LtiMessageLaunch
      */
-    public static function fromCache($launch_id, Database $database, Cache $cache = null)
+    public static function fromCache($launch_id, IDatabase $database, ICache $cache = null)
     {
         $new = new LtiMessageLaunch($database, $cache, null);
         $new->launch_id = $launch_id;

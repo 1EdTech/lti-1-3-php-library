@@ -2,9 +2,9 @@
 
 namespace Packback\Lti1p3;
 
-use Packback\Lti1p3\Interfaces\LtiRegistrationInterface;
+use Packback\Lti1p3\Interfaces\ILtiRegistration;
 
-class LtiRegistration implements LtiRegistrationInterface
+class LtiRegistration implements ILtiRegistration
 {
     private $issuer;
     private $clientId;

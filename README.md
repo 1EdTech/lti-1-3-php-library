@@ -30,9 +30,9 @@ Firebase\JWT\JWT::$leeway = 5;
 
 This library uses three methods for storing and accessing data: cache, cookie, and database. All three must be implemented in order for the library to work. You may create your own custom implementations so long as they adhere to the following interfaces:
 
-- `Packback\Lti1p3\Interfaces\Cache`
-- `Packback\Lti1p3\Interfaces\Cookie`
-- `Packback\Lti1p3\Interfaces\Database`
+- `Packback\Lti1p3\Interfaces\ICache`
+- `Packback\Lti1p3\Interfaces\ICookie`
+- `Packback\Lti1p3\Interfaces\IDatabase`
 
 View the [Laravel Implementation Guide](https://github.com/packbackbooks/lti-1-3-php-library/wiki/Laravel-Implementation-Guide) to see examples (or copy/paste the code outright). Cache and Cookie storage have legacy implementations at `Packback\Lti1p3\ImsStorage\` if you do not wish to implement your own. However, you must implement your own database.
 

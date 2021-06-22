@@ -2,9 +2,9 @@
 
 namespace Packback\Lti1p3;
 
-use Packback\Lti1p3\Interfaces\Cache;
-use Packback\Lti1p3\Interfaces\Cookie;
-use Packback\Lti1p3\Interfaces\Database;
+use Packback\Lti1p3\Interfaces\ICache;
+use Packback\Lti1p3\Interfaces\ICookie;
+use Packback\Lti1p3\Interfaces\IDatabase;
 
 class LtiOidcLogin
 {
@@ -22,11 +22,11 @@ class LtiOidcLogin
     /**
      * Constructor.
      *
-     * @param Database $database instance of the database interface used for looking up registrations and deployments
-     * @param Cache    $cache    Instance of the Cache interface used to loading and storing launches. If non is provided launch data will be store in $_SESSION.
-     * @param Cookie   $cookie   Instance of the Cookie interface used to set and read cookies. Will default to using $_COOKIE and setcookie.
+     * @param IDatabase $database instance of the database interface used for looking up registrations and deployments
+     * @param ICache    $cache    Instance of the Cache interface used to loading and storing launches. If non is provided launch data will be store in $_SESSION.
+     * @param ICookie   $cookie   Instance of the Cookie interface used to set and read cookies. Will default to using $_COOKIE and setcookie.
      */
-    public function __construct(Database $database, Cache $cache = null, Cookie $cookie = null)
+    public function __construct(IDatabase $database, ICache $cache = null, ICookie $cookie = null)
     {
         $this->db = $database;
         $this->cache = $cache;
@@ -36,7 +36,7 @@ class LtiOidcLogin
     /**
      * Static function to allow for method chaining without having to assign to a variable first.
      */
-    public static function new(Database $database, Cache $cache = null, Cookie $cookie = null)
+    public static function new(IDatabase $database, ICache $cache = null, ICookie $cookie = null)
     {
         return new LtiOidcLogin($database, $cache, $cookie);
     }

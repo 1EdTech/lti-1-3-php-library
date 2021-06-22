@@ -2,7 +2,7 @@
 
 namespace Packback\Lti1p3\Interfaces;
 
-interface LtiRegistrationInterface
+interface ILtiRegistration
 {
     public function getIssuer();
 
