@@ -2,7 +2,7 @@
 
 namespace Packback\Lti1p3;
 
-use Packback\Lti1p3\Interfaces\Cookie;
+use Packback\Lti1p3\Interfaces\ICookie;
 
 class Redirect
 {
@@ -22,7 +22,7 @@ class Redirect
         exit;
     }
 
-    public function doHybridRedirect(Cookie $cookie)
+    public function doHybridRedirect(ICookie $cookie)
     {
         if (!empty($cookie->getCookie(self::$CAN_302_COOKIE))) {
             return $this->doRedirect();

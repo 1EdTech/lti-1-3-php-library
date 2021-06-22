@@ -3,7 +3,7 @@
 namespace Tests;
 
 use Mockery;
-use Packback\Lti1p3\Interfaces\LtiServiceConnectorInterface;
+use Packback\Lti1p3\Interfaces\ILtiServiceConnector;
 use Packback\Lti1p3\LtiNamesRolesProvisioningService;
 use PHPUnit\Framework\TestCase;
 
@@ -11,7 +11,7 @@ class LtiNamesRolesProvisioningServiceTest extends TestCase
 {
     public function setUp(): void
     {
-        $this->connector = Mockery::mock(LtiServiceConnectorInterface::class);
+        $this->connector = Mockery::mock(ILtiServiceConnector::class);
     }
 
     public function testItInstantiates()

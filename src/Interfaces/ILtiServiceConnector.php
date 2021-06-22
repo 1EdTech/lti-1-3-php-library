@@ -2,7 +2,7 @@
 
 namespace Packback\Lti1p3\Interfaces;
 
-interface LtiServiceConnectorInterface
+interface ILtiServiceConnector
 {
     public function getAccessToken(array $scopes);
 

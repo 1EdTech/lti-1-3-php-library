@@ -2,7 +2,7 @@
 
 namespace Packback\Lti1p3\Interfaces;
 
-interface Cache
+interface ICache
 {
     public function getLaunchData($key);
 

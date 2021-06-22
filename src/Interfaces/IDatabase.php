@@ -2,7 +2,7 @@
 
 namespace Packback\Lti1p3\Interfaces;
 
-interface Database
+interface IDatabase
 {
     public function findRegistrationByIssuer($iss, $clientId = null);
 

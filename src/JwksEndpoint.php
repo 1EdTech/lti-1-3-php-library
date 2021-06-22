@@ -3,8 +3,8 @@
 namespace Packback\Lti1p3;
 
 use Firebase\JWT\JWT;
-use Packback\Lti1p3\Interfaces\Database;
-use Packback\Lti1p3\Interfaces\LtiRegistrationInterface;
+use Packback\Lti1p3\Interfaces\IDatabase;
+use Packback\Lti1p3\Interfaces\ILtiRegistration;
 use phpseclib\Crypt\RSA;
 
 class JwksEndpoint
@@ -21,14 +21,14 @@ class JwksEndpoint
         return new JwksEndpoint($keys);
     }
 
-    public static function fromIssuer(Database $database, $issuer)
+    public static function fromIssuer(IDatabase $database, $issuer)
     {
         $registration = $database->findRegistrationByIssuer($issuer);
 
         return new JwksEndpoint([$registration->getKid() => $registration->getToolPrivateKey()]);
     }
 
-    public static function fromRegistration(LtiRegistrationInterface $registration)
+    public static function fromRegistration(ILtiRegistration $registration)
     {
         return new JwksEndpoint([$registration->getKid() => $registration->getToolPrivateKey()]);
     }

@@ -3,10 +3,10 @@
 namespace Packback\Lti1p3;
 
 use Firebase\JWT\JWT;
-use Packback\Lti1p3\Interfaces\LtiRegistrationInterface;
-use Packback\Lti1p3\Interfaces\LtiServiceConnectorInterface;
+use Packback\Lti1p3\Interfaces\ILtiRegistration;
+use Packback\Lti1p3\Interfaces\ILtiServiceConnector;
 
-class LtiServiceConnector implements LtiServiceConnectorInterface
+class LtiServiceConnector implements ILtiServiceConnector
 {
     const NEXT_PAGE_REGEX = '/^Link:.*<([^>]*)>; ?rel="next"/i';
 
@@ -16,7 +16,7 @@ class LtiServiceConnector implements LtiServiceConnectorInterface
     private $registration;
     private $access_tokens = [];
 
-    public function __construct(LtiRegistrationInterface $registration)
+    public function __construct(ILtiRegistration $registration)
     {
         $this->registration = $registration;
     }
