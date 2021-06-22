@@ -50,7 +50,7 @@ class LtiMessageLaunch
     /**
      * Load an LtiMessageLaunch from a Cache using a launch id.
      *
-     * @param string   $launch_id the launch id of the LtiMessageLaunch object that is being pulled from the cache
+     * @param string    $launch_id the launch id of the LtiMessageLaunch object that is being pulled from the cache
      * @param IDatabase $database  instance of the database interface used for looking up registrations and deployments
      * @param ICache    $cache     Instance of the Cache interface used to loading and storing launches. If non is provided launch data will be store in $_SESSION.
      *
