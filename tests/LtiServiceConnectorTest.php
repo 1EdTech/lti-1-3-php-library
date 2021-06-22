@@ -73,7 +73,6 @@ class LtiServiceConnectorTest extends TestCase
     //         ->once()
     //         ->andReturn('jwt');
 
-
     //     $this->registration->shouldReceive('getAuthTokenUrl')
     //         ->once()
     //         ->andReturn('auth_token_url');
