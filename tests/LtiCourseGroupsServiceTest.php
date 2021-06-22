@@ -3,7 +3,7 @@
 namespace Tests;
 
 use Mockery;
-use Packback\Lti1p3\Interfaces\LtiServiceConnectorInterface;
+use Packback\Lti1p3\Interfaces\ILtiServiceConnector;
 use Packback\Lti1p3\LtiCourseGroupsService;
 use PHPUnit\Framework\TestCase;
 
@@ -11,7 +11,7 @@ class LtiCourseGroupsServiceTest extends TestCase
 {
     public function testItInstantiates()
     {
-        $connector = Mockery::mock(LtiServiceConnectorInterface::class);
+        $connector = Mockery::mock(ILtiServiceConnector::class);
 
         $service = new LtiCourseGroupsService($connector, []);
 

@@ -321,9 +321,9 @@ use App\Lti13Cookie;
 use App\Lti13Database;
 use Firebase\JWT\JWT;
 use Illuminate\Support\ServiceProvider;
-use Packback\Lti1p3\Interfaces\Cache;
-use Packback\Lti1p3\Interfaces\Cookie;
-use Packback\Lti1p3\Interfaces\Database;
+use Packback\Lti1p3\Interfaces\ICache;
+use Packback\Lti1p3\Interfaces\ICookie;
+use Packback\Lti1p3\Interfaces\IDatabase;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -356,7 +356,7 @@ Below are examples of how to get the library's data store interfaces to work wit
 ```php
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
-use Packback\Lti1p3\Interfaces\Cache as Lti1p3Cache;
+use Packback\Lti1p3\Interfaces\ICache as Lti1p3Cache;
 
 class Lti13Cache implements Lti1p3Cache
 {
@@ -392,7 +392,7 @@ class Lti13Cache implements Lti1p3Cache
 
 ```php
 use Illuminate\Support\Facades\Cookie;
-use Packback\Lti1p3\Interfaces\Cookie as Lti1p3Cookie;
+use Packback\Lti1p3\Interfaces\ICookie as Lti1p3Cookie;
 
 class Lti13Cookie implements Lti1p3Cookie
 {
@@ -416,7 +416,7 @@ For this data store you will need to create models to store the issuer and deplo
 ```php
 use App\Models\Issuer;
 use App\Models\Deployment;
-use Packback\Lti1p3\Interfaces\Database;
+use Packback\Lti1p3\Interfaces\IDatabase;
 use Packback\Lti1p3\LtiRegistration;
 use Packback\Lti1p3\LtiDeployment;
 use Packback\Lti1p3\OidcException;

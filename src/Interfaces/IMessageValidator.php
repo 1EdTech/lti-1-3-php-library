@@ -2,7 +2,7 @@
 
 namespace Packback\Lti1p3\Interfaces;
 
-interface MessageValidator
+interface IMessageValidator
 {
     public function validate(array $jwtBody);
 

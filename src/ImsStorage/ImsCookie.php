@@ -2,9 +2,9 @@
 
 namespace Packback\Lti1p3\ImsStorage;
 
-use Packback\Lti1p3\Interfaces\Cookie;
+use Packback\Lti1p3\Interfaces\ICookie;
 
-class ImsCookie implements Cookie
+class ImsCookie implements ICookie
 {
     public function getCookie($name)
     {
