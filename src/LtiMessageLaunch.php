@@ -58,7 +58,7 @@ class LtiMessageLaunch
      *
      * @return LtiMessageLaunch a populated and validated LtiMessageLaunch
      */
-    public static function fromCache($launch_id, Database $database, Cache $cache = null)
+    public static function fromCache($launch_id, IDatabase $database, ICache $cache = null)
     {
         $new = new LtiMessageLaunch($database, $cache, null);
         $new->launch_id = $launch_id;
