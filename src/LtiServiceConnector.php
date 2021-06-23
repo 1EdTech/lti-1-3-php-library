@@ -29,9 +29,6 @@ class LtiServiceConnector implements ILtiServiceConnector
 
     public function getAccessToken(array $scopes)
     {
-        // Don't fetch the same key more than once.
-        sort($scopes);
-
         // Build up JWT to exchange for an auth token
         $clientId = $this->registration->getClientId();
 
@@ -67,7 +64,6 @@ class LtiServiceConnector implements ILtiServiceConnector
 
         // Get Access
         $response = $this->client->post($url, [
-            'timeout' => 10,
             'form_params' => $authRequest,
         ]);
 
@@ -86,18 +82,16 @@ class LtiServiceConnector implements ILtiServiceConnector
             'Accept' => $accept,
         ];
 
-        switch ($method) {
+        switch (strtoupper($method)) {
             case 'POST':
                 $headers = array_merge($headers, ['Content-Type' => $contentType]);
                 $response = $this->client->request($method, $url, [
                     'headers' => $headers,
                     'json' => $body,
-                    'timeout' => 60,
                 ]);
                 break;
             default:
                 $response = $this->client->request($method, $url, [
-                    'timeout' => 60,
                     'headers' => $headers,
                 ]);
                 break;
@@ -114,6 +108,9 @@ class LtiServiceConnector implements ILtiServiceConnector
 
     private function getAccessTokenCacheKey(array $scopes)
     {
+        // Don't fetch the same key more than once.
+        sort($scopes);
+
         $scopeKey = md5(implode('|', $scopes));
 
         return $this->registration->getIssuer().$this->registration->getClientId().$scopeKey;
