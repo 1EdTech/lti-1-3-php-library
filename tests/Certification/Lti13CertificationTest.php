@@ -42,6 +42,18 @@ class TestCache implements ICache
     {
         return $this->nonce === $nonce;
     }
+
+    public function cacheAccessToken($key, $accessToken)
+    {
+        $this->launchData[$key] = $accessToken;
+
+        return $this;
+    }
+
+    public function getAccessToken($key)
+    {
+        return $this->launchData[$key] ?? null;
+    }
 }
 
 class TestCookie implements ICookie

@@ -3,6 +3,8 @@
 namespace Packback\Lti1p3;
 
 use Firebase\JWT\JWT;
+use GuzzleHttp\Client;
+use Packback\Lti1p3\Interfaces\ICache;
 use Packback\Lti1p3\Interfaces\ILtiRegistration;
 use Packback\Lti1p3\Interfaces\ILtiServiceConnector;
 
@@ -13,28 +15,34 @@ class LtiServiceConnector implements ILtiServiceConnector
     const METHOD_GET = 'GET';
     const METHOD_POST = 'POST';
 
+    private $cache;
+    private $client;
     private $registration;
     private $access_tokens = [];
 
-    public function __construct(ILtiRegistration $registration)
+    public function __construct(ILtiRegistration $registration, ICache $cache, Client $client)
     {
         $this->registration = $registration;
+        $this->cache = $cache;
+        $this->client = $client;
     }
 
     public function getAccessToken(array $scopes)
     {
-        // Don't fetch the same key more than once.
-        sort($scopes);
-        $scope_key = md5(implode('|', $scopes));
-        if (isset($this->access_tokens[$scope_key])) {
-            return $this->access_tokens[$scope_key];
+        // Build up JWT to exchange for an auth token
+        $clientId = $this->registration->getClientId();
+
+        // Store access token with a unique key
+        $accessTokenKey = $this->getAccessTokenCacheKey($scopes);
+
+        // Get Access Token from cache if it exists and is not expired.
+        if ($this->cache->getAccessToken($accessTokenKey)) {
+            return $this->cache->getAccessToken($accessTokenKey);
         }
 
-        // Build up JWT to exchange for an auth token
-        $client_id = $this->registration->getClientId();
-        $jwt_claim = [
-                'iss' => $client_id,
-                'sub' => $client_id,
+        $jwtClaim = [
+                'iss' => $clientId,
+                'sub' => $clientId,
                 'aud' => $this->registration->getAuthServer(),
                 'iat' => time() - 5,
                 'exp' => time() + 60,
@@ -42,61 +50,69 @@ class LtiServiceConnector implements ILtiServiceConnector
         ];
 
         // Sign the JWT with our private key (given by the platform on registration)
-        $jwt = JWT::encode($jwt_claim, $this->registration->getToolPrivateKey(), 'RS256', $this->registration->getKid());
+        $jwt = JWT::encode($jwtClaim, $this->registration->getToolPrivateKey(), 'RS256', $this->registration->getKid());
 
         // Build auth token request headers
-        $auth_request = [
+        $authRequest = [
             'grant_type' => 'client_credentials',
             'client_assertion_type' => 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer',
             'client_assertion' => $jwt,
             'scope' => implode(' ', $scopes),
         ];
 
-        // Make request to get auth token
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->registration->getAuthTokenUrl());
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($auth_request));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        $resp = curl_exec($ch);
-        $token_data = json_decode($resp, true);
-        curl_close($ch);
+        $url = $this->registration->getAuthTokenUrl();
 
-        return $this->access_tokens[$scope_key] = $token_data['access_token'];
+        // Get Access
+        $response = $this->client->post($url, [
+            'form_params' => $authRequest,
+        ]);
+
+        $tokenData = json_decode($response->getBody()->__toString(), true);
+
+        // Cache access token
+        $this->cache->cacheAccessToken($accessTokenKey, $tokenData['access_token']);
+
+        return $tokenData['access_token'];
     }
 
     public function makeServiceRequest(array $scopes, $method, $url, $body = null, $contentType = 'application/json', $accept = 'application/json')
     {
-        $ch = curl_init();
         $headers = [
-            'Authorization: Bearer '.$this->getAccessToken($scopes),
-            'Accept:'.$accept,
+            'Authorization' => 'Bearer '.$this->getAccessToken($scopes),
+            'Accept' => $accept,
         ];
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, 1);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-        if ($method === 'POST') {
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, strval($body));
-            $headers[] = 'Content-Type: '.$contentType;
-        }
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        $response = curl_exec($ch);
-        if (curl_errno($ch)) {
-            echo 'Request Error:'.curl_error($ch);
-        }
-        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        curl_close($ch);
 
-        $resp_headers = substr($response, 0, $header_size);
-        $resp_body = substr($response, $header_size);
+        switch (strtoupper($method)) {
+            case 'POST':
+                $headers = array_merge($headers, ['Content-Type' => $contentType]);
+                $response = $this->client->request($method, $url, [
+                    'headers' => $headers,
+                    'json' => $body,
+                ]);
+                break;
+            default:
+                $response = $this->client->request($method, $url, [
+                    'headers' => $headers,
+                ]);
+                break;
+        }
+
+        $respHeaders = $response->getHeaders();
+        $respBody = $response->getBody();
 
         return [
-            'headers' => array_filter(explode("\r\n", $resp_headers)),
-            'body' => json_decode($resp_body, true),
+            'headers' => array_filter(explode("\r\n", $respHeaders)),
+            'body' => json_decode($respBody, true),
         ];
+    }
+
+    private function getAccessTokenCacheKey(array $scopes)
+    {
+        // Don't fetch the same key more than once.
+        sort($scopes);
+
+        $scopeKey = md5(implode('|', $scopes));
+
+        return $this->registration->getIssuer().$this->registration->getClientId().$scopeKey;
     }
 }

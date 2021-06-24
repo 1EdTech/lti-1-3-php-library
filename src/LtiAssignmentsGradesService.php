@@ -41,7 +41,7 @@ class LtiAssignmentsGradesService
             $this->service_data['scope'],
             LtiServiceConnector::METHOD_POST,
             $score_url,
-            strval($grade),
+            $grade,
             'application/vnd.ims.lis.v1.score+json'
         );
     }
@@ -78,7 +78,7 @@ class LtiAssignmentsGradesService
             $this->service_data['scope'],
             LtiServiceConnector::METHOD_POST,
             $this->service_data['lineitems'],
-            strval($new_line_item),
+            $new_line_item,
             'application/vnd.ims.lis.v2.lineitem+json',
             'application/vnd.ims.lis.v2.lineitem+json'
         );

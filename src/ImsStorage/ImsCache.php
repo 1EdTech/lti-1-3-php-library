@@ -41,6 +41,21 @@ class ImsCache implements ICache
         return true;
     }
 
+    public function cacheAccessToken($key, $accessToken)
+    {
+        $this->cache[$key] = $accessToken;
+        $this->saveCache();
+
+        return $this;
+    }
+
+    public function getAccessToken($key)
+    {
+        $this->loadCache();
+
+        return $this->cache[$key];
+    }
+
     private function loadCache()
     {
         $cache = file_get_contents(sys_get_temp_dir().'/lti_cache.txt');
