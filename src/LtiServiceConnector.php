@@ -29,17 +29,16 @@ class LtiServiceConnector implements ILtiServiceConnector
 
     public function getAccessToken(array $scopes)
     {
-        // Store access token with a unique key
+        // Get a unique cache key for the access token
         $accessTokenKey = $this->getAccessTokenCacheKey($scopes);
-
-        // Get Access Token from cache if it exists and is not expired.
-        if ($this->cache->getAccessToken($accessTokenKey)) {
-            return $this->cache->getAccessToken($accessTokenKey);
+        // Get access token from cache if it exists
+        $accessToken = $this->cache->getAccessToken($accessTokenKey);
+        if ($accessToken) {
+            return $accessToken;
         }
 
         // Build up JWT to exchange for an auth token
         $clientId = $this->registration->getClientId();
-
         $jwtClaim = [
                 'iss' => $clientId,
                 'sub' => $clientId,
@@ -110,7 +109,6 @@ class LtiServiceConnector implements ILtiServiceConnector
     private function getAccessTokenCacheKey(array $scopes)
     {
         sort($scopes);
-
         $scopeKey = md5(implode('|', $scopes));
 
         return $this->registration->getIssuer().$this->registration->getClientId().$scopeKey;
