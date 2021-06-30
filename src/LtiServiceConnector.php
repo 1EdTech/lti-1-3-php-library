@@ -66,7 +66,7 @@ class LtiServiceConnector implements ILtiServiceConnector
             'form_params' => $authRequest,
         ]);
 
-        $body = $response->getBody();
+        $body = (string) $response->getBody();
         $tokenData = json_decode($body, true);
 
         // Cache access token
