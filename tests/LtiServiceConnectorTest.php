@@ -2,22 +2,25 @@
 
 namespace Tests;
 
-// use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
 use Mockery;
 use Packback\Lti1p3\Interfaces\ICache;
 use Packback\Lti1p3\Interfaces\ILtiRegistration;
+use Packback\Lti1p3\LtiRegistration;
 use Packback\Lti1p3\LtiServiceConnector;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ResponseInterface;
 
 class LtiServiceConnectorTest extends TestCase
 {
     public function setUp(): void
     {
-        // $this->jwt = Mockery::mock(JWT::class);
         $this->registration = Mockery::mock(ILtiRegistration::class);
         $this->cache = Mockery::mock(ICache::class);
         $this->client = Mockery::mock(Client::class);
+        $this->response = Mockery::mock(ResponseInterface::class);
+
+        $this->token = 'TokenOfAccess';
 
         $this->connector = new LtiServiceConnector($this->registration, $this->cache, $this->client);
     }
@@ -29,66 +32,116 @@ class LtiServiceConnectorTest extends TestCase
 
     public function testItGetsCachedAccessToken()
     {
-        $this->registration->shouldReceive('getClientId')
-            ->once()
-            ->andReturn('client_id');
-        $this->registration->shouldReceive('getIssuer')
-            ->once()
-            ->andReturn('issuer');
-        $this->cache->shouldReceive('getAccessToken')
-            ->once()
-            ->andReturn('TokenOfAccess');
+        $this->mockCacheHasAccessToken();
 
         $result = $this->connector->getAccessToken(['scopeKey']);
 
-        $this->assertEquals($result, 'TokenOfAccess');
+        $this->assertEquals($result, $this->token);
     }
 
-    /*
-     * @todo Figure out how to test this
-     */
-    // public function testItGetsAccessToken()
-    // {
-    //     $this->registration->shouldReceive('getClientId')
-    //         ->once()
-    //         ->andReturn('client_id');
-    //     $this->registration->shouldReceive('getIssuer')
-    //         ->once()
-    //         ->andReturn('issuer');
-    //     $this->cache->shouldReceive('getAccessToken')
-    //         ->once()
-    //         ->andReturn();
-    //     $this->registration->shouldReceive('getAuthServer')
-    //         ->once()
-    //         ->andReturn('auth_server');
-    //     $this->registration->shouldReceive('getToolPrivateKey')
-    //         ->once()
-    //         ->andReturn('toolprivatekey');
-    //     $this->registration->shouldReceive('getKid')
-    //         ->once()
-    //         ->andReturn('kid');
+    public function testItGetsNewAccessToken()
+    {
+        $registration = new LtiRegistration([
+            'clientId' => 'client_id',
+            'issuer' => 'issuer',
+            'authServer' => 'auth_server',
+            'toolPrivateKey' => file_get_contents(__DIR__.'/data/private.key'),
+            'kid' => 'kid',
+            'authTokenUrl' => 'auth_token_url',
+        ]);
+        $connector = new LtiServiceConnector($registration, $this->cache, $this->client);
 
-        // Error: supplied key param cannot be coerced into a private key
-    //     $this->jwt->shouldReceive('encode')
-    //         ->once()
-    //         ->andReturn('jwt');
+        $this->cache->shouldReceive('getAccessToken')
+            ->once()->andReturn(false);
+        $this->client->shouldReceive('post')
+            ->once()->andReturn($this->response);
+        $this->response->shouldReceive('getBody')
+            ->once()->andReturn(json_encode(['access_token' => $this->token]));
+        $this->cache->shouldReceive('cacheAccessToken')->once();
 
-    //     $this->registration->shouldReceive('getAuthTokenUrl')
-    //         ->once()
-    //         ->andReturn('auth_token_url');
-    //     $this->client->shouldReceive('post')
-    //         ->once()
-    //         ->andReturn([
-    //             'body' => [
-    //                 'access_token' => 'accessToken'
-    //             ]
-    //         ]);
-    //     $this->cache->shouldReceive('cacheAccessToken')
-    //         ->once()
-    //         ->andReturn();
+        $result = $connector->getAccessToken(['scopeKey']);
 
-    //     $result = $this->connector->getAccessToken(['scopeKey']);
+        $this->assertEquals($result, $this->token);
+    }
 
-    //     $this->assertEquals($result, 'TokenOfAccess');
-    // }
+    public function testItMakesPostServiceRequest()
+    {
+        $scopes = ['scopeKey'];
+        $method = 'post';
+        $url = 'https://example.com';
+        $body = ['post' => 'body'];
+        $requestHeaders = [
+            'Authorization' => 'Bearer '.$this->token,
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ];
+        $responseHeaders = [
+            'Content-Type: application/json',
+            'Accept: application/json',
+        ];
+        $responseBody = ['some' => 'response'];
+        $expected = [
+            'headers' => $responseHeaders,
+            'body' => $responseBody,
+        ];
+
+        $this->mockCacheHasAccessToken();
+        $this->client->shouldReceive('request')
+            ->with($method, $url, [
+                'headers' => $requestHeaders,
+                'json' => $body,
+            ])->once()->andReturn($this->response);
+        $this->response->shouldReceive('getHeaders')
+            ->once()->andReturn(implode("\r\n", $responseHeaders));
+        $this->response->shouldReceive('getBody')
+            ->once()->andReturn(json_encode($responseBody));
+
+        $result = $this->connector->makeServiceRequest($scopes, $method, $url, $body);
+
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testItMakesDefaultServiceRequest()
+    {
+        $scopes = ['scopeKey'];
+        $method = 'get';
+        $url = 'https://example.com';
+        $requestHeaders = [
+            'Authorization' => 'Bearer '.$this->token,
+            'Accept' => 'application/json',
+        ];
+        $responseHeaders = [
+            'Content-Type: application/json',
+            'Accept: application/json',
+        ];
+        $responseBody = ['some' => 'response'];
+        $expected = [
+            'headers' => $responseHeaders,
+            'body' => $responseBody,
+        ];
+
+        $this->mockCacheHasAccessToken();
+        $this->client->shouldReceive('request')
+            ->with($method, $url, [
+                'headers' => $requestHeaders,
+            ])->once()->andReturn($this->response);
+        $this->response->shouldReceive('getHeaders')
+            ->once()->andReturn(implode("\r\n", $responseHeaders));
+        $this->response->shouldReceive('getBody')
+            ->once()->andReturn(json_encode($responseBody));
+
+        $result = $this->connector->makeServiceRequest($scopes, $method, $url);
+
+        $this->assertEquals($expected, $result);
+    }
+
+    private function mockCacheHasAccessToken()
+    {
+        $this->registration->shouldReceive('getClientId')
+            ->once()->andReturn('client_id');
+        $this->registration->shouldReceive('getIssuer')
+            ->once()->andReturn('issuer');
+        $this->cache->shouldReceive('getAccessToken')
+            ->once()->andReturn($this->token);
+    }
 }
