@@ -75,7 +75,7 @@ class LtiServiceConnector implements ILtiServiceConnector
         return $tokenData['access_token'];
     }
 
-    public function makeServiceRequest(array $scopes, $method, $url, $body = null, $contentType = 'application/json', $accept = 'application/json')
+    public function makeServiceRequest(array $scopes, string $method, string $url, string $body = null, $contentType = 'application/json', $accept = 'application/json')
     {
         $headers = [
             'Authorization' => 'Bearer '.$this->getAccessToken($scopes),
@@ -87,7 +87,7 @@ class LtiServiceConnector implements ILtiServiceConnector
                 $headers = array_merge($headers, ['Content-Type' => $contentType]);
                 $response = $this->client->request($method, $url, [
                     'headers' => $headers,
-                    'json' => $body,
+                    'body' => $body,
                 ]);
                 break;
             default:
@@ -98,10 +98,13 @@ class LtiServiceConnector implements ILtiServiceConnector
         }
 
         $respHeaders = $response->getHeaders();
+        array_walk($respHeaders, function (&$value) {
+            $value = $value[0];
+        });
         $respBody = $response->getBody();
 
         return [
-            'headers' => array_filter(explode("\r\n", $respHeaders)),
+            'headers' => $respHeaders,
             'body' => json_decode($respBody, true),
         ];
     }

@@ -13,6 +13,31 @@ use Psr\Http\Message\ResponseInterface;
 
 class LtiServiceConnectorTest extends TestCase
 {
+    /**
+     * @var Mockery\MockInterface
+     */
+    private $registration;
+    /**
+     * @var Mockery\MockInterface
+     */
+    private $cache;
+    /**
+     * @var Mockery\MockInterface
+     */
+    private $client;
+    /**
+     * @var Mockery\MockInterface
+     */
+    private $response;
+    /**
+     * @var string
+     */
+    private $token;
+    /**
+     * @var LtiServiceConnector
+     */
+    private $connector;
+
     public function setUp(): void
     {
         $this->registration = Mockery::mock(ILtiRegistration::class);
@@ -69,19 +94,22 @@ class LtiServiceConnectorTest extends TestCase
         $scopes = ['scopeKey'];
         $method = 'post';
         $url = 'https://example.com';
-        $body = ['post' => 'body'];
+        $body = json_encode(['post' => 'body']);
         $requestHeaders = [
             'Authorization' => 'Bearer '.$this->token,
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
         ];
         $responseHeaders = [
-            'Content-Type: application/json',
-            'Accept: application/json',
+            'Content-Type' => ['application/json'],
+            'Server' => ['nginx'],
         ];
         $responseBody = ['some' => 'response'];
         $expected = [
-            'headers' => $responseHeaders,
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Server' => 'nginx',
+            ],
             'body' => $responseBody,
         ];
 
@@ -89,10 +117,10 @@ class LtiServiceConnectorTest extends TestCase
         $this->client->shouldReceive('request')
             ->with($method, $url, [
                 'headers' => $requestHeaders,
-                'json' => $body,
+                'body' => $body,
             ])->once()->andReturn($this->response);
         $this->response->shouldReceive('getHeaders')
-            ->once()->andReturn(implode("\r\n", $responseHeaders));
+            ->once()->andReturn($responseHeaders);
         $this->response->shouldReceive('getBody')
             ->once()->andReturn(json_encode($responseBody));
 
@@ -111,12 +139,15 @@ class LtiServiceConnectorTest extends TestCase
             'Accept' => 'application/json',
         ];
         $responseHeaders = [
-            'Content-Type: application/json',
-            'Accept: application/json',
+            'Content-Type' => ['application/json'],
+            'Server' => ['nginx'],
         ];
         $responseBody = ['some' => 'response'];
         $expected = [
-            'headers' => $responseHeaders,
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Server' => 'nginx',
+            ],
             'body' => $responseBody,
         ];
 
@@ -126,7 +157,7 @@ class LtiServiceConnectorTest extends TestCase
                 'headers' => $requestHeaders,
             ])->once()->andReturn($this->response);
         $this->response->shouldReceive('getHeaders')
-            ->once()->andReturn(implode("\r\n", $responseHeaders));
+            ->once()->andReturn($responseHeaders);
         $this->response->shouldReceive('getBody')
             ->once()->andReturn(json_encode($responseBody));
 
