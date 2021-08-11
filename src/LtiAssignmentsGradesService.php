@@ -70,7 +70,6 @@ class LtiAssignmentsGradesService
             $link = $page['headers']['Link'];
             if (preg_match(LtiServiceConnector::NEXT_PAGE_REGEX, $link, $matches)) {
                 $next_page = $matches[1];
-                dump($next_page);
             }
         }
 
