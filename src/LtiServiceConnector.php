@@ -10,7 +10,7 @@ use Packback\Lti1p3\Interfaces\ILtiServiceConnector;
 
 class LtiServiceConnector implements ILtiServiceConnector
 {
-    const NEXT_PAGE_REGEX = '/^Link:.*<([^>]*)>; ?rel="next"/i';
+    const NEXT_PAGE_REGEX = '/<([^>]*)>; ?rel="next"/i';
 
     const METHOD_GET = 'GET';
     const METHOD_POST = 'POST';
@@ -31,7 +31,7 @@ class LtiServiceConnector implements ILtiServiceConnector
     {
         // Get a unique cache key for the access token
         $accessTokenKey = $this->getAccessTokenCacheKey($scopes);
-        // Get access token from cache if it exists
+        // // Get access token from cache if it exists
         $accessToken = $this->cache->getAccessToken($accessTokenKey);
         if ($accessToken) {
             return $accessToken;
