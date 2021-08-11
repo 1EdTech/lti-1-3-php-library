@@ -68,7 +68,6 @@ class LtiAssignmentsGradesService
             $line_items = array_merge($line_items, $page['body']);
             $next_page = false;
             $link = $page['headers']['Link'];
-
             if (preg_match(LtiServiceConnector::NEXT_PAGE_REGEX, $link, $matches)) {
                 $next_page = $matches[1];
                 dump($next_page);
@@ -153,6 +152,7 @@ class LtiAssignmentsGradesService
         if (isset($line_items['body']['id'])) {
             $line_items['body'] = [$line_items['body']];
         }
+
         return $line_items;
     }
 }
