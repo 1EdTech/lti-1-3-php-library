@@ -31,7 +31,7 @@ class LtiServiceConnector implements ILtiServiceConnector
     {
         // Get a unique cache key for the access token
         $accessTokenKey = $this->getAccessTokenCacheKey($scopes);
-        // // Get access token from cache if it exists
+        // Get access token from cache if it exists
         $accessToken = $this->cache->getAccessToken($accessTokenKey);
         if ($accessToken) {
             return $accessToken;
