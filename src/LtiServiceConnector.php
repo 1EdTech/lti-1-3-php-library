@@ -10,7 +10,7 @@ use Packback\Lti1p3\Interfaces\ILtiServiceConnector;
 
 class LtiServiceConnector implements ILtiServiceConnector
 {
-    const NEXT_PAGE_REGEX = '/^Link:.*<([^>]*)>; ?rel="next"/i';
+    const NEXT_PAGE_REGEX = '/<([^>]*)>; ?rel="next"/i';
 
     const METHOD_GET = 'GET';
     const METHOD_POST = 'POST';

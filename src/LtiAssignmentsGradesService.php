@@ -48,22 +48,9 @@ class LtiAssignmentsGradesService
 
     public function findOrCreateLineitem(LtiLineitem $new_line_item)
     {
-        if (!in_array(LtiConstants::AGS_SCOPE_LINEITEM, $this->service_data['scope'])) {
-            throw new LtiException('Missing required scope', 1);
-        }
-        $line_items = $this->service_connector->makeServiceRequest(
-            $this->service_data['scope'],
-            LtiServiceConnector::METHOD_GET,
-            $this->service_data['lineitems'],
-            null,
-            null,
-            'application/vnd.ims.lis.v2.lineitemcontainer+json'
-        );
-        // If there is only one item, then wrap it in an array so the foreach works
-        if (isset($line_items['body']['id'])) {
-            $line_items['body'] = [$line_items['body']];
-        }
-        foreach ($line_items['body'] as $line_item) {
+        $line_items = $this->getLineItems();
+
+        foreach ($line_items as $line_item) {
             if (
                 (empty($new_line_item->getResourceId()) && empty($new_line_item->getResourceLinkId())) ||
                 (isset($line_item['resourceId']) && $line_item['resourceId'] == $new_line_item->getResourceId()) ||
@@ -102,5 +89,41 @@ class LtiAssignmentsGradesService
         );
 
         return $scores['body'];
+    }
+
+    public function getLineItems()
+    {
+        if (!in_array(LtiConstants::AGS_SCOPE_LINEITEM, $this->service_data['scope'])) {
+            throw new LtiException('Missing required scope', 1);
+        }
+        $line_items = [];
+
+        $next_page = $this->service_data['lineitems'];
+
+        while ($next_page) {
+            $page = $this->service_connector->makeServiceRequest(
+                $this->service_data['scope'],
+                LtiServiceConnector::METHOD_GET,
+                $next_page,
+                null,
+                null,
+                'application/vnd.ims.lti-gs.v1.contextgroupcontainer+json'
+            );
+
+            $line_items = array_merge($line_items, $page['body']);
+            $next_page = false;
+            $link = $page['headers']['Link'];
+
+            if (preg_match(LtiServiceConnector::NEXT_PAGE_REGEX, $link, $matches)) {
+                $next_page = $matches[1];
+            }
+        }
+
+        // If there is only one item, then wrap it in an array so the foreach works
+        if (isset($line_items['body']['id'])) {
+            $line_items['body'] = [$line_items['body']];
+        }
+
+        return $line_items;
     }
 }
