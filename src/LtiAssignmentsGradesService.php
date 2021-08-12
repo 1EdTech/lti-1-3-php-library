@@ -112,6 +112,12 @@ class LtiAssignmentsGradesService
 
             $line_items = array_merge($line_items, $page['body']);
             $next_page = false;
+
+            // If the "Next" Link is not in the request headers, we can break the loop here.
+            if (!isset($page['headers']['Link'])) {
+                break;
+            }
+
             $link = $page['headers']['Link'];
 
             if (preg_match(LtiServiceConnector::NEXT_PAGE_REGEX, $link, $matches)) {
