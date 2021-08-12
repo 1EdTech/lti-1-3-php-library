@@ -128,6 +128,7 @@ class LtiAssignmentsGradesService
         if (isset($line_items['body']['id'])) {
             $line_items['body'] = [$line_items['body']];
         }
+
         return $line_items;
     }
 }
