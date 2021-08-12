@@ -50,11 +50,6 @@ class LtiAssignmentsGradesService
     {
         $line_items = $this->getLineItems();
 
-        // If there is only one item, then wrap it in an array so the foreach works
-        if (isset($line_items['body']['id'])) {
-            $line_items['body'] = [$line_items['body']];
-        }
-
         foreach ($line_items as $line_item) {
             if (
                 (empty($new_line_item->getResourceId()) && empty($new_line_item->getResourceLinkId())) ||
