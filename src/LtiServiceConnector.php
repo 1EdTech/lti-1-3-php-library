@@ -4,6 +4,7 @@ namespace Packback\Lti1p3;
 
 use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use Packback\Lti1p3\Interfaces\ICache;
 use Packback\Lti1p3\Interfaces\ILtiRegistration;
 use Packback\Lti1p3\Interfaces\ILtiServiceConnector;
@@ -75,28 +76,49 @@ class LtiServiceConnector implements ILtiServiceConnector
         return $tokenData['access_token'];
     }
 
-    public function makeServiceRequest(array $scopes, string $method, string $url, string $body = null, $contentType = 'application/json', $accept = 'application/json')
-    {
+    public function makeServiceRequest(
+        array $scopes,
+        string $method,
+        string $url,
+        string $body = null,
+        $contentType = 'application/json',
+        $accept = 'application/json',
+        bool $shouldRetry = true
+    ) {
         $headers = [
             'Authorization' => 'Bearer '.$this->getAccessToken($scopes),
             'Accept' => $accept,
         ];
 
-        switch (strtoupper($method)) {
-            case 'POST':
-                $headers = array_merge($headers, ['Content-Type' => $contentType]);
-                $response = $this->client->request($method, $url, [
-                    'headers' => $headers,
-                    'body' => $body,
-                ]);
-                break;
-            default:
-                $response = $this->client->request($method, $url, [
-                    'headers' => $headers,
-                ]);
-                break;
-        }
+        try {
+            switch (strtoupper($method)) {
+                case 'POST':
+                    $headers = array_merge($headers, ['Content-Type' => $contentType]);
+                    $response = $this->client->request($method, $url, [
+                        'headers' => $headers,
+                        'body' => $body,
+                    ]);
+                    break;
+                default:
+                    $response = $this->client->request($method, $url, [
+                        'headers' => $headers,
+                    ]);
+                    break;
+            }
+        } catch (ClientException $e) {
+            $status = $e->getResponse()->getStatusCode();
 
+            // If the error was due to invalid authentication and the request
+            // should be retried, clear the access token and retry it.
+            if ($status === 401 && $shouldRetry) {
+                $key = $this->getAccessTokenCacheKey($scopes);
+                $this->cache->clearAccessToken($key);
+
+                return $this->makeServiceRequest($scopes, $method, $url, $body, $contentType, $accept, false);
+            }
+
+            throw $e;
+        }
         $respHeaders = $response->getHeaders();
         array_walk($respHeaders, function (&$value) {
             $value = $value[0];
@@ -104,9 +126,9 @@ class LtiServiceConnector implements ILtiServiceConnector
         $respBody = $response->getBody();
 
         return [
-            'headers' => $respHeaders,
-            'body' => json_decode($respBody, true),
-        ];
+                'headers' => $respHeaders,
+                'body' => json_decode($respBody, true),
+            ];
     }
 
     private function getAccessTokenCacheKey(array $scopes)
