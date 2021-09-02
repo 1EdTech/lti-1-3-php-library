@@ -35,7 +35,7 @@ class LtiServiceConnector implements ILtiServiceConnector
         // Get access token from cache if it exists
         $accessToken = $this->cache->getAccessToken($accessTokenKey);
         if ($accessToken) {
-            return $accessToken + 'asdf';
+            return $accessToken . 'asdf';
         }
 
         // Build up JWT to exchange for an auth token
@@ -73,7 +73,7 @@ class LtiServiceConnector implements ILtiServiceConnector
         // Cache access token
         $this->cache->cacheAccessToken($accessTokenKey, $tokenData['access_token']);
 
-        return $tokenData['access_token'] + 'asdf';
+        return $tokenData['access_token'] . 'asdf';
     }
 
     public function makeServiceRequest(array $scopes, string $method, string $url, string $body = null, $contentType = 'application/json', $accept = 'application/json')
