@@ -106,6 +106,7 @@ class LtiServiceConnector implements ILtiServiceConnector
         return [
             'headers' => $respHeaders,
             'body' => json_decode($respBody, true),
+            'status' => $response->getStatusCode(),
         ];
     }
 
