@@ -83,7 +83,7 @@ class LtiServiceConnector implements ILtiServiceConnector
         string $body = null,
         $contentType = 'application/json',
         $accept = 'application/json',
-        bool $hasRetried = false
+        bool $shouldRetry = true
     ) {
         $headers = [
             'Authorization' => 'Bearer '.$this->getAccessToken($scopes),
@@ -105,7 +105,20 @@ class LtiServiceConnector implements ILtiServiceConnector
                     ]);
                     break;
             }
+        } catch (ClientException $e) {
+            $status = $e->getResponse()->getStatusCode();
 
+            // If the error was due to invalid authentication and the request
+            // should be retried, clear the access token and retry it.
+            if ($status === 401 && $shouldRetry) {
+                $key = $this->getAccessTokenCacheKey($scopes);
+                $this->cache->clearAccessToken($key);
+
+                return $this->makeServiceRequest($scopes, $method, $url, $body, $contentType, $accept, false);
+            }
+
+            throw $e;
+        }
             $respHeaders = $response->getHeaders();
             array_walk($respHeaders, function (&$value) {
                 $value = $value[0];
@@ -116,20 +129,7 @@ class LtiServiceConnector implements ILtiServiceConnector
                 'headers' => $respHeaders,
                 'body' => json_decode($respBody, true),
             ];
-        } catch (ClientException $e) {
-            $status = $e->getResponse()->getStatusCode();
 
-            // If the error was due to invalid authentication and the request
-            // hasn't been retried, clear the access token and retry it.
-            if ($status === 401 && !$hasRetried) {
-                $key = $this->getAccessTokenCacheKey($scopes);
-                $this->cache->clearAccessToken($key);
-
-                return $this->makeServiceRequest($scopes, $method, $url, $body, $contentType, $accept, true);
-            }
-
-            throw $e;
-        }
     }
 
     private function getAccessTokenCacheKey(array $scopes)
