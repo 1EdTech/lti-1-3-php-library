@@ -116,7 +116,7 @@ class LtiServiceConnector implements ILtiServiceConnector
                 'headers' => $respHeaders,
                 'body' => json_decode($respBody, true),
             ];
-        } catch(ClientException $e) {
+        } catch (ClientException $e) {
             $status = $e->getResponse()->getStatusCode();
 
             // If the error was due to invalid authentication and the request

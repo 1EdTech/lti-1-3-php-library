@@ -58,6 +58,7 @@ class TestCache implements ICache
     public function clearAccessToken($key)
     {
         $this->launchData[$key] = null;
+
         return $this->launchData;
     }
 }
