@@ -106,12 +106,14 @@ class LtiServiceConnectorTest extends TestCase
             'Server' => ['nginx'],
         ];
         $responseBody = ['some' => 'response'];
+        $responseStatus = 200;
         $expected = [
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Server' => 'nginx',
             ],
             'body' => $responseBody,
+            'status' => $responseStatus,
         ];
 
         $this->mockCacheHasAccessToken();
@@ -124,6 +126,8 @@ class LtiServiceConnectorTest extends TestCase
             ->once()->andReturn($responseHeaders);
         $this->response->shouldReceive('getBody')
             ->once()->andReturn(json_encode($responseBody));
+        $this->response->shouldReceive('getStatusCode')
+            ->once()->andReturn(json_encode($responseStatus));
 
         $result = $this->connector->makeServiceRequest($scopes, $method, $url, $body);
 
@@ -144,12 +148,14 @@ class LtiServiceConnectorTest extends TestCase
             'Server' => ['nginx'],
         ];
         $responseBody = ['some' => 'response'];
+        $responseStatus = 200;
         $expected = [
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Server' => 'nginx',
             ],
             'body' => $responseBody,
+            'status' => $responseStatus,
         ];
 
         $this->mockCacheHasAccessToken();
@@ -161,6 +167,8 @@ class LtiServiceConnectorTest extends TestCase
             ->once()->andReturn($responseHeaders);
         $this->response->shouldReceive('getBody')
             ->once()->andReturn(json_encode($responseBody));
+        $this->response->shouldReceive('getStatusCode')
+            ->once()->andReturn(json_encode($responseStatus));
 
         $result = $this->connector->makeServiceRequest($scopes, $method, $url);
 
