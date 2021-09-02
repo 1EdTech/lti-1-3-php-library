@@ -119,17 +119,16 @@ class LtiServiceConnector implements ILtiServiceConnector
 
             throw $e;
         }
-            $respHeaders = $response->getHeaders();
-            array_walk($respHeaders, function (&$value) {
-                $value = $value[0];
-            });
-            $respBody = $response->getBody();
+        $respHeaders = $response->getHeaders();
+        array_walk($respHeaders, function (&$value) {
+            $value = $value[0];
+        });
+        $respBody = $response->getBody();
 
-            return [
+        return [
                 'headers' => $respHeaders,
                 'body' => json_decode($respBody, true),
             ];
-
     }
 
     private function getAccessTokenCacheKey(array $scopes)
