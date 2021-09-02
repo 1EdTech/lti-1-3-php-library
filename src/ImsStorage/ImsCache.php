@@ -59,7 +59,7 @@ class ImsCache implements ICache
     public function clearAccessToken($key)
     {
         $this->loadCache();
-        $this->cache[$key] = null;
+        unset($this->cache[$key]);
         $this->saveCache();
 
         return $this->cache;
