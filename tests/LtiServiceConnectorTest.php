@@ -3,6 +3,7 @@
 namespace Tests;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use Mockery;
 use Packback\Lti1p3\Interfaces\ICache;
 use Packback\Lti1p3\Interfaces\ILtiRegistration;
@@ -164,6 +165,110 @@ class LtiServiceConnectorTest extends TestCase
         $result = $this->connector->makeServiceRequest($scopes, $method, $url);
 
         $this->assertEquals($expected, $result);
+    }
+
+    public function testItRetriesServiceRequestOn401Error()
+    {
+        $scopes = ['scopeKey'];
+        $method = 'post';
+        $url = 'https://example.com';
+        $body = json_encode(['post' => 'body']);
+        $requestHeaders = [
+            'Authorization' => 'Bearer '.$this->token,
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ];
+        $responseHeaders = [
+            'Content-Type' => ['application/json'],
+            'Server' => ['nginx'],
+        ];
+        $responseBody = ['some' => 'response'];
+        $expected = [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Server' => 'nginx',
+            ],
+            'body' => $responseBody,
+        ];
+
+        $this->mockCacheHasAccessToken();
+
+        // Mock the response failing on the first request
+        $mockError = Mockery::mock(ClientException::class);
+        $mockResponse = Mockery::mock(ResponseInterface::class);
+        $this->client->shouldReceive('request')
+            ->with($method, $url, [
+                'headers' => $requestHeaders,
+                'body' => $body,
+            ])->once()
+            ->andThrow($mockError);
+        $mockError->shouldReceive('getResponse')
+            ->once()->andReturn($mockResponse);
+        $mockResponse->shouldReceive('getStatusCode')
+            ->once()->andReturn(401);
+        $this->cache->shouldReceive('clearAccessToken')->once();
+
+        // Mock the response succeeding on the retry
+        $this->client->shouldReceive('request')
+            ->with($method, $url, [
+                'headers' => $requestHeaders,
+                'body' => $body,
+            ])->once()->andReturn($this->response);
+        $this->response->shouldReceive('getHeaders')
+            ->once()->andReturn($responseHeaders);
+        $this->response->shouldReceive('getBody')
+            ->once()->andReturn(json_encode($responseBody));
+
+        $result = $this->connector->makeServiceRequest($scopes, $method, $url, $body);
+
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testItThrowsOnRepeated401Errors()
+    {
+        $scopes = ['scopeKey'];
+        $method = 'post';
+        $url = 'https://example.com';
+        $body = json_encode(['post' => 'body']);
+        $requestHeaders = [
+            'Authorization' => 'Bearer '.$this->token,
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ];
+        $responseHeaders = [
+            'Content-Type' => ['application/json'],
+            'Server' => ['nginx'],
+        ];
+        $responseBody = ['some' => 'response'];
+        $expected = [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Server' => 'nginx',
+            ],
+            'body' => $responseBody,
+        ];
+
+        $this->mockCacheHasAccessToken();
+
+        // Mock the response failing twice
+        $mockError = Mockery::mock(ClientException::class);
+        $mockResponse = Mockery::mock(ResponseInterface::class);
+        $this->client->shouldReceive('request')
+            ->with($method, $url, [
+                'headers' => $requestHeaders,
+                'body' => $body,
+            ])->twice()
+            ->andThrow($mockError);
+        $mockError->shouldReceive('getResponse')
+            ->twice()->andReturn($mockResponse);
+        $mockResponse->shouldReceive('getStatusCode')
+            ->twice()->andReturn(401);
+
+        $this->cache->shouldReceive('clearAccessToken')->once();
+
+        $this->expectException(ClientException::class);
+
+        $this->connector->makeServiceRequest($scopes, $method, $url, $body);
     }
 
     private function mockCacheHasAccessToken()

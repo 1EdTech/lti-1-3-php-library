@@ -54,6 +54,12 @@ class TestCache implements ICache
     {
         return $this->launchData[$key] ?? null;
     }
+
+    public function clearAccessToken($key)
+    {
+        $this->launchData[$key] = null;
+        return $this->launchData;
+    }
 }
 
 class TestCookie implements ICookie
