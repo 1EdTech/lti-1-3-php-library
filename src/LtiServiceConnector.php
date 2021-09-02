@@ -4,6 +4,7 @@ namespace Packback\Lti1p3;
 
 use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use Packback\Lti1p3\Interfaces\ICache;
 use Packback\Lti1p3\Interfaces\ILtiRegistration;
 use Packback\Lti1p3\Interfaces\ILtiServiceConnector;
@@ -34,7 +35,7 @@ class LtiServiceConnector implements ILtiServiceConnector
         // Get access token from cache if it exists
         $accessToken = $this->cache->getAccessToken($accessTokenKey);
         if ($accessToken) {
-            return $accessToken;
+            return $accessToken + 'asdf';
         }
 
         // Build up JWT to exchange for an auth token
@@ -72,7 +73,7 @@ class LtiServiceConnector implements ILtiServiceConnector
         // Cache access token
         $this->cache->cacheAccessToken($accessTokenKey, $tokenData['access_token']);
 
-        return $tokenData['access_token'];
+        return $tokenData['access_token'] + 'asdf';
     }
 
     public function makeServiceRequest(array $scopes, string $method, string $url, string $body = null, $contentType = 'application/json', $accept = 'application/json')
@@ -82,31 +83,36 @@ class LtiServiceConnector implements ILtiServiceConnector
             'Accept' => $accept,
         ];
 
-        switch (strtoupper($method)) {
-            case 'POST':
-                $headers = array_merge($headers, ['Content-Type' => $contentType]);
-                $response = $this->client->request($method, $url, [
-                    'headers' => $headers,
-                    'body' => $body,
-                ]);
-                break;
-            default:
-                $response = $this->client->request($method, $url, [
-                    'headers' => $headers,
-                ]);
-                break;
+        try {
+            switch (strtoupper($method)) {
+                case 'POST':
+                    $headers = array_merge($headers, ['Content-Type' => $contentType]);
+                    $response = $this->client->request($method, $url, [
+                        'headers' => $headers,
+                        'body' => $body,
+                    ]);
+                    break;
+                default:
+                    $response = $this->client->request($method, $url, [
+                        'headers' => $headers,
+                    ]);
+                    break;
+            }
+
+            $respHeaders = $response->getHeaders();
+            array_walk($respHeaders, function (&$value) {
+                $value = $value[0];
+            });
+            $respBody = $response->getBody();
+
+            return [
+                'headers' => $respHeaders,
+                'body' => json_decode($respBody, true),
+            ];
+        } catch(ClientException $e) {
+            info($e->getMessage());
+            info($e->getResponse()->getStatusCode());
         }
-
-        $respHeaders = $response->getHeaders();
-        array_walk($respHeaders, function (&$value) {
-            $value = $value[0];
-        });
-        $respBody = $response->getBody();
-
-        return [
-            'headers' => $respHeaders,
-            'body' => json_decode($respBody, true),
-        ];
     }
 
     private function getAccessTokenCacheKey(array $scopes)
