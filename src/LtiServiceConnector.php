@@ -35,7 +35,7 @@ class LtiServiceConnector implements ILtiServiceConnector
         // Get access token from cache if it exists
         $accessToken = $this->cache->getAccessToken($accessTokenKey);
         if ($accessToken) {
-            return $accessToken . 'asdf';
+            return $accessToken;
         }
 
         // Build up JWT to exchange for an auth token
@@ -73,11 +73,18 @@ class LtiServiceConnector implements ILtiServiceConnector
         // Cache access token
         $this->cache->cacheAccessToken($accessTokenKey, $tokenData['access_token']);
 
-        return $tokenData['access_token'] . 'asdf';
+        return $tokenData['access_token'];
     }
 
-    public function makeServiceRequest(array $scopes, string $method, string $url, string $body = null, $contentType = 'application/json', $accept = 'application/json')
-    {
+    public function makeServiceRequest(
+        array $scopes,
+        string $method,
+        string $url,
+        string $body = null,
+        $contentType = 'application/json',
+        $accept = 'application/json',
+        bool $hasRetried = false
+    ) {
         $headers = [
             'Authorization' => 'Bearer '.$this->getAccessToken($scopes),
             'Accept' => $accept,
@@ -110,8 +117,18 @@ class LtiServiceConnector implements ILtiServiceConnector
                 'body' => json_decode($respBody, true),
             ];
         } catch(ClientException $e) {
-            info($e->getMessage());
-            info($e->getResponse()->getStatusCode());
+            $status = $e->getResponse()->getStatusCode();
+
+            // If the error was due to invalid authentication and the request
+            // hasn't been retried, clear the access token and retry it.
+            if ($status === 401 && !$hasRetried) {
+                $key = $this->getAccessTokenCacheKey($scopes);
+                $this->cache->clearAccessToken($key);
+
+                return $this->makeServiceRequest($scopes, $method, $url, $body, $contentType, $accept, true);
+            }
+
+            throw $e;
         }
     }
 

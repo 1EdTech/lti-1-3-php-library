@@ -15,4 +15,6 @@ interface ICache
     public function cacheAccessToken($key, $accessToken);
 
     public function getAccessToken($key);
+
+    public function clearAccessToken($key);
 }
