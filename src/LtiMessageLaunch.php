@@ -265,7 +265,7 @@ class LtiMessageLaunch
         // Check State for OIDC.
         if ($this->cookie->getCookie(LtiOidcLogin::COOKIE_PREFIX.$this->request['state']) !== $this->request['state']) {
             // Error if state doesn't match
-            throw new LtiException('State not found', 1);
+            throw new LtiException('State not found. Please make sure you have cookies enabled in this browser.', 1);
         }
 
         return $this;
@@ -314,7 +314,7 @@ class LtiMessageLaunch
         $this->registration = $this->db->findRegistrationByIssuer($this->jwt['body']['iss'], $client_id);
 
         if (empty($this->registration)) {
-            throw new LtiException('Registration not found.', 1);
+            throw new LtiException('Registration not found. Please have your admin confirm your Issuer URL, client ID, and deployment ID.', 1);
         }
 
         // Check client id.
