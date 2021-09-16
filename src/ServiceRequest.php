@@ -77,7 +77,7 @@ class ServiceRequest implements IServiceRequest
             'Accept' => $this->accept,
         ];
 
-        if (${$this}->getMethod() === LtiServiceConnector::METHOD_POST) {
+        if ($this->getMethod() === LtiServiceConnector::METHOD_POST) {
             $headers['Content-Type'] = $this->contentType;
         }
 
