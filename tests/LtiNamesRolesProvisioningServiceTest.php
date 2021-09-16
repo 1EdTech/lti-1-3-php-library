@@ -3,6 +3,7 @@
 namespace Tests;
 
 use Mockery;
+use Packback\Lti1p3\Interfaces\ILtiRegistration;
 use Packback\Lti1p3\Interfaces\ILtiServiceConnector;
 use Packback\Lti1p3\LtiNamesRolesProvisioningService;
 use PHPUnit\Framework\TestCase;
@@ -12,11 +13,12 @@ class LtiNamesRolesProvisioningServiceTest extends TestCase
     public function setUp(): void
     {
         $this->connector = Mockery::mock(ILtiServiceConnector::class);
+        $this->registration = Mockery::mock(ILtiRegistration::class);
     }
 
     public function testItInstantiates()
     {
-        $nrps = new LtiNamesRolesProvisioningService($this->connector, []);
+        $nrps = new LtiNamesRolesProvisioningService($this->connector, $this->registration, []);
 
         $this->assertInstanceOf(LtiNamesRolesProvisioningService::class, $nrps);
     }
@@ -25,7 +27,7 @@ class LtiNamesRolesProvisioningServiceTest extends TestCase
     {
         $expected = ['members'];
 
-        $nrps = new LtiNamesRolesProvisioningService($this->connector, [
+        $nrps = new LtiNamesRolesProvisioningService($this->connector, $this->registration, [
             'context_memberships_url' => 'url',
         ]);
         $this->connector->shouldReceive('makeServiceRequest')
@@ -44,7 +46,7 @@ class LtiNamesRolesProvisioningServiceTest extends TestCase
         $response = ['members'];
         $expected = array_merge($response, $response);
 
-        $nrps = new LtiNamesRolesProvisioningService($this->connector, [
+        $nrps = new LtiNamesRolesProvisioningService($this->connector, $this->registration, [
             'context_memberships_url' => 'url',
         ]);
         // First response

@@ -2,41 +2,30 @@
 
 namespace Packback\Lti1p3;
 
-use Packback\Lti1p3\Interfaces\ILtiServiceConnector;
-
-class LtiNamesRolesProvisioningService
+class LtiNamesRolesProvisioningService extends LtiAbstractService
 {
-    private $service_connector;
-    private $service_data;
-
-    public function __construct(ILtiServiceConnector $service_connector, array $service_data)
+    public function getScope()
     {
-        $this->service_connector = $service_connector;
-        $this->service_data = $service_data;
+        return [LtiConstants::NRPS_SCOPE_MEMBERSHIP_READONLY];
     }
 
     public function getMembers()
     {
         $members = [];
 
-        $next_page = $this->service_data['context_memberships_url'];
+        $nextPage = $this->getServiceData()['context_memberships_url'];
 
-        while ($next_page) {
-            $page = $this->service_connector->makeServiceRequest(
-                [LtiConstants::NRPS_SCOPE_MEMBERSHIP_READONLY],
-                LtiServiceConnector::METHOD_GET,
-                $next_page,
-                null,
-                null,
-                'application/vnd.ims.lti-nrps.v2.membershipcontainer+json'
-            );
+        while ($nextPage) {
+            $request = new ServiceRequest(LtiServiceConnector::METHOD_GET, $nextPage);
+            $request->setAccept('application/vnd.ims.lti-nrps.v2.membershipcontainer+json');
+            $page = $this->makeServiceRequest($request);
 
             $members = array_merge($members, $page['body']['members']);
 
-            $next_page = false;
+            $nextPage = false;
             foreach ($page['headers'] as $header) {
                 if (preg_match(LtiServiceConnector::NEXT_PAGE_REGEX, $header, $matches)) {
-                    $next_page = $matches[1];
+                    $nextPage = $matches[1];
                     break;
                 }
             }

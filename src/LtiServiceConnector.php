@@ -8,6 +8,7 @@ use GuzzleHttp\Exception\ClientException;
 use Packback\Lti1p3\Interfaces\ICache;
 use Packback\Lti1p3\Interfaces\ILtiRegistration;
 use Packback\Lti1p3\Interfaces\ILtiServiceConnector;
+use Packback\Lti1p3\Interfaces\IServiceRequest;
 
 class LtiServiceConnector implements ILtiServiceConnector
 {
@@ -18,20 +19,17 @@ class LtiServiceConnector implements ILtiServiceConnector
 
     private $cache;
     private $client;
-    private $registration;
-    private $access_tokens = [];
 
-    public function __construct(ILtiRegistration $registration, ICache $cache, Client $client)
+    public function __construct(ICache $cache, Client $client)
     {
-        $this->registration = $registration;
         $this->cache = $cache;
         $this->client = $client;
     }
 
-    public function getAccessToken(array $scopes)
+    public function getAccessToken(ILtiRegistration $registration, array $scopes)
     {
         // Get a unique cache key for the access token
-        $accessTokenKey = $this->getAccessTokenCacheKey($scopes);
+        $accessTokenKey = $this->getAccessTokenCacheKey($registration, $scopes);
         // Get access token from cache if it exists
         $accessToken = $this->cache->getAccessToken($accessTokenKey);
         if ($accessToken) {
@@ -39,18 +37,18 @@ class LtiServiceConnector implements ILtiServiceConnector
         }
 
         // Build up JWT to exchange for an auth token
-        $clientId = $this->registration->getClientId();
+        $clientId = $registration->getClientId();
         $jwtClaim = [
                 'iss' => $clientId,
                 'sub' => $clientId,
-                'aud' => $this->registration->getAuthServer(),
+                'aud' => $registration->getAuthServer(),
                 'iat' => time() - 5,
                 'exp' => time() + 60,
                 'jti' => 'lti-service-token'.hash('sha256', random_bytes(64)),
         ];
 
         // Sign the JWT with our private key (given by the platform on registration)
-        $jwt = JWT::encode($jwtClaim, $this->registration->getToolPrivateKey(), 'RS256', $this->registration->getKid());
+        $jwt = JWT::encode($jwtClaim, $registration->getToolPrivateKey(), 'RS256', $registration->getKid());
 
         // Build auth token request headers
         $authRequest = [
@@ -60,7 +58,7 @@ class LtiServiceConnector implements ILtiServiceConnector
             'scope' => implode(' ', $scopes),
         ];
 
-        $url = $this->registration->getAuthTokenUrl();
+        $url = $registration->getAuthTokenUrl();
 
         // Get Access
         $response = $this->client->post($url, [
@@ -77,44 +75,29 @@ class LtiServiceConnector implements ILtiServiceConnector
     }
 
     public function makeServiceRequest(
+        ILtiRegistration $registration,
         array $scopes,
-        string $method,
-        string $url,
-        string $body = null,
-        $contentType = 'application/json',
-        $accept = 'application/json',
+        IServiceRequest $request,
         bool $shouldRetry = true
     ) {
-        $headers = [
-            'Authorization' => 'Bearer '.$this->getAccessToken($scopes),
-            'Accept' => $accept,
-        ];
+        $request->setAccessToken($this->getAccessToken($registration, $scopes));
 
         try {
-            switch (strtoupper($method)) {
-                case 'POST':
-                    $headers = array_merge($headers, ['Content-Type' => $contentType]);
-                    $response = $this->client->request($method, $url, [
-                        'headers' => $headers,
-                        'body' => $body,
-                    ]);
-                    break;
-                default:
-                    $response = $this->client->request($method, $url, [
-                        'headers' => $headers,
-                    ]);
-                    break;
-            }
+            $response = $this->client->request(
+                $request->getMethod(),
+                $request->getUrl(),
+                $request->getPayload()
+            );
         } catch (ClientException $e) {
             $status = $e->getResponse()->getStatusCode();
 
             // If the error was due to invalid authentication and the request
             // should be retried, clear the access token and retry it.
             if ($status === 401 && $shouldRetry) {
-                $key = $this->getAccessTokenCacheKey($scopes);
+                $key = $this->getAccessTokenCacheKey($registration, $scopes);
                 $this->cache->clearAccessToken($key);
 
-                return $this->makeServiceRequest($scopes, $method, $url, $body, $contentType, $accept, false);
+                return $this->makeServiceRequest($registration, $scopes, $request, false);
             }
 
             throw $e;
@@ -132,11 +115,11 @@ class LtiServiceConnector implements ILtiServiceConnector
         ];
     }
 
-    private function getAccessTokenCacheKey(array $scopes)
+    private function getAccessTokenCacheKey(ILtiRegistration $registration, array $scopes)
     {
         sort($scopes);
         $scopeKey = md5(implode('|', $scopes));
 
-        return $this->registration->getIssuer().$this->registration->getClientId().$scopeKey;
+        return $registration->getIssuer().$registration->getClientId().$scopeKey;
     }
 }

@@ -2,41 +2,30 @@
 
 namespace Packback\Lti1p3;
 
-use Packback\Lti1p3\Interfaces\ILtiServiceConnector;
-
-class LtiCourseGroupsService
+class LtiCourseGroupsService extends LtiAbstractService
 {
-    private $service_connector;
-    private $service_data;
-
-    public function __construct(ILtiServiceConnector $service_connector, array $service_data)
+    public function getScope()
     {
-        $this->service_connector = $service_connector;
-        $this->service_data = $service_data;
+        return $this->getServiceData()['scope'];
     }
 
     public function getGroups()
     {
         $groups = [];
 
-        $next_page = $this->service_data['context_groups_url'];
+        $nextPage = $this->getServiceData()['context_groups_url'];
 
-        while ($next_page) {
-            $page = $this->service_connector->makeServiceRequest(
-                $this->service_data['scope'],
-                LtiServiceConnector::METHOD_GET,
-                $next_page,
-                null,
-                null,
-                'application/vnd.ims.lti-gs.v1.contextgroupcontainer+json'
-            );
+        while ($nextPage) {
+            $request = new ServiceRequest(LtiServiceConnector::METHOD_GET, $nextPage);
+            $request->setAccept('application/vnd.ims.lti-gs.v1.contextgroupcontainer+json');
+            $this->makeServiceRequest($request);
 
             $groups = array_merge($groups, $page['body']['groups']);
 
-            $next_page = false;
+            $nextPage = false;
             foreach ($page['headers'] as $header) {
                 if (preg_match(LtiServiceConnector::NEXT_PAGE_REGEX, $header, $matches)) {
-                    $next_page = $matches[1];
+                    $nextPage = $matches[1];
                     break;
                 }
             }
@@ -50,28 +39,23 @@ class LtiCourseGroupsService
         $sets = [];
 
         // Sets are optional.
-        if (!isset($this->service_data['context_group_sets_url'])) {
+        if (!isset($this->getServiceData()['context_group_sets_url'])) {
             return [];
         }
 
-        $next_page = $this->service_data['context_group_sets_url'];
+        $nextPage = $this->getServiceData()['context_group_sets_url'];
 
-        while ($next_page) {
-            $page = $this->service_connector->makeServiceRequest(
-                $this->service_data['scope'],
-                LtiServiceConnector::METHOD_GET,
-                $next_page,
-                null,
-                null,
-                'application/vnd.ims.lti-gs.v1.contextgroupcontainer+json'
-            );
+        while ($nextPage) {
+            $request = new ServiceRequest(LtiServiceConnector::METHOD_GET, $nextPage);
+            $request->setAccept('application/vnd.ims.lti-gs.v1.contextgroupcontainer+json');
+            $this->makeServiceRequest($request);
 
             $sets = array_merge($sets, $page['body']['sets']);
 
-            $next_page = false;
+            $nextPage = false;
             foreach ($page['headers'] as $header) {
                 if (preg_match(LtiServiceConnector::NEXT_PAGE_REGEX, $header, $matches)) {
-                    $next_page = $matches[1];
+                    $nextPage = $matches[1];
                     break;
                 }
             }
@@ -85,30 +69,30 @@ class LtiCourseGroupsService
         $groups = $this->getGroups();
         $sets = $this->getSets();
 
-        $groups_by_set = [];
+        $groupsBySet = [];
         $unsetted = [];
 
         foreach ($sets as $key => $set) {
-            $groups_by_set[$set['id']] = $set;
-            $groups_by_set[$set['id']]['groups'] = [];
+            $groupsBySet[$set['id']] = $set;
+            $groupsBySet[$set['id']]['groups'] = [];
         }
 
         foreach ($groups as $key => $group) {
-            if (isset($group['set_id']) && isset($groups_by_set[$group['set_id']])) {
-                $groups_by_set[$group['set_id']]['groups'][$group['id']] = $group;
+            if (isset($group['set_id']) && isset($groupsBySet[$group['set_id']])) {
+                $groupsBySet[$group['set_id']]['groups'][$group['id']] = $group;
             } else {
                 $unsetted[$group['id']] = $group;
             }
         }
 
         if (!empty($unsetted)) {
-            $groups_by_set['none'] = [
+            $groupsBySet['none'] = [
                 'name' => 'None',
                 'id' => 'none',
                 'groups' => $unsetted,
             ];
         }
 
-        return $groups_by_set;
+        return $groupsBySet;
     }
 }
