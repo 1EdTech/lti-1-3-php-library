@@ -34,7 +34,7 @@ class ServiceRequest implements IServiceRequest
             'headers' => $this->getHeaders(),
         ];
 
-        $body = $this->body();
+        $body = $this->getBody();
         if ($body) {
             $payload['body'] = $body;
         }
