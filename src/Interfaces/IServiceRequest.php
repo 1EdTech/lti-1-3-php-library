@@ -12,6 +12,8 @@ interface IServiceRequest
 
     public function setAccessToken(string $accessToken): self;
 
+    public function setBody(string $body): self;
+
     public function setAccept(string $accept): self;
 
     public function setContentType(string $contentType): self;

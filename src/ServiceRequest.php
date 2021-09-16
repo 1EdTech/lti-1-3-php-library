@@ -49,6 +49,13 @@ class ServiceRequest implements IServiceRequest
         return $this;
     }
 
+    public function setBody(string $body): IServiceRequest
+    {
+        $this->body = $body;
+
+        return $this;
+    }
+
     public function setAccept(string $accept): IServiceRequest
     {
         $this->accept = $accept;
