@@ -7,6 +7,7 @@ use GuzzleHttp\Exception\ClientException;
 use Mockery;
 use Packback\Lti1p3\Interfaces\ICache;
 use Packback\Lti1p3\Interfaces\ILtiRegistration;
+use Packback\Lti1p3\Interfaces\IServiceRequest;
 use Packback\Lti1p3\LtiRegistration;
 use Packback\Lti1p3\LtiServiceConnector;
 use PHPUnit\Framework\TestCase;
@@ -42,13 +43,14 @@ class LtiServiceConnectorTest extends TestCase
     public function setUp(): void
     {
         $this->registration = Mockery::mock(ILtiRegistration::class);
+        $this->request = Mockery::mock(IServiceRequest::class);
         $this->cache = Mockery::mock(ICache::class);
         $this->client = Mockery::mock(Client::class);
         $this->response = Mockery::mock(ResponseInterface::class);
 
         $this->token = 'TokenOfAccess';
 
-        $this->connector = new LtiServiceConnector($this->registration, $this->cache, $this->client);
+        $this->connector = new LtiServiceConnector($this->cache, $this->client);
     }
 
     public function testItInstantiates()
@@ -60,7 +62,7 @@ class LtiServiceConnectorTest extends TestCase
     {
         $this->mockCacheHasAccessToken();
 
-        $result = $this->connector->getAccessToken(['scopeKey']);
+        $result = $this->connector->getAccessToken($this->registration, ['scopeKey']);
 
         $this->assertEquals($result, $this->token);
     }
@@ -75,7 +77,7 @@ class LtiServiceConnectorTest extends TestCase
             'kid' => 'kid',
             'authTokenUrl' => 'auth_token_url',
         ]);
-        $connector = new LtiServiceConnector($registration, $this->cache, $this->client);
+        $connector = new LtiServiceConnector($this->cache, $this->client);
 
         $this->cache->shouldReceive('getAccessToken')
             ->once()->andReturn(false);
@@ -85,12 +87,12 @@ class LtiServiceConnectorTest extends TestCase
             ->once()->andReturn(json_encode(['access_token' => $this->token]));
         $this->cache->shouldReceive('cacheAccessToken')->once();
 
-        $result = $connector->getAccessToken(['scopeKey']);
+        $result = $connector->getAccessToken($registration, ['scopeKey']);
 
         $this->assertEquals($result, $this->token);
     }
 
-    public function testItMakesPostServiceRequest()
+    public function testItMakesAServiceRequest()
     {
         $scopes = ['scopeKey'];
         $method = 'post';
@@ -105,47 +107,9 @@ class LtiServiceConnectorTest extends TestCase
             'Content-Type' => ['application/json'],
             'Server' => ['nginx'],
         ];
-        $responseBody = ['some' => 'response'];
-        $responseStatus = 200;
-        $expected = [
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'Server' => 'nginx',
-            ],
-            'body' => $responseBody,
-            'status' => $responseStatus,
-        ];
-
-        $this->mockCacheHasAccessToken();
-        $this->client->shouldReceive('request')
-            ->with($method, $url, [
-                'headers' => $requestHeaders,
-                'body' => $body,
-            ])->once()->andReturn($this->response);
-        $this->response->shouldReceive('getHeaders')
-            ->once()->andReturn($responseHeaders);
-        $this->response->shouldReceive('getBody')
-            ->once()->andReturn(json_encode($responseBody));
-        $this->response->shouldReceive('getStatusCode')
-            ->once()->andReturn(json_encode($responseStatus));
-
-        $result = $this->connector->makeServiceRequest($scopes, $method, $url, $body);
-
-        $this->assertEquals($expected, $result);
-    }
-
-    public function testItMakesDefaultServiceRequest()
-    {
-        $scopes = ['scopeKey'];
-        $method = 'get';
-        $url = 'https://example.com';
-        $requestHeaders = [
-            'Authorization' => 'Bearer '.$this->token,
-            'Accept' => 'application/json',
-        ];
-        $responseHeaders = [
-            'Content-Type' => ['application/json'],
-            'Server' => ['nginx'],
+        $payload = [
+            'headers' => $requestHeaders,
+            'body' => $body,
         ];
         $responseBody = ['some' => 'response'];
         $responseStatus = 200;
@@ -158,11 +122,19 @@ class LtiServiceConnectorTest extends TestCase
             'status' => $responseStatus,
         ];
 
+        $this->request->shouldReceive('setAccessToken')
+            ->once()->andReturn($this->request);
+        $this->request->shouldReceive('getMethod')
+            ->once()->andReturn($method);
+        $this->request->shouldReceive('getUrl')
+            ->once()->andReturn($url);
+        $this->request->shouldReceive('getPayload')
+            ->once()->andReturn($payload);
+
         $this->mockCacheHasAccessToken();
         $this->client->shouldReceive('request')
-            ->with($method, $url, [
-                'headers' => $requestHeaders,
-            ])->once()->andReturn($this->response);
+            ->with($method, $url, $payload)
+            ->once()->andReturn($this->response);
         $this->response->shouldReceive('getHeaders')
             ->once()->andReturn($responseHeaders);
         $this->response->shouldReceive('getBody')
@@ -170,7 +142,7 @@ class LtiServiceConnectorTest extends TestCase
         $this->response->shouldReceive('getStatusCode')
             ->once()->andReturn(json_encode($responseStatus));
 
-        $result = $this->connector->makeServiceRequest($scopes, $method, $url);
+        $result = $this->connector->makeServiceRequest($this->registration, $scopes, $this->request);
 
         $this->assertEquals($expected, $result);
     }
@@ -190,6 +162,10 @@ class LtiServiceConnectorTest extends TestCase
             'Content-Type' => ['application/json'],
             'Server' => ['nginx'],
         ];
+        $payload = [
+            'headers' => $requestHeaders,
+            'body' => $body,
+        ];
         $responseBody = ['some' => 'response'];
         $responseStatus = 200;
         $expected = [
@@ -200,6 +176,15 @@ class LtiServiceConnectorTest extends TestCase
             'body' => $responseBody,
             'status' => $responseStatus,
         ];
+
+        $this->request->shouldReceive('setAccessToken')
+            ->once()->andReturn($this->request);
+        $this->request->shouldReceive('getMethod')
+            ->once()->andReturn($method);
+        $this->request->shouldReceive('getUrl')
+            ->once()->andReturn($url);
+        $this->request->shouldReceive('getPayload')
+            ->once()->andReturn($payload);
 
         $this->mockCacheHasAccessToken();
 
@@ -231,7 +216,7 @@ class LtiServiceConnectorTest extends TestCase
         $this->response->shouldReceive('getStatusCode')
             ->once()->andReturn(json_encode($responseStatus));
 
-        $result = $this->connector->makeServiceRequest($scopes, $method, $url, $body);
+        $result = $this->connector->makeServiceRequest($this->registration, $scopes, $this->request);
 
         $this->assertEquals($expected, $result);
     }
@@ -251,6 +236,10 @@ class LtiServiceConnectorTest extends TestCase
             'Content-Type' => ['application/json'],
             'Server' => ['nginx'],
         ];
+        $payload = [
+            'headers' => $requestHeaders,
+            'body' => $body,
+        ];
         $responseBody = ['some' => 'response'];
         $expected = [
             'headers' => [
@@ -259,6 +248,15 @@ class LtiServiceConnectorTest extends TestCase
             ],
             'body' => $responseBody,
         ];
+
+        $this->request->shouldReceive('setAccessToken')
+            ->once()->andReturn($this->request);
+        $this->request->shouldReceive('getMethod')
+            ->once()->andReturn($method);
+        $this->request->shouldReceive('getUrl')
+            ->once()->andReturn($url);
+        $this->request->shouldReceive('getPayload')
+            ->once()->andReturn($payload);
 
         $this->mockCacheHasAccessToken();
 
@@ -280,7 +278,7 @@ class LtiServiceConnectorTest extends TestCase
 
         $this->expectException(ClientException::class);
 
-        $this->connector->makeServiceRequest($scopes, $method, $url, $body);
+        $this->connector->makeServiceRequest($this->registration, $scopes, $this->request);
     }
 
     private function mockCacheHasAccessToken()
