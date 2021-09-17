@@ -4,64 +4,36 @@ namespace Packback\Lti1p3;
 
 class LtiCourseGroupsService extends LtiAbstractService
 {
-    public function getScope()
+    public function getScope(): array
     {
         return $this->getServiceData()['scope'];
     }
 
-    public function getGroups()
+    public function getGroups(): array
     {
-        $groups = [];
+        $request = new ServiceRequest(
+            LtiServiceConnector::METHOD_GET,
+            $this->getServiceData()['context_groups_url']
+        );
+        $request->setAccept('application/vnd.ims.lti-gs.v1.contextgroupcontainer+json');
 
-        $nextPage = $this->getServiceData()['context_groups_url'];
-
-        while ($nextPage) {
-            $request = new ServiceRequest(LtiServiceConnector::METHOD_GET, $nextPage);
-            $request->setAccept('application/vnd.ims.lti-gs.v1.contextgroupcontainer+json');
-            $this->makeServiceRequest($request);
-
-            $groups = array_merge($groups, $page['body']['groups']);
-
-            $nextPage = false;
-            foreach ($page['headers'] as $header) {
-                if (preg_match(LtiServiceConnector::NEXT_PAGE_REGEX, $header, $matches)) {
-                    $nextPage = $matches[1];
-                    break;
-                }
-            }
-        }
-
-        return $groups;
+        return $this->getAll($request);
     }
 
-    public function getSets()
+    public function getSets(): array
     {
-        $sets = [];
-
         // Sets are optional.
         if (!isset($this->getServiceData()['context_group_sets_url'])) {
             return [];
         }
+        
+        $request = new ServiceRequest(
+            LtiServiceConnector::METHOD_GET,
+            $this->getServiceData()['context_group_sets_url']
+        );
+        $request->setAccept('application/vnd.ims.lti-gs.v1.contextgroupcontainer+json');
 
-        $nextPage = $this->getServiceData()['context_group_sets_url'];
-
-        while ($nextPage) {
-            $request = new ServiceRequest(LtiServiceConnector::METHOD_GET, $nextPage);
-            $request->setAccept('application/vnd.ims.lti-gs.v1.contextgroupcontainer+json');
-            $this->makeServiceRequest($request);
-
-            $sets = array_merge($sets, $page['body']['sets']);
-
-            $nextPage = false;
-            foreach ($page['headers'] as $header) {
-                if (preg_match(LtiServiceConnector::NEXT_PAGE_REGEX, $header, $matches)) {
-                    $nextPage = $matches[1];
-                    break;
-                }
-            }
-        }
-
-        return $sets;
+        return $this->makeServiceRequest($request);
     }
 
     public function getGroupsBySet()

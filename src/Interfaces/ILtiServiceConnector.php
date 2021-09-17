@@ -6,5 +6,12 @@ interface ILtiServiceConnector
 {
     public function getAccessToken(ILtiRegistration $registration, array $scopes);
 
-    public function makeServiceRequest(ILtiRegistration $registration, array $scopes, IServiceRequest $request, bool $shouldRetry = true);
+    public function makeServiceRequest(
+        ILtiRegistration $registration,
+        array $scopes,
+        IServiceRequest $request,
+        bool $shouldRetry = true
+    ): array;
+
+    public function getAll(ILtiRegistration $registration, array $scopes, IServiceRequest $request): array;
 }

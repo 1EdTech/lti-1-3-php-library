@@ -42,6 +42,13 @@ class ServiceRequest implements IServiceRequest
         return $payload;
     }
 
+    public function setUrl(string $url): IServiceRequest
+    {
+        $this->url = $url;
+
+        return $this;
+    }
+
     public function setAccessToken(string $accessToken): IServiceRequest
     {
         $this->accessToken = 'Bearer '.$accessToken;

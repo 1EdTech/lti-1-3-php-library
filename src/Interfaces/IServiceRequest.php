@@ -10,6 +10,8 @@ interface IServiceRequest
 
     public function getPayload(): array;
 
+    public function setUrl(string $url): self;
+
     public function setAccessToken(string $accessToken): self;
 
     public function setBody(string $body): self;

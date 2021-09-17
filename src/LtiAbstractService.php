@@ -22,7 +22,7 @@ abstract class LtiAbstractService
         $this->serviceData = $serviceData;
     }
 
-    public function makeServiceRequest(IServiceRequest $request)
+    public function makeServiceRequest(IServiceRequest $request): array
     {
         return $this->serviceConnector->makeServiceRequest(
             $this->registration,
@@ -31,17 +31,17 @@ abstract class LtiAbstractService
         );
     }
 
-    public function getServiceData()
+    public function getServiceData(): array
     {
         return $this->serviceData;
     }
 
-    public function setServiceData(array $serviceData)
+    public function setServiceData(array $serviceData): self
     {
         $this->serviceData = $serviceData;
 
         return $this;
     }
 
-    abstract public function getScope();
+    abstract public function getScope(): array;
 }

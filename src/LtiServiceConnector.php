@@ -79,7 +79,7 @@ class LtiServiceConnector implements ILtiServiceConnector
         array $scopes,
         IServiceRequest $request,
         bool $shouldRetry = true
-    ) {
+    ): array {
         $request->setAccessToken($this->getAccessToken($registration, $scopes));
 
         try {
@@ -115,11 +115,34 @@ class LtiServiceConnector implements ILtiServiceConnector
         ];
     }
 
+    public function getAll(ILtiRegistration $registration, array $scopes, IServiceRequest $request): array
+    {
+        $results = [];
+
+        while ($request->getUrl()) {
+            $response = $this->makeServiceRequest($registration, $scopes, $request);
+
+            $results = array_merge($results, $response['body']);
+
+            $response->setUrl($this->getNextUrl($response['headers']));
+        }
+
+        return $results;
+    }
+
     private function getAccessTokenCacheKey(ILtiRegistration $registration, array $scopes)
     {
         sort($scopes);
         $scopeKey = md5(implode('|', $scopes));
 
         return $registration->getIssuer().$registration->getClientId().$scopeKey;
+    }
+
+    private function getNextUrl(array $headers)
+    {
+        $subject = $headers['Link'] ?? '';
+        preg_match(LtiServiceConnector::NEXT_PAGE_REGEX, $subject, $matches);
+
+        return $matches[1] ?? null;
     }
 }

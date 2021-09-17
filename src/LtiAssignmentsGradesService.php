@@ -4,7 +4,7 @@ namespace Packback\Lti1p3;
 
 class LtiAssignmentsGradesService extends LtiAbstractService
 {
-    public function getScope()
+    public function getScope(): array
     {
         return $this->getServiceData()['scope'];
     }
@@ -75,34 +75,19 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         return $scores['body'];
     }
 
-    public function getLineItems()
+    public function getLineItems(): array
     {
         if (!in_array(LtiConstants::AGS_SCOPE_LINEITEM, $this->getScope())) {
             throw new LtiException('Missing required scope', 1);
         }
-        $lineitems = [];
 
-        $nextPage = $this->getServiceData()['lineitems'];
+        $request = new ServiceRequest(
+            LtiServiceConnector::METHOD_GET,
+            $this->getServiceData()['lineitems']
+        );
+        $request->setAccept('application/vnd.ims.lti-gs.v1.contextgroupcontainer+json');
 
-        while ($nextPage) {
-            $request = new ServiceRequest(LtiServiceConnector::METHOD_GET, $nextPage);
-            $request->setAccept('application/vnd.ims.lti-gs.v1.contextgroupcontainer+json');
-            $page = $this->makeServiceRequest($request);
-
-            $lineitems = array_merge($lineitems, $page['body']);
-            $nextPage = false;
-
-            // If the "Next" Link is not in the request headers, we can break the loop here.
-            if (!isset($page['headers']['Link'])) {
-                break;
-            }
-
-            $link = $page['headers']['Link'];
-
-            if (preg_match(LtiServiceConnector::NEXT_PAGE_REGEX, $link, $matches)) {
-                $nextPage = $matches[1];
-            }
-        }
+        $lineitems = $this->getAll($request);
 
         // If there is only one item, then wrap it in an array so the foreach works
         if (isset($lineitems['body']['id'])) {
