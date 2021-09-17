@@ -5,6 +5,7 @@ namespace Packback\Lti1p3;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
+use GuzzleHttp\Client;
 use Packback\Lti1p3\Interfaces\ICache;
 use Packback\Lti1p3\Interfaces\ICookie;
 use Packback\Lti1p3\Interfaces\IDatabase;
@@ -16,8 +17,9 @@ class LtiMessageLaunch
 {
     private $db;
     private $cache;
-    private $request;
     private $cookie;
+    private $serviceConnector;
+    private $request;
     private $jwt;
     private $registration;
     private $launch_id;
@@ -25,26 +27,36 @@ class LtiMessageLaunch
     /**
      * Constructor.
      *
-     * @param IDatabase $database instance of the database interface used for looking up registrations and deployments
-     * @param ICache    $cache    instance of the Cache interface used to loading and storing launches
-     * @param ICookie   $cookie   instance of the Cookie interface used to set and read cookies
+     * @param IDatabase            $database         instance of the database interface used for looking up registrations and deployments
+     * @param ICache               $cache            instance of the Cache interface used to loading and storing launches
+     * @param ICookie              $cookie           instance of the Cookie interface used to set and read cookies
+     * @param ILtiServiceConnector $serviceConnector instance of the LtiServiceConnector used to by LTI services to make API requests
      */
-    public function __construct(IDatabase $database, ICache $cache = null, ICookie $cookie = null)
-    {
+    public function __construct(
+        IDatabase $database,
+        ICache $cache = null,
+        ICookie $cookie = null,
+        ILtiServiceConnector $serviceConnector = null
+    ) {
         $this->db = $database;
 
         $this->launch_id = uniqid('lti1p3_launch_', true);
 
         $this->cache = $cache;
         $this->cookie = $cookie;
+        $this->serviceConnector = $serviceConnector;
     }
 
     /**
      * Static function to allow for method chaining without having to assign to a variable first.
      */
-    public static function new(IDatabase $database, ICache $cache = null, ICookie $cookie = null)
-    {
-        return new LtiMessageLaunch($database, $cache, $cookie);
+    public static function new(
+        IDatabase $database,
+        ICache $cache = null,
+        ICookie $cookie = null,
+        ILtiServiceConnector $serviceConnector = nul
+        ) {
+        return new LtiMessageLaunch($database, $cache, $cookie, $serviceConnector);
     }
 
     /**
@@ -111,7 +123,8 @@ class LtiMessageLaunch
     public function getNrps()
     {
         return new LtiNamesRolesProvisioningService(
-            new LtiServiceConnector($this->registration),
+            $this->serviceConnector,
+            $this->registration,
             $this->jwt['body'][LtiConstants::NRPS_CLAIM_SERVICE]);
     }
 
@@ -133,7 +146,8 @@ class LtiMessageLaunch
     public function getGs()
     {
         return new LtiCourseGroupsService(
-            new LtiServiceConnector($this->registration),
+            $this->serviceConnector,
+            $this->registration,
             $this->jwt['body'][LtiConstants::GS_CLAIM_SERVICE]);
     }
 
@@ -155,7 +169,8 @@ class LtiMessageLaunch
     public function getAgs()
     {
         return new LtiAssignmentsGradesService(
-            new LtiServiceConnector($this->registration),
+            $this->serviceConnector,
+            $this->registration,
             $this->jwt['body'][LtiConstants::AGS_CLAIM_ENDPOINT]);
     }
 
