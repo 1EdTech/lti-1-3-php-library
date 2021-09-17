@@ -4,6 +4,8 @@ namespace Packback\Lti1p3;
 
 class LtiCourseGroupsService extends LtiAbstractService
 {
+    public const CONTENTTYPE_CONTEXTGROUPCONTAINER = 'application/vnd.ims.lti-gs.v1.contextgroupcontainer+json';
+
     public function getScope(): array
     {
         return $this->getServiceData()['scope'];
@@ -15,7 +17,7 @@ class LtiCourseGroupsService extends LtiAbstractService
             LtiServiceConnector::METHOD_GET,
             $this->getServiceData()['context_groups_url']
         );
-        $request->setAccept('application/vnd.ims.lti-gs.v1.contextgroupcontainer+json');
+        $request->setAccept(static::CONTENTTYPE_CONTEXTGROUPCONTAINER);
 
         return $this->getAll($request, 'groups');
     }
@@ -31,7 +33,7 @@ class LtiCourseGroupsService extends LtiAbstractService
             LtiServiceConnector::METHOD_GET,
             $this->getServiceData()['context_group_sets_url']
         );
-        $request->setAccept('application/vnd.ims.lti-gs.v1.contextgroupcontainer+json');
+        $request->setAccept(static::CONTENTTYPE_CONTEXTGROUPCONTAINER);
 
         return $this->getAll($request, 'sets');
     }

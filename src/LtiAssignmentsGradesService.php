@@ -4,6 +4,10 @@ namespace Packback\Lti1p3;
 
 class LtiAssignmentsGradesService extends LtiAbstractService
 {
+    public const CONTENTTYPE_SCORE = 'application/vnd.ims.lis.v1.score+json';
+    public const CONTENTTYPE_LINEITEM = 'application/vnd.ims.lis.v2.lineitem+json';
+    public const CONTENTTYPE_RESULTCONTAINER = 'application/vnd.ims.lis.v2.resultcontainer+json';
+
     public function getScope(): array
     {
         return $this->getServiceData()['scope'];
@@ -33,7 +37,7 @@ class LtiAssignmentsGradesService extends LtiAbstractService
 
         $request = new ServiceRequest(LtiServiceConnector::METHOD_POST, $scoreUrl);
         $request->setBody($grade);
-        $request->setContentType('application/vnd.ims.lis.v1.score+json');
+        $request->setContentType(static::CONTENTTYPE_SCORE);
 
         return $this->makeServiceRequest($request);
     }
@@ -55,8 +59,8 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         }
         $request = new ServiceRequest(LtiServiceConnector::METHOD_POST, $this->getServiceData()['lineitems']);
         $request->setBody($newLineItem)
-            ->setContentType('application/vnd.ims.lis.v2.lineitem+json')
-            ->setAccept('application/vnd.ims.lis.v2.lineitem+json');
+            ->setContentType(static::CONTENTTYPE_LINEITEM)
+            ->setAccept(static::CONTENTTYPE_LINEITEM);
         $createdLineItems = $this->makeServiceRequest($request);
 
         return new LtiLineitem($createdLineItems['body']);
@@ -69,7 +73,7 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         $pos = strpos($lineitem->getId(), '?');
         $resultsUrl = $pos === false ? $lineitem->getId().'/results' : substr_replace($lineitem->getId(), '/results', $pos, 0);
         $request = new ServiceRequest(LtiServiceConnector::METHOD_GET, $resultsUrl);
-        $request->setAccept('application/vnd.ims.lis.v2.resultcontainer+json');
+        $request->setAccept();
         $scores = $this->makeServiceRequest($request);
 
         return $scores['body'];
@@ -85,7 +89,7 @@ class LtiAssignmentsGradesService extends LtiAbstractService
             LtiServiceConnector::METHOD_GET,
             $this->getServiceData()['lineitems']
         );
-        $request->setAccept('application/vnd.ims.lti-gs.v1.contextgroupcontainer+json');
+        $request->setAccept(static::CONTENTTYPE_RESULTCONTAINER);
 
         $lineitems = $this->getAll($request, 'lineitems');
 
