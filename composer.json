@@ -25,7 +25,7 @@
         "phpseclib/phpseclib": "^2.0"
     },
     "require-dev": {
-        "matt-allan/laravel-code-style": "^0.6.0",
+        "matt-allan/laravel-code-style": "dev-main",
         "mockery/mockery": "^1.4",
         "nesbot/carbon": "^2.43",
         "phpunit/phpunit": "^9.5"
