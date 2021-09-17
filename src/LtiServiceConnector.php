@@ -122,7 +122,7 @@ class LtiServiceConnector implements ILtiServiceConnector
         string $key
     ): array {
         if ($request->getMethod() !== static::METHOD_GET) {
-            throw new \Exception('An invalid method was specified for a request to get items.');
+            throw new \Exception('An invalid method was specified by an LTI service requesting all items.');
         }
 
         $results = [];
