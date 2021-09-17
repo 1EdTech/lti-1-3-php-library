@@ -6,7 +6,6 @@ use Mockery;
 use Packback\Lti1p3\Interfaces\IDatabase;
 use Packback\Lti1p3\Interfaces\ILtiRegistration;
 use Packback\Lti1p3\JwksEndpoint;
-use PHPUnit\Framework\TestCase;
 
 class JwksEndpointTest extends TestCase
 {

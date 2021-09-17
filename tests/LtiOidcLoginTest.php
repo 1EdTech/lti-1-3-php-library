@@ -8,7 +8,6 @@ use Packback\Lti1p3\Interfaces\ICookie;
 use Packback\Lti1p3\Interfaces\IDatabase;
 use Packback\Lti1p3\LtiOidcLogin;
 use Packback\Lti1p3\OidcException;
-use PHPUnit\Framework\TestCase;
 
 class LtiOidcLoginTest extends TestCase
 {

@@ -3,7 +3,6 @@
 namespace Tests;
 
 use Packback\Lti1p3\LtiRegistration;
-use PHPUnit\Framework\TestCase;
 
 class LtiRegistrationTest extends TestCase
 {

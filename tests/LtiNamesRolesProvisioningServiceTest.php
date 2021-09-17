@@ -6,7 +6,6 @@ use Mockery;
 use Packback\Lti1p3\Interfaces\ILtiRegistration;
 use Packback\Lti1p3\Interfaces\ILtiServiceConnector;
 use Packback\Lti1p3\LtiNamesRolesProvisioningService;
-use PHPUnit\Framework\TestCase;
 
 class LtiNamesRolesProvisioningServiceTest extends TestCase
 {

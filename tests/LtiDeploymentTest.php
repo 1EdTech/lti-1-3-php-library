@@ -3,7 +3,6 @@
 namespace Tests;
 
 use Packback\Lti1p3\LtiDeployment;
-use PHPUnit\Framework\TestCase;
 
 class LtiDeploymentTest extends TestCase
 {
