@@ -18,7 +18,7 @@ class LtiCourseGroupsService extends LtiAbstractService
         while ($nextPage) {
             $request = new ServiceRequest(LtiServiceConnector::METHOD_GET, $nextPage);
             $request->setAccept('application/vnd.ims.lti-gs.v1.contextgroupcontainer+json');
-            $this->makeServiceRequest($request);
+            $page = $this->makeServiceRequest($request);
 
             $groups = array_merge($groups, $page['body']['groups']);
 
@@ -48,7 +48,7 @@ class LtiCourseGroupsService extends LtiAbstractService
         while ($nextPage) {
             $request = new ServiceRequest(LtiServiceConnector::METHOD_GET, $nextPage);
             $request->setAccept('application/vnd.ims.lti-gs.v1.contextgroupcontainer+json');
-            $this->makeServiceRequest($request);
+            $page = $this->makeServiceRequest($request);
 
             $sets = array_merge($sets, $page['body']['sets']);
 
