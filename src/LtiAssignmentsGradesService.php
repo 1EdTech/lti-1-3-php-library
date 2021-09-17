@@ -57,7 +57,7 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         $request->setBody($newLineItem)
             ->setContentType('application/vnd.ims.lis.v2.lineitem+json')
             ->setAccept('application/vnd.ims.lis.v2.lineitem+json');
-        $created_lineitem = $this->makeServiceRequest($request);
+        $createdLineItems = $this->makeServiceRequest($request);
 
         return new LtiLineitem($created_lineitem['body']);
     }
