@@ -3,7 +3,7 @@
 namespace Tests\MessageValidators;
 
 use Packback\Lti1p3\MessageValidators\ResourceMessageValidator;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class ResourceMessageValidatorTest extends TestCase
 {

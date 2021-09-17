@@ -14,7 +14,7 @@ use Packback\Lti1p3\LtiException;
 use Packback\Lti1p3\LtiMessageLaunch;
 use Packback\Lti1p3\LtiOidcLogin;
 use Packback\Lti1p3\LtiRegistration;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class TestCache implements ICache
 {
