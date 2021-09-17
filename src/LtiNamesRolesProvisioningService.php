@@ -16,7 +16,7 @@ class LtiNamesRolesProvisioningService extends LtiAbstractService
             $this->getServiceData()['context_memberships_url']
         );
         $request->setAccept('application/vnd.ims.lti-nrps.v2.membershipcontainer+json');
-        
+
         return $this->getAll($request);
     }
 }

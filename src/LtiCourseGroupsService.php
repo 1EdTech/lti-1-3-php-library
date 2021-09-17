@@ -26,7 +26,7 @@ class LtiCourseGroupsService extends LtiAbstractService
         if (!isset($this->getServiceData()['context_group_sets_url'])) {
             return [];
         }
-        
+
         $request = new ServiceRequest(
             LtiServiceConnector::METHOD_GET,
             $this->getServiceData()['context_group_sets_url']
