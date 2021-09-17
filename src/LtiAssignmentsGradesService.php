@@ -57,9 +57,9 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         $request->setBody($newLineItem)
             ->setContentType('application/vnd.ims.lis.v2.lineitem+json')
             ->setAccept('application/vnd.ims.lis.v2.lineitem+json');
-        $created_lineitem = $this->makeServiceRequest($request);
+        $createdLineItems = $this->makeServiceRequest($request);
 
-        return new LtiLineitem($created_lineitem['body']);
+        return new LtiLineitem($createdLineItems['body']);
     }
 
     public function getGrades(LtiLineitem $lineitem)
@@ -67,9 +67,9 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         $lineitem = $this->findOrCreateLineitem($lineitem);
         // Place '/results' before url params
         $pos = strpos($lineitem->getId(), '?');
-        $results_url = $pos === false ? $lineitem->getId().'/results' : substr_replace($lineitem->getId(), '/results', $pos, 0);
-        $request = new ServiceRequest(LtiServiceConnector::METHOD_GET, $results_url);
-        $reques->setAccept('application/vnd.ims.lis.v2.resultcontainer+json');
+        $resultsUrl = $pos === false ? $lineitem->getId().'/results' : substr_replace($lineitem->getId(), '/results', $pos, 0);
+        $request = new ServiceRequest(LtiServiceConnector::METHOD_GET, $resultsUrl);
+        $request->setAccept('application/vnd.ims.lis.v2.resultcontainer+json');
         $scores = $this->makeServiceRequest($request);
 
         return $scores['body'];
