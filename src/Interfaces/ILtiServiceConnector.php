@@ -13,5 +13,10 @@ interface ILtiServiceConnector
         bool $shouldRetry = true
     ): array;
 
-    public function getAll(ILtiRegistration $registration, array $scopes, IServiceRequest $request): array;
+    public function getAll(
+        ILtiRegistration $registration,
+        array $scopes,
+        IServiceRequest $request,
+        string $key
+    ): array;
 }

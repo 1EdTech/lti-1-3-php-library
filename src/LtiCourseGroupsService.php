@@ -17,7 +17,7 @@ class LtiCourseGroupsService extends LtiAbstractService
         );
         $request->setAccept('application/vnd.ims.lti-gs.v1.contextgroupcontainer+json');
 
-        return $this->getAll($request);
+        return $this->getAll($request, 'groups');
     }
 
     public function getSets(): array
@@ -33,7 +33,7 @@ class LtiCourseGroupsService extends LtiAbstractService
         );
         $request->setAccept('application/vnd.ims.lti-gs.v1.contextgroupcontainer+json');
 
-        return $this->makeServiceRequest($request);
+        return $this->getAll($request, 'sets');
     }
 
     public function getGroupsBySet()

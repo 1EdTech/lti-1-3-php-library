@@ -115,16 +115,28 @@ class LtiServiceConnector implements ILtiServiceConnector
         ];
     }
 
-    public function getAll(ILtiRegistration $registration, array $scopes, IServiceRequest $request): array
-    {
-        $results = [];
+    public function getAll(
+        ILtiRegistration $registration,
+        array $scopes,
+        IServiceRequest $request,
+        string $key
+    ): array {
+        if ($request->getMethod() !== static::METHOD_GET) {
+            throw new \Exception('An invalid method was specified for a request to get items.');
+        }
 
-        while ($request->getUrl()) {
+        $results = [];
+        $nextUrl = $request->getUrl();
+
+        while ($nextUrl) {
             $response = $this->makeServiceRequest($registration, $scopes, $request);
 
-            $results = array_merge($results, $response['body']);
+            $results = array_merge($results, $response['body'][$key] ?? []);
 
-            $response->setUrl($this->getNextUrl($response['headers']));
+            $nextUrl = $this->getNextUrl($response['headers']);
+            if ($nextUrl) {
+                $request->setUrl($nextUrl);
+            }
         }
 
         return $results;

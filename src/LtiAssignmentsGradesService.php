@@ -87,7 +87,7 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         );
         $request->setAccept('application/vnd.ims.lti-gs.v1.contextgroupcontainer+json');
 
-        $lineitems = $this->getAll($request);
+        $lineitems = $this->getAll($request, 'lineitems');
 
         // If there is only one item, then wrap it in an array so the foreach works
         if (isset($lineitems['body']['id'])) {
