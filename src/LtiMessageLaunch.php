@@ -55,7 +55,7 @@ class LtiMessageLaunch
         IDatabase $database,
         ICache $cache = null,
         ICookie $cookie = null,
-        ILtiServiceConnector $serviceConnector = nul
+        ILtiServiceConnector $serviceConnector = null
         ) {
         return new LtiMessageLaunch($database, $cache, $cookie, $serviceConnector);
     }
