@@ -16,6 +16,9 @@ use Packback\Lti1p3\MessageValidators\SubmissionReviewMessageValidator;
 
 class LtiMessageLaunch
 {
+    public const TYPE_DEEPLINK = 'LtiDeepLinkingRequest';
+    public const TYPE_SUBMISSIONREVIEW = 'LtiSubmissionReviewRequest';
+    public const TYPE_RESOURCELINK = 'LtiResourceLinkRequest';
     private $db;
     private $cache;
     private $cookie;
@@ -71,9 +74,12 @@ class LtiMessageLaunch
      *
      * @return LtiMessageLaunch a populated and validated LtiMessageLaunch
      */
-    public static function fromCache($launch_id, IDatabase $database, ICache $cache = null)
+    public static function fromCache($launch_id,
+        IDatabase $database,
+        ICache $cache = null,
+        ILtiServiceConnector $serviceConnector = null)
     {
-        $new = new LtiMessageLaunch($database, $cache, null);
+        $new = new LtiMessageLaunch($database, $cache, null, $serviceConnector);
         $new->launch_id = $launch_id;
         $new->jwt = ['body' => $new->cache->getLaunchData($launch_id)];
 
@@ -176,6 +182,16 @@ class LtiMessageLaunch
     }
 
     /**
+     * Returns whether or not the current launch is a deep linking launch.
+     *
+     * @return bool returns true if the current launch is a deep linking launch
+     */
+    public function isDeepLinkLaunch()
+    {
+        return $this->jwt['body'][LtiConstants::MESSAGE_TYPE] === static::TYPE_DEEPLINK;
+    }
+
+    /**
      * Fetches a deep link that can be used to construct a deep linking response.
      *
      * @return LtiDeepLink an instance of a deep link to construct a deep linking response for the current launch
@@ -189,23 +205,13 @@ class LtiMessageLaunch
     }
 
     /**
-     * Returns whether or not the current launch is a deep linking launch.
-     *
-     * @return bool returns true if the current launch is a deep linking launch
-     */
-    public function isDeepLinkLaunch()
-    {
-        return $this->jwt['body'][LtiConstants::MESSAGE_TYPE] === 'LtiDeepLinkingRequest';
-    }
-
-    /**
      * Returns whether or not the current launch is a submission review launch.
      *
      * @return bool returns true if the current launch is a submission review launch
      */
     public function isSubmissionReviewLaunch()
     {
-        return $this->jwt['body'][LtiConstants::MESSAGE_TYPE] === 'LtiSubmissionReviewRequest';
+        return $this->jwt['body'][LtiConstants::MESSAGE_TYPE] === static::TYPE_SUBMISSIONREVIEW;
     }
 
     /**
@@ -215,7 +221,7 @@ class LtiMessageLaunch
      */
     public function isResourceLaunch()
     {
-        return $this->jwt['body'][LtiConstants::MESSAGE_TYPE] === 'LtiResourceLinkRequest';
+        return $this->jwt['body'][LtiConstants::MESSAGE_TYPE] === static::TYPE_RESOURCELINK;
     }
 
     /**
