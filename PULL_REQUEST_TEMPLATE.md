@@ -6,5 +6,4 @@
 
 <!-- Describe how this PR has been tested, manually and automatically. -->
 
-- [ ] I have run `composer test`
-- [ ] I have run `composer lint-fix`
+- [ ] I have added automated tests for my changes
