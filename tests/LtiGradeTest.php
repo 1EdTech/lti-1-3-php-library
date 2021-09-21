@@ -3,7 +3,6 @@
 namespace Tests;
 
 use Packback\Lti1p3\LtiGrade;
-use PHPUnit\Framework\TestCase;
 
 class LtiGradeTest extends TestCase
 {

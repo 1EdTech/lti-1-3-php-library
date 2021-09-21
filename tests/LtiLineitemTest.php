@@ -3,7 +3,6 @@
 namespace Tests;
 
 use Packback\Lti1p3\LtiLineitem;
-use PHPUnit\Framework\TestCase;
 
 class LtiLineitemTest extends TestCase
 {

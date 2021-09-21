@@ -5,7 +5,6 @@ namespace Tests;
 use Mockery;
 use Packback\Lti1p3\LtiDeepLinkResource;
 use Packback\Lti1p3\LtiLineitem;
-use PHPUnit\Framework\TestCase;
 
 class LtiDeepLinkResourceTest extends TestCase
 {

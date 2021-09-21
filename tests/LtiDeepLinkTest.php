@@ -5,7 +5,6 @@ namespace Tests;
 use Mockery;
 use Packback\Lti1p3\Interfaces\ILtiRegistration;
 use Packback\Lti1p3\LtiDeepLink;
-use PHPUnit\Framework\TestCase;
 
 class LtiDeepLinkTest extends TestCase
 {

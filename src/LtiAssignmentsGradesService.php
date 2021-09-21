@@ -4,7 +4,11 @@ namespace Packback\Lti1p3;
 
 class LtiAssignmentsGradesService extends LtiAbstractService
 {
-    public function getScope()
+    public const CONTENTTYPE_SCORE = 'application/vnd.ims.lis.v1.score+json';
+    public const CONTENTTYPE_LINEITEM = 'application/vnd.ims.lis.v2.lineitem+json';
+    public const CONTENTTYPE_RESULTCONTAINER = 'application/vnd.ims.lis.v2.resultcontainer+json';
+
+    public function getScope(): array
     {
         return $this->getServiceData()['scope'];
     }
@@ -33,7 +37,7 @@ class LtiAssignmentsGradesService extends LtiAbstractService
 
         $request = new ServiceRequest(LtiServiceConnector::METHOD_POST, $scoreUrl);
         $request->setBody($grade);
-        $request->setContentType('application/vnd.ims.lis.v1.score+json');
+        $request->setContentType(static::CONTENTTYPE_SCORE);
 
         return $this->makeServiceRequest($request);
     }
@@ -55,8 +59,8 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         }
         $request = new ServiceRequest(LtiServiceConnector::METHOD_POST, $this->getServiceData()['lineitems']);
         $request->setBody($newLineItem)
-            ->setContentType('application/vnd.ims.lis.v2.lineitem+json')
-            ->setAccept('application/vnd.ims.lis.v2.lineitem+json');
+            ->setContentType(static::CONTENTTYPE_LINEITEM)
+            ->setAccept(static::CONTENTTYPE_LINEITEM);
         $createdLineItems = $this->makeServiceRequest($request);
 
         return new LtiLineitem($createdLineItems['body']);
@@ -69,40 +73,25 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         $pos = strpos($lineitem->getId(), '?');
         $resultsUrl = $pos === false ? $lineitem->getId().'/results' : substr_replace($lineitem->getId(), '/results', $pos, 0);
         $request = new ServiceRequest(LtiServiceConnector::METHOD_GET, $resultsUrl);
-        $request->setAccept('application/vnd.ims.lis.v2.resultcontainer+json');
+        $request->setAccept();
         $scores = $this->makeServiceRequest($request);
 
         return $scores['body'];
     }
 
-    public function getLineItems()
+    public function getLineItems(): array
     {
         if (!in_array(LtiConstants::AGS_SCOPE_LINEITEM, $this->getScope())) {
             throw new LtiException('Missing required scope', 1);
         }
-        $lineitems = [];
 
-        $nextPage = $this->getServiceData()['lineitems'];
+        $request = new ServiceRequest(
+            LtiServiceConnector::METHOD_GET,
+            $this->getServiceData()['lineitems']
+        );
+        $request->setAccept(static::CONTENTTYPE_RESULTCONTAINER);
 
-        while ($nextPage) {
-            $request = new ServiceRequest(LtiServiceConnector::METHOD_GET, $nextPage);
-            $request->setAccept('application/vnd.ims.lti-gs.v1.contextgroupcontainer+json');
-            $page = $this->makeServiceRequest($request);
-
-            $lineitems = array_merge($lineitems, $page['body']);
-            $nextPage = false;
-
-            // If the "Next" Link is not in the request headers, we can break the loop here.
-            if (!isset($page['headers']['Link'])) {
-                break;
-            }
-
-            $link = $page['headers']['Link'];
-
-            if (preg_match(LtiServiceConnector::NEXT_PAGE_REGEX, $link, $matches)) {
-                $nextPage = $matches[1];
-            }
-        }
+        $lineitems = $this->getAll($request, 'lineitems');
 
         // If there is only one item, then wrap it in an array so the foreach works
         if (isset($lineitems['body']['id'])) {
