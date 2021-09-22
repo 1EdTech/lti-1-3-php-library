@@ -4,7 +4,19 @@ namespace Packback\Lti1p3\Interfaces;
 
 interface ILtiServiceConnector
 {
-    public function getAccessToken(array $scopes);
+    public function getAccessToken(ILtiRegistration $registration, array $scopes);
 
-    public function makeServiceRequest(array $scopes, string $method, string $url, string $body = null, $contentType = 'application/json', $accept = 'application/json');
+    public function makeServiceRequest(
+        ILtiRegistration $registration,
+        array $scopes,
+        IServiceRequest $request,
+        bool $shouldRetry = true
+    ): array;
+
+    public function getAll(
+        ILtiRegistration $registration,
+        array $scopes,
+        IServiceRequest $request,
+        string $key
+    ): array;
 }

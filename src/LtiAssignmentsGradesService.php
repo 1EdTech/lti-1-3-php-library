@@ -2,75 +2,68 @@
 
 namespace Packback\Lti1p3;
 
-use Packback\Lti1p3\Interfaces\ILtiServiceConnector;
-
-class LtiAssignmentsGradesService
+class LtiAssignmentsGradesService extends LtiAbstractService
 {
-    private $service_connector;
-    private $service_data;
+    public const CONTENTTYPE_SCORE = 'application/vnd.ims.lis.v1.score+json';
+    public const CONTENTTYPE_LINEITEM = 'application/vnd.ims.lis.v2.lineitem+json';
+    public const CONTENTTYPE_RESULTCONTAINER = 'application/vnd.ims.lis.v2.resultcontainer+json';
 
-    public function __construct(ILtiServiceConnector $service_connector, array $service_data)
+    public function getScope(): array
     {
-        $this->service_connector = $service_connector;
-        $this->service_data = $service_data;
+        return $this->getServiceData()['scope'];
     }
 
     public function putGrade(LtiGrade $grade, LtiLineitem $lineitem = null)
     {
-        if (!in_array(LtiConstants::AGS_SCOPE_SCORE, $this->service_data['scope'])) {
+        if (!in_array(LtiConstants::AGS_SCOPE_SCORE, $this->getScope())) {
             throw new LtiException('Missing required scope', 1);
         }
         if ($lineitem !== null && empty($lineitem->getId())) {
             $lineitem = $this->findOrCreateLineitem($lineitem);
-            $score_url = $lineitem->getId();
-        } elseif ($lineitem === null && !empty($this->service_data['lineitem'])) {
-            $score_url = $this->service_data['lineitem'];
+            $scoreUrl = $lineitem->getId();
+        } elseif ($lineitem === null && !empty($this->getServiceData()['lineitem'])) {
+            $scoreUrl = $this->getServiceData()['lineitem'];
         } else {
             $lineitem = LtiLineitem::new()
                 ->setLabel('default')
                 ->setScoreMaximum(100);
             $lineitem = $this->findOrCreateLineitem($lineitem);
-            $score_url = $lineitem->getId();
+            $scoreUrl = $lineitem->getId();
         }
 
         // Place '/scores' before url params
-        $pos = strpos($score_url, '?');
-        $score_url = $pos === false ? $score_url.'/scores' : substr_replace($score_url, '/scores', $pos, 0);
+        $pos = strpos($scoreUrl, '?');
+        $scoreUrl = $pos === false ? $scoreUrl.'/scores' : substr_replace($scoreUrl, '/scores', $pos, 0);
 
-        return $this->service_connector->makeServiceRequest(
-            $this->service_data['scope'],
-            LtiServiceConnector::METHOD_POST,
-            $score_url,
-            $grade,
-            'application/vnd.ims.lis.v1.score+json'
-        );
+        $request = new ServiceRequest(LtiServiceConnector::METHOD_POST, $scoreUrl);
+        $request->setBody($grade);
+        $request->setContentType(static::CONTENTTYPE_SCORE);
+
+        return $this->makeServiceRequest($request);
     }
 
-    public function findOrCreateLineitem(LtiLineitem $new_line_item)
+    public function findOrCreateLineitem(LtiLineitem $newLineItem)
     {
-        $line_items = $this->getLineItems();
+        $lineitems = $this->getLineItems();
 
-        foreach ($line_items as $line_item) {
+        foreach ($lineitems as $lineitem) {
             if (
-                (empty($new_line_item->getResourceId()) && empty($new_line_item->getResourceLinkId())) ||
-                (isset($line_item['resourceId']) && $line_item['resourceId'] == $new_line_item->getResourceId()) ||
-                (isset($line_item['resourceLinkId']) && $line_item['resourceLinkId'] == $new_line_item->getResourceLinkId())
+                (empty($newLineItem->getResourceId()) && empty($newLineItem->getResourceLinkId())) ||
+                (isset($lineitem['resourceId']) && $lineitem['resourceId'] == $newLineItem->getResourceId()) ||
+                (isset($lineitem['resourceLinkId']) && $lineitem['resourceLinkId'] == $newLineItem->getResourceLinkId())
             ) {
-                if (empty($new_line_item->getTag()) || $line_item['tag'] == $new_line_item->getTag()) {
-                    return new LtiLineitem($line_item);
+                if (empty($newLineItem->getTag()) || $lineitem['tag'] == $newLineItem->getTag()) {
+                    return new LtiLineitem($lineitem);
                 }
             }
         }
-        $created_line_item = $this->service_connector->makeServiceRequest(
-            $this->service_data['scope'],
-            LtiServiceConnector::METHOD_POST,
-            $this->service_data['lineitems'],
-            $new_line_item,
-            'application/vnd.ims.lis.v2.lineitem+json',
-            'application/vnd.ims.lis.v2.lineitem+json'
-        );
+        $request = new ServiceRequest(LtiServiceConnector::METHOD_POST, $this->getServiceData()['lineitems']);
+        $request->setBody($newLineItem)
+            ->setContentType(static::CONTENTTYPE_LINEITEM)
+            ->setAccept(static::CONTENTTYPE_LINEITEM);
+        $createdLineItems = $this->makeServiceRequest($request);
 
-        return new LtiLineitem($created_line_item['body']);
+        return new LtiLineitem($createdLineItems['body']);
     }
 
     public function getGrades(LtiLineitem $lineitem)
@@ -78,58 +71,33 @@ class LtiAssignmentsGradesService
         $lineitem = $this->findOrCreateLineitem($lineitem);
         // Place '/results' before url params
         $pos = strpos($lineitem->getId(), '?');
-        $results_url = $pos === false ? $lineitem->getId().'/results' : substr_replace($lineitem->getId(), '/results', $pos, 0);
-        $scores = $this->service_connector->makeServiceRequest(
-            $this->service_data['scope'],
-            LtiServiceConnector::METHOD_GET,
-            $results_url,
-            null,
-            null,
-            'application/vnd.ims.lis.v2.resultcontainer+json'
-        );
+        $resultsUrl = $pos === false ? $lineitem->getId().'/results' : substr_replace($lineitem->getId(), '/results', $pos, 0);
+        $request = new ServiceRequest(LtiServiceConnector::METHOD_GET, $resultsUrl);
+        $request->setAccept();
+        $scores = $this->makeServiceRequest($request);
 
         return $scores['body'];
     }
 
-    public function getLineItems()
+    public function getLineItems(): array
     {
-        if (!in_array(LtiConstants::AGS_SCOPE_LINEITEM, $this->service_data['scope'])) {
+        if (!in_array(LtiConstants::AGS_SCOPE_LINEITEM, $this->getScope())) {
             throw new LtiException('Missing required scope', 1);
         }
-        $line_items = [];
 
-        $next_page = $this->service_data['lineitems'];
+        $request = new ServiceRequest(
+            LtiServiceConnector::METHOD_GET,
+            $this->getServiceData()['lineitems']
+        );
+        $request->setAccept(static::CONTENTTYPE_RESULTCONTAINER);
 
-        while ($next_page) {
-            $page = $this->service_connector->makeServiceRequest(
-                $this->service_data['scope'],
-                LtiServiceConnector::METHOD_GET,
-                $next_page,
-                null,
-                null,
-                'application/vnd.ims.lti-gs.v1.contextgroupcontainer+json'
-            );
-
-            $line_items = array_merge($line_items, $page['body']);
-            $next_page = false;
-
-            // If the "Next" Link is not in the request headers, we can break the loop here.
-            if (!isset($page['headers']['Link'])) {
-                break;
-            }
-
-            $link = $page['headers']['Link'];
-
-            if (preg_match(LtiServiceConnector::NEXT_PAGE_REGEX, $link, $matches)) {
-                $next_page = $matches[1];
-            }
-        }
+        $lineitems = $this->getAll($request, 'lineitems');
 
         // If there is only one item, then wrap it in an array so the foreach works
-        if (isset($line_items['body']['id'])) {
-            $line_items['body'] = [$line_items['body']];
+        if (isset($lineitems['body']['id'])) {
+            $lineitems['body'] = [$lineitems['body']];
         }
 
-        return $line_items;
+        return $lineitems;
     }
 }

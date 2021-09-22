@@ -1,3 +1,8 @@
+## 3.0
+
+* Added a new method to `ICache`: `clearAccessToken()`.
+* Modified the constructor arguments for `LtiServiceConnector`, `LtiAssignmentGradesService`, `LtiCourseGroupsService`, and `LtiNamesRolesProvisioningService`.
+
 ## 2.0
 
 * A standard naming convention was implemented for all interfaces.

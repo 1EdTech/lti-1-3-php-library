@@ -5,19 +5,25 @@ namespace Packback\Lti1p3;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
+use GuzzleHttp\Client;
 use Packback\Lti1p3\Interfaces\ICache;
 use Packback\Lti1p3\Interfaces\ICookie;
 use Packback\Lti1p3\Interfaces\IDatabase;
+use Packback\Lti1p3\Interfaces\ILtiServiceConnector;
 use Packback\Lti1p3\MessageValidators\DeepLinkMessageValidator;
 use Packback\Lti1p3\MessageValidators\ResourceMessageValidator;
 use Packback\Lti1p3\MessageValidators\SubmissionReviewMessageValidator;
 
 class LtiMessageLaunch
 {
+    public const TYPE_DEEPLINK = 'LtiDeepLinkingRequest';
+    public const TYPE_SUBMISSIONREVIEW = 'LtiSubmissionReviewRequest';
+    public const TYPE_RESOURCELINK = 'LtiResourceLinkRequest';
     private $db;
     private $cache;
-    private $request;
     private $cookie;
+    private $serviceConnector;
+    private $request;
     private $jwt;
     private $registration;
     private $launch_id;
@@ -25,26 +31,36 @@ class LtiMessageLaunch
     /**
      * Constructor.
      *
-     * @param IDatabase $database instance of the database interface used for looking up registrations and deployments
-     * @param ICache    $cache    instance of the Cache interface used to loading and storing launches
-     * @param ICookie   $cookie   instance of the Cookie interface used to set and read cookies
+     * @param IDatabase            $database         instance of the database interface used for looking up registrations and deployments
+     * @param ICache               $cache            instance of the Cache interface used to loading and storing launches
+     * @param ICookie              $cookie           instance of the Cookie interface used to set and read cookies
+     * @param ILtiServiceConnector $serviceConnector instance of the LtiServiceConnector used to by LTI services to make API requests
      */
-    public function __construct(IDatabase $database, ICache $cache = null, ICookie $cookie = null)
-    {
+    public function __construct(
+        IDatabase $database,
+        ICache $cache = null,
+        ICookie $cookie = null,
+        ILtiServiceConnector $serviceConnector = null
+    ) {
         $this->db = $database;
 
         $this->launch_id = uniqid('lti1p3_launch_', true);
 
         $this->cache = $cache;
         $this->cookie = $cookie;
+        $this->serviceConnector = $serviceConnector;
     }
 
     /**
      * Static function to allow for method chaining without having to assign to a variable first.
      */
-    public static function new(IDatabase $database, ICache $cache = null, ICookie $cookie = null)
-    {
-        return new LtiMessageLaunch($database, $cache, $cookie);
+    public static function new(
+        IDatabase $database,
+        ICache $cache = null,
+        ICookie $cookie = null,
+        ILtiServiceConnector $serviceConnector = null
+        ) {
+        return new LtiMessageLaunch($database, $cache, $cookie, $serviceConnector);
     }
 
     /**
@@ -58,9 +74,12 @@ class LtiMessageLaunch
      *
      * @return LtiMessageLaunch a populated and validated LtiMessageLaunch
      */
-    public static function fromCache($launch_id, IDatabase $database, ICache $cache = null)
+    public static function fromCache($launch_id,
+        IDatabase $database,
+        ICache $cache = null,
+        ILtiServiceConnector $serviceConnector = null)
     {
-        $new = new LtiMessageLaunch($database, $cache, null);
+        $new = new LtiMessageLaunch($database, $cache, null, $serviceConnector);
         $new->launch_id = $launch_id;
         $new->jwt = ['body' => $new->cache->getLaunchData($launch_id)];
 
@@ -111,7 +130,8 @@ class LtiMessageLaunch
     public function getNrps()
     {
         return new LtiNamesRolesProvisioningService(
-            new LtiServiceConnector($this->registration),
+            $this->serviceConnector,
+            $this->registration,
             $this->jwt['body'][LtiConstants::NRPS_CLAIM_SERVICE]);
     }
 
@@ -133,7 +153,8 @@ class LtiMessageLaunch
     public function getGs()
     {
         return new LtiCourseGroupsService(
-            new LtiServiceConnector($this->registration),
+            $this->serviceConnector,
+            $this->registration,
             $this->jwt['body'][LtiConstants::GS_CLAIM_SERVICE]);
     }
 
@@ -155,8 +176,19 @@ class LtiMessageLaunch
     public function getAgs()
     {
         return new LtiAssignmentsGradesService(
-            new LtiServiceConnector($this->registration),
+            $this->serviceConnector,
+            $this->registration,
             $this->jwt['body'][LtiConstants::AGS_CLAIM_ENDPOINT]);
+    }
+
+    /**
+     * Returns whether or not the current launch is a deep linking launch.
+     *
+     * @return bool returns true if the current launch is a deep linking launch
+     */
+    public function isDeepLinkLaunch()
+    {
+        return $this->jwt['body'][LtiConstants::MESSAGE_TYPE] === static::TYPE_DEEPLINK;
     }
 
     /**
@@ -173,23 +205,13 @@ class LtiMessageLaunch
     }
 
     /**
-     * Returns whether or not the current launch is a deep linking launch.
-     *
-     * @return bool returns true if the current launch is a deep linking launch
-     */
-    public function isDeepLinkLaunch()
-    {
-        return $this->jwt['body'][LtiConstants::MESSAGE_TYPE] === 'LtiDeepLinkingRequest';
-    }
-
-    /**
      * Returns whether or not the current launch is a submission review launch.
      *
      * @return bool returns true if the current launch is a submission review launch
      */
     public function isSubmissionReviewLaunch()
     {
-        return $this->jwt['body'][LtiConstants::MESSAGE_TYPE] === 'LtiSubmissionReviewRequest';
+        return $this->jwt['body'][LtiConstants::MESSAGE_TYPE] === static::TYPE_SUBMISSIONREVIEW;
     }
 
     /**
@@ -199,7 +221,7 @@ class LtiMessageLaunch
      */
     public function isResourceLaunch()
     {
-        return $this->jwt['body'][LtiConstants::MESSAGE_TYPE] === 'LtiResourceLinkRequest';
+        return $this->jwt['body'][LtiConstants::MESSAGE_TYPE] === static::TYPE_RESOURCELINK;
     }
 
     /**
@@ -265,7 +287,7 @@ class LtiMessageLaunch
         // Check State for OIDC.
         if ($this->cookie->getCookie(LtiOidcLogin::COOKIE_PREFIX.$this->request['state']) !== $this->request['state']) {
             // Error if state doesn't match
-            throw new LtiException('State not found', 1);
+            throw new LtiException('State not found. Please make sure you have cookies enabled in this browser.', 1);
         }
 
         return $this;
@@ -314,7 +336,7 @@ class LtiMessageLaunch
         $this->registration = $this->db->findRegistrationByIssuer($this->jwt['body']['iss'], $client_id);
 
         if (empty($this->registration)) {
-            throw new LtiException('Registration not found.', 1);
+            throw new LtiException('Registration not found. Please have your admin confirm your Issuer URL, client ID, and deployment ID.', 1);
         }
 
         // Check client id.

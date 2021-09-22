@@ -3,7 +3,7 @@
 namespace Tests\MessageValidators;
 
 use Packback\Lti1p3\MessageValidators\DeepLinkMessageValidator;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class DeepLinkMessageValidatorTest extends TestCase
 {

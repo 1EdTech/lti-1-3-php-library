@@ -4,33 +4,32 @@ namespace Packback\Lti1p3;
 
 use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use Packback\Lti1p3\Interfaces\ICache;
 use Packback\Lti1p3\Interfaces\ILtiRegistration;
 use Packback\Lti1p3\Interfaces\ILtiServiceConnector;
+use Packback\Lti1p3\Interfaces\IServiceRequest;
 
 class LtiServiceConnector implements ILtiServiceConnector
 {
-    const NEXT_PAGE_REGEX = '/<([^>]*)>; ?rel="next"/i';
+    public const NEXT_PAGE_REGEX = '/<([^>]*)>; ?rel="next"/i';
 
-    const METHOD_GET = 'GET';
-    const METHOD_POST = 'POST';
+    public const METHOD_GET = 'GET';
+    public const METHOD_POST = 'POST';
 
     private $cache;
     private $client;
-    private $registration;
-    private $access_tokens = [];
 
-    public function __construct(ILtiRegistration $registration, ICache $cache, Client $client)
+    public function __construct(ICache $cache, Client $client)
     {
-        $this->registration = $registration;
         $this->cache = $cache;
         $this->client = $client;
     }
 
-    public function getAccessToken(array $scopes)
+    public function getAccessToken(ILtiRegistration $registration, array $scopes)
     {
         // Get a unique cache key for the access token
-        $accessTokenKey = $this->getAccessTokenCacheKey($scopes);
+        $accessTokenKey = $this->getAccessTokenCacheKey($registration, $scopes);
         // Get access token from cache if it exists
         $accessToken = $this->cache->getAccessToken($accessTokenKey);
         if ($accessToken) {
@@ -38,18 +37,18 @@ class LtiServiceConnector implements ILtiServiceConnector
         }
 
         // Build up JWT to exchange for an auth token
-        $clientId = $this->registration->getClientId();
+        $clientId = $registration->getClientId();
         $jwtClaim = [
-                'iss' => $clientId,
-                'sub' => $clientId,
-                'aud' => $this->registration->getAuthServer(),
-                'iat' => time() - 5,
-                'exp' => time() + 60,
-                'jti' => 'lti-service-token'.hash('sha256', random_bytes(64)),
+            'iss' => $clientId,
+            'sub' => $clientId,
+            'aud' => $registration->getAuthServer(),
+            'iat' => time() - 5,
+            'exp' => time() + 60,
+            'jti' => 'lti-service-token'.hash('sha256', random_bytes(64)),
         ];
 
         // Sign the JWT with our private key (given by the platform on registration)
-        $jwt = JWT::encode($jwtClaim, $this->registration->getToolPrivateKey(), 'RS256', $this->registration->getKid());
+        $jwt = JWT::encode($jwtClaim, $registration->getToolPrivateKey(), 'RS256', $registration->getKid());
 
         // Build auth token request headers
         $authRequest = [
@@ -59,7 +58,7 @@ class LtiServiceConnector implements ILtiServiceConnector
             'scope' => implode(' ', $scopes),
         ];
 
-        $url = $this->registration->getAuthTokenUrl();
+        $url = $registration->getAuthTokenUrl();
 
         // Get Access
         $response = $this->client->post($url, [
@@ -75,28 +74,34 @@ class LtiServiceConnector implements ILtiServiceConnector
         return $tokenData['access_token'];
     }
 
-    public function makeServiceRequest(array $scopes, string $method, string $url, string $body = null, $contentType = 'application/json', $accept = 'application/json')
-    {
-        $headers = [
-            'Authorization' => 'Bearer '.$this->getAccessToken($scopes),
-            'Accept' => $accept,
-        ];
+    public function makeServiceRequest(
+        ILtiRegistration $registration,
+        array $scopes,
+        IServiceRequest $request,
+        bool $shouldRetry = true
+    ): array {
+        $request->setAccessToken($this->getAccessToken($registration, $scopes));
 
-        switch (strtoupper($method)) {
-            case 'POST':
-                $headers = array_merge($headers, ['Content-Type' => $contentType]);
-                $response = $this->client->request($method, $url, [
-                    'headers' => $headers,
-                    'body' => $body,
-                ]);
-                break;
-            default:
-                $response = $this->client->request($method, $url, [
-                    'headers' => $headers,
-                ]);
-                break;
+        try {
+            $response = $this->client->request(
+                $request->getMethod(),
+                $request->getUrl(),
+                $request->getPayload()
+            );
+        } catch (ClientException $e) {
+            $status = $e->getResponse()->getStatusCode();
+
+            // If the error was due to invalid authentication and the request
+            // should be retried, clear the access token and retry it.
+            if ($status === 401 && $shouldRetry) {
+                $key = $this->getAccessTokenCacheKey($registration, $scopes);
+                $this->cache->clearAccessToken($key);
+
+                return $this->makeServiceRequest($registration, $scopes, $request, false);
+            }
+
+            throw $e;
         }
-
         $respHeaders = $response->getHeaders();
         array_walk($respHeaders, function (&$value) {
             $value = $value[0];
@@ -110,11 +115,46 @@ class LtiServiceConnector implements ILtiServiceConnector
         ];
     }
 
-    private function getAccessTokenCacheKey(array $scopes)
+    public function getAll(
+        ILtiRegistration $registration,
+        array $scopes,
+        IServiceRequest $request,
+        string $key
+    ): array {
+        if ($request->getMethod() !== static::METHOD_GET) {
+            throw new \Exception('An invalid method was specified by an LTI service requesting all items.');
+        }
+
+        $results = [];
+        $nextUrl = $request->getUrl();
+
+        while ($nextUrl) {
+            $response = $this->makeServiceRequest($registration, $scopes, $request);
+
+            $results = array_merge($results, $response['body'][$key] ?? []);
+
+            $nextUrl = $this->getNextUrl($response['headers']);
+            if ($nextUrl) {
+                $request->setUrl($nextUrl);
+            }
+        }
+
+        return $results;
+    }
+
+    private function getAccessTokenCacheKey(ILtiRegistration $registration, array $scopes)
     {
         sort($scopes);
         $scopeKey = md5(implode('|', $scopes));
 
-        return $this->registration->getIssuer().$this->registration->getClientId().$scopeKey;
+        return $registration->getIssuer().$registration->getClientId().$scopeKey;
+    }
+
+    private function getNextUrl(array $headers)
+    {
+        $subject = $headers['Link'] ?? '';
+        preg_match(LtiServiceConnector::NEXT_PAGE_REGEX, $subject, $matches);
+
+        return $matches[1] ?? null;
     }
 }

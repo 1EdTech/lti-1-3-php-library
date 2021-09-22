@@ -3,12 +3,13 @@
 namespace Tests;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use Mockery;
 use Packback\Lti1p3\Interfaces\ICache;
 use Packback\Lti1p3\Interfaces\ILtiRegistration;
+use Packback\Lti1p3\Interfaces\IServiceRequest;
 use Packback\Lti1p3\LtiRegistration;
 use Packback\Lti1p3\LtiServiceConnector;
-use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 
 class LtiServiceConnectorTest extends TestCase
@@ -30,10 +31,6 @@ class LtiServiceConnectorTest extends TestCase
      */
     private $response;
     /**
-     * @var string
-     */
-    private $token;
-    /**
      * @var LtiServiceConnector
      */
     private $connector;
@@ -41,13 +38,33 @@ class LtiServiceConnectorTest extends TestCase
     public function setUp(): void
     {
         $this->registration = Mockery::mock(ILtiRegistration::class);
+        $this->request = Mockery::mock(IServiceRequest::class);
         $this->cache = Mockery::mock(ICache::class);
         $this->client = Mockery::mock(Client::class);
         $this->response = Mockery::mock(ResponseInterface::class);
 
+        $this->scopes = ['scopeKey'];
         $this->token = 'TokenOfAccess';
+        $this->method = LtiServiceConnector::METHOD_POST;
+        $this->url = 'https://example.com';
+        $this->body = json_encode(['post' => 'body']);
+        $this->requestHeaders = [
+            'Authorization' => 'Bearer '.$this->token,
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ];
+        $this->responseHeaders = [
+            'Content-Type' => ['application/json'],
+            'Server' => ['nginx'],
+        ];
+        $this->requestPayload = [
+            'headers' => $this->requestHeaders,
+            'body' => $this->body,
+        ];
+        $this->responseBody = ['some' => 'response'];
+        $this->responseStatus = 200;
 
-        $this->connector = new LtiServiceConnector($this->registration, $this->cache, $this->client);
+        $this->connector = new LtiServiceConnector($this->cache, $this->client);
     }
 
     public function testItInstantiates()
@@ -59,7 +76,7 @@ class LtiServiceConnectorTest extends TestCase
     {
         $this->mockCacheHasAccessToken();
 
-        $result = $this->connector->getAccessToken(['scopeKey']);
+        $result = $this->connector->getAccessToken($this->registration, ['scopeKey']);
 
         $this->assertEquals($result, $this->token);
     }
@@ -74,7 +91,7 @@ class LtiServiceConnectorTest extends TestCase
             'kid' => 'kid',
             'authTokenUrl' => 'auth_token_url',
         ]);
-        $connector = new LtiServiceConnector($registration, $this->cache, $this->client);
+        $connector = new LtiServiceConnector($this->cache, $this->client);
 
         $this->cache->shouldReceive('getAccessToken')
             ->once()->andReturn(false);
@@ -84,102 +101,260 @@ class LtiServiceConnectorTest extends TestCase
             ->once()->andReturn(json_encode(['access_token' => $this->token]));
         $this->cache->shouldReceive('cacheAccessToken')->once();
 
-        $result = $connector->getAccessToken(['scopeKey']);
+        $result = $connector->getAccessToken($registration, ['scopeKey']);
 
         $this->assertEquals($result, $this->token);
     }
 
-    public function testItMakesPostServiceRequest()
+    public function testItMakesAServiceRequest()
     {
-        $scopes = ['scopeKey'];
-        $method = 'post';
-        $url = 'https://example.com';
-        $body = json_encode(['post' => 'body']);
-        $requestHeaders = [
+        $expected = [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Server' => 'nginx',
+            ],
+            'body' => $this->responseBody,
+            'status' => $this->responseStatus,
+        ];
+
+        $this->request->shouldReceive('setAccessToken')
+            ->once()->andReturn($this->request);
+        $this->mockMakeRequest();
+
+        $this->mockCacheHasAccessToken();
+        $this->client->shouldReceive('request')
+            ->with($this->method, $this->url, $this->requestPayload)
+            ->once()->andReturn($this->response);
+        $this->response->shouldReceive('getHeaders')
+            ->once()->andReturn($this->responseHeaders);
+        $this->response->shouldReceive('getBody')
+            ->once()->andReturn(json_encode($this->responseBody));
+        $this->response->shouldReceive('getStatusCode')
+            ->once()->andReturn($this->responseStatus);
+
+        $result = $this->connector->makeServiceRequest($this->registration, $this->scopes, $this->request);
+
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testItRetriesServiceRequestOn401Error()
+    {
+        $this->method = LtiServiceConnector::METHOD_POST;
+        $this->url = 'https://example.com';
+        $this->body = json_encode(['post' => 'body']);
+        $this->requestHeaders = [
             'Authorization' => 'Bearer '.$this->token,
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
         ];
-        $responseHeaders = [
+        $this->responseHeaders = [
             'Content-Type' => ['application/json'],
             'Server' => ['nginx'],
         ];
-        $responseBody = ['some' => 'response'];
-        $responseStatus = 200;
+        $this->requestPayload = [
+            'headers' => $this->requestHeaders,
+            'body' => $this->body,
+        ];
+        $this->responseBody = ['some' => 'response'];
+        $this->responseStatus = 200;
         $expected = [
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Server' => 'nginx',
             ],
-            'body' => $responseBody,
-            'status' => $responseStatus,
+            'body' => $this->responseBody,
+            'status' => $this->responseStatus,
         ];
 
+        // It gets an access token
         $this->mockCacheHasAccessToken();
+        // It sets it on the request
+        $this->request->shouldReceive('setAccessToken')
+            ->once()->andReturn($this->request);
+        // It makes the request
+        $this->mockMakeRequest();
+
+        // The request fails
+        $this->mockRequestReturnsA401();
+
+        // It clears the access token from the cache
+        $this->mockCacheHasAccessToken();
+        $this->cache->shouldReceive('clearAccessToken')->once();
+
+        // It gets a new access token
+        $this->mockGetAccessTokenCacheKey();
+        $this->request->shouldReceive('setAccessToken')
+            ->once()->andReturn($this->request);
+        // It makes another request
+        $this->mockMakeRequest();
+
+        // Mock the response succeeding on the retry
         $this->client->shouldReceive('request')
-            ->with($method, $url, [
-                'headers' => $requestHeaders,
-                'body' => $body,
+            ->with($this->method, $this->url, [
+                'headers' => $this->requestHeaders,
+                'body' => $this->body,
             ])->once()->andReturn($this->response);
         $this->response->shouldReceive('getHeaders')
-            ->once()->andReturn($responseHeaders);
+            ->once()->andReturn($this->responseHeaders);
         $this->response->shouldReceive('getBody')
-            ->once()->andReturn(json_encode($responseBody));
+            ->once()->andReturn(json_encode($this->responseBody));
         $this->response->shouldReceive('getStatusCode')
-            ->once()->andReturn(json_encode($responseStatus));
+            ->once()->andReturn($this->responseStatus);
 
-        $result = $this->connector->makeServiceRequest($scopes, $method, $url, $body);
+        $result = $this->connector->makeServiceRequest($this->registration, $this->scopes, $this->request);
 
         $this->assertEquals($expected, $result);
     }
 
-    public function testItMakesDefaultServiceRequest()
+    public function testItThrowsOnRepeated401Errors()
     {
-        $scopes = ['scopeKey'];
-        $method = 'get';
-        $url = 'https://example.com';
-        $requestHeaders = [
+        $this->method = LtiServiceConnector::METHOD_POST;
+        $this->url = 'https://example.com';
+        $this->body = json_encode(['post' => 'body']);
+        $this->requestHeaders = [
             'Authorization' => 'Bearer '.$this->token,
             'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
         ];
-        $responseHeaders = [
+        $this->responseHeaders = [
             'Content-Type' => ['application/json'],
             'Server' => ['nginx'],
         ];
-        $responseBody = ['some' => 'response'];
-        $responseStatus = 200;
+        $this->requestPayload = [
+            'headers' => $this->requestHeaders,
+            'body' => $this->body,
+        ];
+        $this->responseBody = ['some' => 'response'];
         $expected = [
             'headers' => [
                 'Content-Type' => 'application/json',
                 'Server' => 'nginx',
             ],
-            'body' => $responseBody,
-            'status' => $responseStatus,
+            'body' => $this->responseBody,
         ];
 
+        // It gets an access token
         $this->mockCacheHasAccessToken();
-        $this->client->shouldReceive('request')
-            ->with($method, $url, [
-                'headers' => $requestHeaders,
-            ])->once()->andReturn($this->response);
-        $this->response->shouldReceive('getHeaders')
-            ->once()->andReturn($responseHeaders);
-        $this->response->shouldReceive('getBody')
-            ->once()->andReturn(json_encode($responseBody));
-        $this->response->shouldReceive('getStatusCode')
-            ->once()->andReturn(json_encode($responseStatus));
+        // It sets it on the request
+        $this->request->shouldReceive('setAccessToken')
+            ->once()->andReturn($this->request);
+        // It makes the request
+        $this->mockMakeRequest();
 
-        $result = $this->connector->makeServiceRequest($scopes, $method, $url);
+        // The request fails
+        $this->mockRequestReturnsA401();
+
+        // It clears the access token from the cache
+        $this->mockCacheHasAccessToken();
+        $this->cache->shouldReceive('clearAccessToken')->once();
+
+        // It gets a new access token
+        $this->mockGetAccessTokenCacheKey();
+        $this->request->shouldReceive('setAccessToken')
+            ->once()->andReturn($this->request);
+        // It makes another request
+        $this->mockMakeRequest();
+
+        // The request fails again
+        $this->mockRequestReturnsA401();
+
+        $this->expectException(ClientException::class);
+
+        $this->connector->makeServiceRequest($this->registration, $this->scopes, $this->request);
+    }
+
+    public function testItGetsAll()
+    {
+        $method = LtiServiceConnector::METHOD_GET;
+        $key = 'lineitems';
+        $lineitems = ['lineitem'];
+        $firstResponseHeaders = [
+            'Link' => ['Something<'.$this->url.'>;rel="next"'],
+            'Content-Type' => ['application/json'],
+            'Server' => ['nginx'],
+        ];
+        $responseBody = json_encode([$key => $lineitems]);
+        $expected = array_merge($lineitems, $lineitems);
+
+        // Sets the access token on two requests
+        $this->registration->shouldReceive('getClientId')
+            ->twice()->andReturn('client_id');
+        $this->registration->shouldReceive('getIssuer')
+            ->twice()->andReturn('issuer');
+        $this->cache->shouldReceive('getAccessToken')
+            ->twice()->andReturn($this->token);
+        $this->request->shouldReceive('setAccessToken')
+            ->twice()->andReturn($this->request);
+
+        // Makes two requests, but gets the method and URL once before making the request
+        $this->request->shouldReceive('getMethod')
+            ->times(3)->andReturn($method);
+        $this->request->shouldReceive('getUrl')
+            ->times(3)->andReturn($this->url);
+        $this->request->shouldReceive('getPayload')
+            ->twice()->andReturn($this->requestPayload);
+        // Doesn't find a matching link in on the second header, so only updates the URL once
+        $this->request->shouldReceive('setUrl')
+            ->once()->andReturn($this->request);
+
+        // Two responses come back
+        $this->client->shouldReceive('request')
+            ->with($method, $this->url, $this->requestPayload)
+            ->twice()->andReturn($this->response);
+        $this->response->shouldReceive('getBody')
+            ->twice()->andReturn($responseBody);
+        $this->response->shouldReceive('getStatusCode')
+            ->twice()->andReturn($this->responseStatus);
+        // The first has a Link header
+        $this->response->shouldReceive('getHeaders')
+            ->once()->andReturn($firstResponseHeaders);
+        // The second doesnt
+        $this->response->shouldReceive('getHeaders')
+            ->once()->andReturn($this->responseHeaders);
+
+        $result = $this->connector->getAll($this->registration, $this->scopes, $this->request, $key);
 
         $this->assertEquals($expected, $result);
     }
 
-    private function mockCacheHasAccessToken()
+    private function mockMakeRequest()
+    {
+        // It makes another request
+        $this->request->shouldReceive('getMethod')
+            ->once()->andReturn($this->method);
+        $this->request->shouldReceive('getUrl')
+            ->once()->andReturn($this->url);
+        $this->request->shouldReceive('getPayload')
+            ->once()->andReturn($this->requestPayload);
+    }
+
+    private function mockRequestReturnsA401()
+    {
+        $mockError = Mockery::mock(ClientException::class);
+        $mockResponse = Mockery::mock(ResponseInterface::class);
+        $mockError->shouldReceive('getResponse')
+            ->once()->andReturn($mockResponse);
+        $mockResponse->shouldReceive('getStatusCode')
+            ->once()->andReturn(401);
+        $this->client->shouldReceive('request')
+            ->with($this->method, $this->url, [
+                'headers' => $this->requestHeaders,
+                'body' => $this->body,
+            ])->once()
+            ->andThrow($mockError);
+    }
+
+    private function mockGetAccessTokenCacheKey()
     {
         $this->registration->shouldReceive('getClientId')
             ->once()->andReturn('client_id');
         $this->registration->shouldReceive('getIssuer')
             ->once()->andReturn('issuer');
+    }
+
+    private function mockCacheHasAccessToken()
+    {
+        $this->mockGetAccessTokenCacheKey();
         $this->cache->shouldReceive('getAccessToken')
             ->once()->andReturn($this->token);
     }

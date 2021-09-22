@@ -14,7 +14,7 @@ use Packback\Lti1p3\LtiException;
 use Packback\Lti1p3\LtiMessageLaunch;
 use Packback\Lti1p3\LtiOidcLogin;
 use Packback\Lti1p3\LtiRegistration;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class TestCache implements ICache
 {
@@ -53,6 +53,13 @@ class TestCache implements ICache
     public function getAccessToken($key)
     {
         return $this->launchData[$key] ?? null;
+    }
+
+    public function clearAccessToken($key)
+    {
+        $this->launchData[$key] = null;
+
+        return $this->launchData;
     }
 }
 
@@ -97,12 +104,12 @@ class TestDb implements IDatabase
 
 class Lti13CertificationTest extends TestCase
 {
-    const ISSUER_URL = 'https://ltiadvantagevalidator.imsglobal.org';
-    const JWKS_FILE = '/tmp/jwks.json';
-    const CERT_DATA_DIR = __DIR__.'/../data/certification/';
-    const PRIVATE_KEY = __DIR__.'/../data/private.key';
+    public const ISSUER_URL = 'https://ltiadvantagevalidator.imsglobal.org';
+    public const JWKS_FILE = '/tmp/jwks.json';
+    public const CERT_DATA_DIR = __DIR__.'/../data/certification/';
+    public const PRIVATE_KEY = __DIR__.'/../data/private.key';
 
-    const STATE = 'state';
+    public const STATE = 'state';
 
     private $issuer;
     private $key;

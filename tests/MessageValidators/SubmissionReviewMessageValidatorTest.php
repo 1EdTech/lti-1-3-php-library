@@ -3,7 +3,7 @@
 namespace Tests\MessageValidators;
 
 use Packback\Lti1p3\MessageValidators\SubmissionReviewMessageValidator;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class SubmissionReviewMessageValidatorTest extends TestCase
 {

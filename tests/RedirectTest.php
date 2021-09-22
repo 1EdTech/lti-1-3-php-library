@@ -3,7 +3,6 @@
 namespace Tests;
 
 use Packback\Lti1p3\Redirect;
-use PHPUnit\Framework\TestCase;
 
 class RedirectTest extends TestCase
 {
