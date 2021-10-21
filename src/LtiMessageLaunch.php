@@ -295,7 +295,7 @@ class LtiMessageLaunch
 
     private function validateJwtFormat()
     {
-        $jwt = $this->request['id_token'];
+        $jwt = $this->request['id_token'] ?? null;
 
         if (empty($jwt)) {
             throw new LtiException('Missing id_token', 1);
