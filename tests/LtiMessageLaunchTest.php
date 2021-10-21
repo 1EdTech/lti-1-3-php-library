@@ -15,6 +15,7 @@ use Packback\Lti1p3\LtiAssignmentsGradesService;
 use Packback\Lti1p3\LtiConstants;
 use Packback\Lti1p3\LtiCourseGroupsService;
 use Packback\Lti1p3\LtiDeepLink;
+use Packback\Lti1p3\LtiException;
 use Packback\Lti1p3\LtiMessageLaunch;
 use Packback\Lti1p3\LtiNamesRolesProvisioningService;
 
@@ -186,6 +187,210 @@ class LtiMessageLaunchTest extends TestCase
         $actual = $this->messageLaunch->validate($params);
 
         $this->assertInstanceOf(LtiMessageLaunch::class, $actual);
+    }
+
+    public function testALaunchFailsIfCookiesAreDisabled()
+    {
+        $payload = [
+            'utf8' => '✓',
+            'id_token' => $this->buildJWT($this->payload, $this->issuer),
+            'state' => static::STATE,
+        ];
+        $this->cookie->shouldReceive('getCookie')
+            ->once()->andReturn();
+
+        $this->expectException(LtiException::class);
+        $this->expectExceptionMessage(LtiMessageLaunch::ERR_STATE_NOT_FOUND);
+
+        $actual = $this->messageLaunch->validate($payload);
+    }
+
+    public function testALaunchFailsIfIdTokenIsMissing()
+    {
+        $payload = [
+            'utf8' => '✓',
+            'state' => static::STATE,
+        ];
+        $this->cookie->shouldReceive('getCookie')
+            ->once()->andReturn($payload['state']);
+
+        $this->expectException(LtiException::class);
+        $this->expectExceptionMessage(LtiMessageLaunch::ERR_MISSING_ID_TOKEN);
+
+        $actual = $this->messageLaunch->validate($payload);
+    }
+
+    public function testALaunchFailsIfJwtIsInvalid()
+    {
+        $payload = [
+            'utf8' => '✓',
+            'id_token' => 'nope',
+            'state' => static::STATE,
+        ];
+        $this->cookie->shouldReceive('getCookie')
+            ->once()->andReturn($payload['state']);
+
+        $this->expectException(LtiException::class);
+        $this->expectExceptionMessage(LtiMessageLaunch::ERR_INVALID_ID_TOKEN);
+
+        $actual = $this->messageLaunch->validate($payload);
+    }
+
+    public function testALaunchFailsIfNonceIsMissing()
+    {
+        $jwtPayload = $this->payload;
+        unset($jwtPayload['nonce']);
+        $payload = [
+            'utf8' => '✓',
+            'id_token' => $this->buildJWT($jwtPayload, $this->issuer),
+            'state' => static::STATE,
+        ];
+        $this->cookie->shouldReceive('getCookie')
+            ->once()->andReturn($payload['state']);
+
+        $this->expectException(LtiException::class);
+        $this->expectExceptionMessage(LtiMessageLaunch::ERR_MISSING_NONCE);
+
+        $actual = $this->messageLaunch->validate($payload);
+    }
+
+    public function testALaunchFailsIfNonceIsInvalid()
+    {
+        $jwtPayload = $this->payload;
+        $jwtPayload['nonce'] = 'schmonze';
+        $payload = [
+            'utf8' => '✓',
+            'id_token' => $this->buildJWT($jwtPayload, $this->issuer),
+            'state' => static::STATE,
+        ];
+        $this->cookie->shouldReceive('getCookie')
+            ->once()->andReturn($payload['state']);
+        $this->cache->shouldReceive('checkNonce')
+            ->once()->andReturn(false);
+
+        $this->expectException(LtiException::class);
+        $this->expectExceptionMessage(LtiMessageLaunch::ERR_INVALID_NONCE);
+
+        $actual = $this->messageLaunch->validate($payload);
+    }
+
+    public function testALaunchFailsIfMissingRegistration()
+    {
+        $payload = [
+            'utf8' => '✓',
+            'id_token' => $this->buildJWT($this->payload, $this->issuer),
+            'state' => static::STATE,
+        ];
+        $this->cookie->shouldReceive('getCookie')
+            ->once()->andReturn($payload['state']);
+        $this->cache->shouldReceive('checkNonce')
+            ->once()->andReturn(true);
+        $this->database->shouldReceive('findRegistrationByIssuer')
+            ->once()->andReturn();
+
+        $this->expectException(LtiException::class);
+        $this->expectExceptionMessage(LtiMessageLaunch::ERR_MISSING_REGISTRATION);
+
+        $actual = $this->messageLaunch->validate($payload);
+    }
+
+    public function testALaunchFailsIfRegistrationClientIdIsWrong()
+    {
+        $payload = [
+            'utf8' => '✓',
+            'id_token' => $this->buildJWT($this->payload, $this->issuer),
+            'state' => static::STATE,
+        ];
+        $this->cookie->shouldReceive('getCookie')
+            ->once()->andReturn($payload['state']);
+        $this->cache->shouldReceive('checkNonce')
+            ->once()->andReturn(true);
+        $this->database->shouldReceive('findRegistrationByIssuer')
+            ->once()->andReturn($this->registration);
+        $this->registration->shouldReceive('getClientId')
+            ->once()->andReturn('nope');
+
+        $this->expectException(LtiException::class);
+        $this->expectExceptionMessage(LtiMessageLaunch::ERR_CLIENT_NOT_REGISTERED);
+
+        $actual = $this->messageLaunch->validate($payload);
+    }
+
+    public function testALaunchFailsIfKIDIsMissing()
+    {
+        $jwtHeader = $this->issuer;
+        unset($jwtHeader['kid']);
+        $payload = [
+            'utf8' => '✓',
+            'id_token' => $this->buildJWT($this->payload, $jwtHeader),
+            'state' => static::STATE,
+        ];
+        $this->cookie->shouldReceive('getCookie')
+            ->once()->andReturn($payload['state']);
+        $this->cache->shouldReceive('checkNonce')
+            ->once()->andReturn(true);
+        $this->database->shouldReceive('findRegistrationByIssuer')
+            ->once()->andReturn($this->registration);
+        $this->registration->shouldReceive('getClientId')
+            ->once()->andReturn($this->payload['aud']);
+
+        $this->expectException(LtiException::class);
+        $this->expectExceptionMessage(LtiMessageLaunch::ERR_NO_KID);
+
+        $actual = $this->messageLaunch->validate($payload);
+    }
+
+    public function testALaunchFailsIfDeploymentIdIsMissing()
+    {
+        $jwtPayload = $this->payload;
+        unset($jwtPayload[LtiConstants::DEPLOYMENT_ID]);
+        $payload = [
+            'utf8' => '✓',
+            'id_token' => $this->buildJWT($jwtPayload, $this->issuer),
+            'state' => static::STATE,
+        ];
+        $this->cookie->shouldReceive('getCookie')
+            ->once()->andReturn($payload['state']);
+        $this->cache->shouldReceive('checkNonce')
+            ->once()->andReturn(true);
+        $this->database->shouldReceive('findRegistrationByIssuer')
+            ->once()->andReturn($this->registration);
+        $this->registration->shouldReceive('getClientId')
+            ->once()->andReturn($this->payload['aud']);
+        $this->registration->shouldReceive('getKeySetUrl')
+            ->once()->andReturn($this->issuer['key_set_url']);
+
+        $this->expectException(LtiException::class);
+        $this->expectExceptionMessage(LtiMessageLaunch::ERR_MISSING_DEPLOYEMENT_ID);
+
+        $actual = $this->messageLaunch->validate($payload);
+    }
+
+    public function testALaunchFailsIfNoDeployment()
+    {
+        $jwtPayload = $this->payload;
+        $payload = [
+            'utf8' => '✓',
+            'id_token' => $this->buildJWT($jwtPayload, $this->issuer),
+            'state' => static::STATE,
+        ];
+        $this->cookie->shouldReceive('getCookie')
+            ->once()->andReturn($payload['state']);
+        $this->cache->shouldReceive('checkNonce')
+            ->once()->andReturn(true);
+        $this->database->shouldReceive('findRegistrationByIssuer')
+            ->once()->andReturn($this->registration);
+        $this->registration->shouldReceive('getClientId')
+            ->once()->andReturn($this->payload['aud']);
+        $this->registration->shouldReceive('getKeySetUrl')
+            ->once()->andReturn($this->issuer['key_set_url']);
+        $this->database->shouldReceive('findDeployment')
+            ->once()->andReturn();
+
+        $this->expectException(LtiException::class);
+        $this->expectExceptionMessage(LtiMessageLaunch::ERR_NO_DEPLOYMENT);
+
+        $actual = $this->messageLaunch->validate($payload);
     }
 
     public function testALaunchHasNrps()
