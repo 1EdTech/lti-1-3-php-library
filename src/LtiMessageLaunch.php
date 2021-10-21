@@ -19,6 +19,25 @@ class LtiMessageLaunch
     public const TYPE_DEEPLINK = 'LtiDeepLinkingRequest';
     public const TYPE_SUBMISSIONREVIEW = 'LtiSubmissionReviewRequest';
     public const TYPE_RESOURCELINK = 'LtiResourceLinkRequest';
+
+    public const ERR_FETCH_PUBLIC_KEY = 'Failed to fetch public key.';
+    public const ERR_NO_PUBLIC_KEY = 'Unable to find public key.';
+    public const ERR_STATE_NOT_FOUND = 'State not found. Please make sure you have cookies enabled in this browser.';
+    public const ERR_MISSING_ID_TOKEN = 'Missing id_token.';
+    public const ERR_INVALID_ID_TOKEN = 'Invalid id_token, JWT must contain 3 parts.';
+    public const ERR_MISSING_NONCE = 'Missing Nonce.';
+    public const ERR_INVALID_NONCE = 'Invalid Nonce.';
+    public const ERR_MISSING_REGISTRATION = 'Registration not found. Please have your admin confirm your Issuer URL, client ID, and deployment ID.';
+    public const ERR_CLIENT_NOT_REGISTERED = 'Client id not registered for this issuer.';
+    public const ERR_NO_KID = 'No KID specified in the JWT Header.';
+    public const ERR_INVALID_SIGNATURE = 'Invalid signature on id_token.';
+    public const ERR_MISSING_DEPLOYEMENT_ID = 'No deployment ID was specified.';
+    public const ERR_NO_DEPLOYMENT = 'Unable to find deployment.';
+    public const ERR_INVALID_MESSAGE_TYPE = 'Invalid message type.';
+    public const ERR_VALIDATOR_CONFLICT = 'Validator conflict.';
+    public const ERR_UNRECOGNIZED_MESSAGE_TYPE = 'Unrecognized message type.';
+    public const ERR_INVALID_MESSAGE = 'Message validation failed.';
+
     private $db;
     private $cache;
     private $cookie;
@@ -253,7 +272,7 @@ class LtiMessageLaunch
 
         if (empty($public_key_set)) {
             // Failed to fetch public keyset from URL.
-            throw new LtiException('Failed to fetch public key', 1);
+            throw new LtiException(static::ERR_FETCH_PUBLIC_KEY);
         }
 
         // Find key used to sign the JWT (matches the KID in the header)
@@ -272,7 +291,7 @@ class LtiMessageLaunch
         }
 
         // Could not find public key with a matching kid and alg.
-        throw new LtiException('Unable to find public key', 1);
+        throw new LtiException(static::ERR_NO_PUBLIC_KEY);
     }
 
     private function cacheLaunchData()
@@ -287,7 +306,7 @@ class LtiMessageLaunch
         // Check State for OIDC.
         if ($this->cookie->getCookie(LtiOidcLogin::COOKIE_PREFIX.$this->request['state']) !== $this->request['state']) {
             // Error if state doesn't match
-            throw new LtiException('State not found. Please make sure you have cookies enabled in this browser.', 1);
+            throw new LtiException(static::ERR_STATE_NOT_FOUND);
         }
 
         return $this;
@@ -295,10 +314,10 @@ class LtiMessageLaunch
 
     private function validateJwtFormat()
     {
-        $jwt = $this->request['id_token'];
+        $jwt = $this->request['id_token'] ?? null;
 
         if (empty($jwt)) {
-            throw new LtiException('Missing id_token', 1);
+            throw new LtiException(static::ERR_MISSING_ID_TOKEN);
         }
 
         // Get parts of JWT.
@@ -306,7 +325,7 @@ class LtiMessageLaunch
 
         if (count($jwt_parts) !== 3) {
             // Invalid number of parts in JWT.
-            throw new LtiException('Invalid id_token, JWT must contain 3 parts', 1);
+            throw new LtiException(static::ERR_INVALID_ID_TOKEN);
         }
 
         // Decode JWT headers.
@@ -320,10 +339,10 @@ class LtiMessageLaunch
     private function validateNonce()
     {
         if (!isset($this->jwt['body']['nonce'])) {
-            throw new LtiException('Missing Nonce');
+            throw new LtiException(static::ERR_MISSING_NONCE);
         }
         if (!$this->cache->checkNonce($this->jwt['body']['nonce'])) {
-            throw new LtiException('Invalid Nonce');
+            throw new LtiException(static::ERR_INVALID_NONCE);
         }
 
         return $this;
@@ -336,13 +355,13 @@ class LtiMessageLaunch
         $this->registration = $this->db->findRegistrationByIssuer($this->jwt['body']['iss'], $client_id);
 
         if (empty($this->registration)) {
-            throw new LtiException('Registration not found. Please have your admin confirm your Issuer URL, client ID, and deployment ID.', 1);
+            throw new LtiException(static::ERR_MISSING_REGISTRATION);
         }
 
         // Check client id.
         if ($client_id !== $this->registration->getClientId()) {
             // Client not registered.
-            throw new LtiException('Client id not registered for this issuer', 1);
+            throw new LtiException(static::ERR_CLIENT_NOT_REGISTERED);
         }
 
         return $this;
@@ -351,7 +370,7 @@ class LtiMessageLaunch
     private function validateJwtSignature()
     {
         if (!isset($this->jwt['header']['kid'])) {
-            throw new LtiException('No KID specified in the JWT Header');
+            throw new LtiException(static::ERR_NO_KID);
         }
 
         // Fetch public key.
@@ -362,7 +381,7 @@ class LtiMessageLaunch
             JWT::decode($this->request['id_token'], $public_key['key'], ['RS256']);
         } catch (ExpiredException $e) {
             // Error validating signature.
-            throw new LtiException('Invalid signature on id_token', 1);
+            throw new LtiException(static::ERR_INVALID_SIGNATURE);
         }
 
         return $this;
@@ -371,7 +390,7 @@ class LtiMessageLaunch
     private function validateDeployment()
     {
         if (!isset($this->jwt['body'][LtiConstants::DEPLOYMENT_ID])) {
-            throw new LtiException('No deployment ID was specified', 1);
+            throw new LtiException(static::ERR_MISSING_DEPLOYEMENT_ID);
         }
 
         // Find deployment.
@@ -380,7 +399,7 @@ class LtiMessageLaunch
 
         if (empty($deployment)) {
             // deployment not recognized.
-            throw new LtiException('Unable to find deployment', 1);
+            throw new LtiException(static::ERR_NO_DEPLOYMENT);
         }
 
         return $this;
@@ -390,7 +409,7 @@ class LtiMessageLaunch
     {
         if (empty($this->jwt['body'][LtiConstants::MESSAGE_TYPE])) {
             // Unable to identify message type.
-            throw new LtiException('Invalid message type', 1);
+            throw new LtiException(static::ERR_INVALID_MESSAGE_TYPE);
         }
 
         /**
@@ -409,18 +428,18 @@ class LtiMessageLaunch
             if ($validator->canValidate($this->jwt['body'])) {
                 if ($message_validator !== false) {
                     // Can't have more than one validator apply at a time.
-                    throw new LtiException('Validator conflict', 1);
+                    throw new LtiException(static::ERR_VALIDATOR_CONFLICT);
                 }
                 $message_validator = $validator;
             }
         }
 
         if ($message_validator === false) {
-            throw new LtiException('Unrecognized message type.', 1);
+            throw new LtiException(static::ERR_UNRECOGNIZED_MESSAGE_TYPE);
         }
 
         if (!$message_validator->validate($this->jwt['body'])) {
-            throw new LtiException('Message validation failed.', 1);
+            throw new LtiException(static::ERR_INVALID_MESSAGE);
         }
 
         return $this;
