@@ -213,8 +213,29 @@ class LtiGradeTest extends TestCase
         $this->assertEquals(json_encode($expected), (string) $grade);
     }
 
+    public function testItCastsFullObjectToStringWith0Grade()
+    {
+        $expected = [
+            'scoreGiven' => 0,
+            'scoreMaximum' => 10,
+            'comment' => 'Comment',
+            'activityProgress' => 'ActivityProgress',
+            'gradingProgress' => 'GradingProgress',
+            'timestamp' => 'Timestamp',
+            'userId' => 'UserId',
+            'submissionReview' => 'SubmissionReview',
+            'https://canvas.instructure.com/lti/submission' => 'CanvasExtension',
+        ];
+
+        $grade = new LtiGrade($expected);
+
+        $this->assertEquals(json_encode($expected), (string) $grade);
+    }
+
     public function testItCastsEmptyObjectToString()
     {
         $this->assertEquals('[]', (string) $this->grade);
     }
+
+
 }

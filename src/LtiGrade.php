@@ -28,8 +28,8 @@ class LtiGrade
 
     public function __toString()
     {
-        return json_encode(array_filter([
-            'scoreGiven' => 0 + $this->score_given,
+        // Make sure do not filter scoreGiven as it will filter out 0 scores
+        $request = array_filter([
             'scoreMaximum' => 0 + $this->score_maximum,
             'comment' => $this->comment,
             'activityProgress' => $this->activity_progress,
@@ -38,7 +38,11 @@ class LtiGrade
             'userId' => $this->user_id,
             'submissionReview' => $this->submission_review,
             'https://canvas.instructure.com/lti/submission' => $this->canvas_extension,
-        ]));
+        ]);
+
+        $request['scoreGiven'] = 0 + $this->score_given;
+
+        return json_encode($request);
     }
 
     /**
