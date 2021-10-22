@@ -30,7 +30,8 @@ class LtiGrade
     {
         // Make sure do not filter scoreGiven as it will filter out 0 scores
         $request = array_filter([
-            'scoreMaximum' => 0 + $this->score_maximum,
+            'scoreGiven' => $this->score_given,
+            'scoreMaximum' => $this->score_maximum,
             'comment' => $this->comment,
             'activityProgress' => $this->activity_progress,
             'gradingProgress' => $this->grading_progress,
@@ -38,9 +39,7 @@ class LtiGrade
             'userId' => $this->user_id,
             'submissionReview' => $this->submission_review,
             'https://canvas.instructure.com/lti/submission' => $this->canvas_extension,
-        ]);
-
-        $request['scoreGiven'] = 0 + $this->score_given;
+        ], 'strlen');
 
         return json_encode($request);
     }
