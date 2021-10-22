@@ -236,6 +236,4 @@ class LtiGradeTest extends TestCase
     {
         $this->assertEquals('[]', (string) $this->grade);
     }
-
-
 }
