@@ -6,10 +6,9 @@ class Helpers
 {
     /**
      * @param $value
-     * @return bool
      */
     public static function checkIfNullValue($value): bool
-  {
-    return !is_null($value);
-  }
+    {
+        return !is_null($value);
+    }
 }
