@@ -19,6 +19,7 @@ class LtiGradeSubmissionReview
 
     public function __toString()
     {
+        // Additionally, includes the call back to filter out only NULL values
         return json_encode(array_filter([
             'reviewableStatus' => $this->reviewable_status,
             'label' => $this->label,

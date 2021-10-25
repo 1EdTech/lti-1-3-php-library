@@ -28,7 +28,7 @@ class LtiGrade
 
     public function __toString()
     {
-        // Make sure do not filter out 0 scores since we still need to pass 0 grades
+        // Additionally, includes the call back to filter out only NULL values
         $request = array_filter([
             'scoreGiven' => $this->score_given,
             'scoreMaximum' => $this->score_maximum,
