@@ -28,9 +28,10 @@ class LtiGrade
 
     public function __toString()
     {
-        return json_encode(array_filter([
-            'scoreGiven' => 0 + $this->score_given,
-            'scoreMaximum' => 0 + $this->score_maximum,
+        // Additionally, includes the call back to filter out only NULL values
+        $request = array_filter([
+            'scoreGiven' => $this->score_given,
+            'scoreMaximum' => $this->score_maximum,
             'comment' => $this->comment,
             'activityProgress' => $this->activity_progress,
             'gradingProgress' => $this->grading_progress,
@@ -38,7 +39,9 @@ class LtiGrade
             'userId' => $this->user_id,
             'submissionReview' => $this->submission_review,
             'https://canvas.instructure.com/lti/submission' => $this->canvas_extension,
-        ]));
+        ], '\Packback\Lti1p3\Helpers\Helpers::checkIfNullValue');
+
+        return json_encode($request);
     }
 
     /**

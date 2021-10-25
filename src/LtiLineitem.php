@@ -27,6 +27,7 @@ class LtiLineitem
 
     public function __toString()
     {
+        // Additionally, includes the call back to filter out only NULL values
         return json_encode(array_filter([
             'id' => $this->id,
             'scoreMaximum' => $this->score_maximum,
@@ -35,7 +36,7 @@ class LtiLineitem
             'tag' => $this->tag,
             'startDateTime' => $this->start_date_time,
             'endDateTime' => $this->end_date_time,
-        ]));
+        ], '\Packback\Lti1p3\Helpers\Helpers::checkIfNullValue'));
     }
 
     /**
