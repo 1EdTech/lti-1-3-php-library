@@ -24,7 +24,7 @@ class LtiGradeSubmissionReview
             'label' => $this->label,
             'url' => $this->url,
             'custom' => $this->custom,
-        ]));
+        ], '\Packback\Lti1p3\Helpers\Helpers::checkIfNullValue'));
     }
 
     /**
