@@ -2,8 +2,6 @@
 
 namespace Packback\Lti1p3;
 
-use Packback\Lti1p3\Helpers;
-
 class LtiGrade
 {
     private $score_given;
