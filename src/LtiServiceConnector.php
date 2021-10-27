@@ -108,6 +108,12 @@ class LtiServiceConnector implements ILtiServiceConnector
         });
         $respBody = $response->getBody();
 
+        error_log(print_r([
+            'request'=> $request,
+            'response_headers' => $respHeaders,
+            'response_body' => $respBody,
+        ], true));
+
         return [
             'headers' => $respHeaders,
             'body' => json_decode($respBody, true),
