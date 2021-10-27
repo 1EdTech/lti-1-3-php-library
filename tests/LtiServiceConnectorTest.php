@@ -47,7 +47,7 @@ class LtiServiceConnectorTest extends TestCase
         $this->token = 'TokenOfAccess';
         $this->method = LtiServiceConnector::METHOD_POST;
         $this->url = 'https://example.com';
-        $this->body = json_encode(['post' => 'body']);
+        $this->body = json_encode(['userId' => 'id']);
         $this->requestHeaders = [
             'Authorization' => 'Bearer '.$this->token,
             'Accept' => 'application/json',
@@ -141,7 +141,7 @@ class LtiServiceConnectorTest extends TestCase
     {
         $this->method = LtiServiceConnector::METHOD_POST;
         $this->url = 'https://example.com';
-        $this->body = json_encode(['post' => 'body']);
+        $this->body = json_encode(['userId' => 'id']);
         $this->requestHeaders = [
             'Authorization' => 'Bearer '.$this->token,
             'Accept' => 'application/json',
@@ -202,7 +202,6 @@ class LtiServiceConnectorTest extends TestCase
             ->once()->andReturn($this->responseStatus);
 
         $result = $this->connector->makeServiceRequest($this->registration, $this->scopes, $this->request);
-
         $this->assertEquals($expected, $result);
     }
 
@@ -288,11 +287,11 @@ class LtiServiceConnectorTest extends TestCase
 
         // Makes two requests, but gets the method and URL once before making the request
         $this->request->shouldReceive('getMethod')
-            ->times(3)->andReturn($method);
+            ->times(5)->andReturn($method);
         $this->request->shouldReceive('getUrl')
-            ->times(3)->andReturn($this->url);
+            ->times(5)->andReturn($this->url);
         $this->request->shouldReceive('getPayload')
-            ->twice()->andReturn($this->requestPayload);
+            ->times(6)->andReturn($this->requestPayload);
         // Doesn't find a matching link in on the second header, so only updates the URL once
         $this->request->shouldReceive('setUrl')
             ->once()->andReturn($this->request);
@@ -321,11 +320,11 @@ class LtiServiceConnectorTest extends TestCase
     {
         // It makes another request
         $this->request->shouldReceive('getMethod')
-            ->once()->andReturn($this->method);
+            ->andReturn($this->method);
         $this->request->shouldReceive('getUrl')
-            ->once()->andReturn($this->url);
+            ->andReturn($this->url);
         $this->request->shouldReceive('getPayload')
-            ->once()->andReturn($this->requestPayload);
+            ->andReturn($this->requestPayload);
     }
 
     private function mockRequestReturnsA401()
