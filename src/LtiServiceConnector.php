@@ -114,7 +114,7 @@ class LtiServiceConnector implements ILtiServiceConnector
             'request_url' => $request->getUrl(),
             'request_body'=> $request->getPayload()['body'],
             'response_headers' => $respHeaders,
-            'response_body' => $respBody,
+            'response_body' => (string)$respBody,
         ], true));
 
         return [
