@@ -27,7 +27,7 @@ class LtiServiceConnector implements ILtiServiceConnector
         $this->client = $client;
     }
 
-    public function setDebuggingMode(boolean $enable): void
+    public function setDebuggingMode(bool $enable): void
     {
         $this->debuggingMode = $enable;
     }
