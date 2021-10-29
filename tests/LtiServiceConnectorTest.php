@@ -287,11 +287,11 @@ class LtiServiceConnectorTest extends TestCase
 
         // Makes two requests, but gets the method and URL once before making the request
         $this->request->shouldReceive('getMethod')
-            ->times(5)->andReturn($method);
+            ->times(3)->andReturn($method);
         $this->request->shouldReceive('getUrl')
-            ->times(5)->andReturn($this->url);
+            ->times(3)->andReturn($this->url);
         $this->request->shouldReceive('getPayload')
-            ->times(6)->andReturn($this->requestPayload);
+            ->times(2)->andReturn($this->requestPayload);
         // Doesn't find a matching link in on the second header, so only updates the URL once
         $this->request->shouldReceive('setUrl')
             ->once()->andReturn($this->request);
