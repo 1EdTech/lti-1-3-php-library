@@ -1,12 +1,18 @@
+## 3.0 to 4.0
+
+### New method implemented on the `ILtiServiceConnecetor`
+
+Version 4.0 introduced changes to the `Packback\Lti1p3\Interfaces\ILtiServiceConnecetor` interface, adding one method: `setDebuggingMode()`.
+
 ## 2.0 to 3.0
 
 ### New method implemented on the `ICache`
 
-Version 3.0 introduced changes to the `Packback\Lti1p3\Interfaces\ICache` interface, adding one methods: `clearAccessToken()`. This methods must be implemented to any custom implementations of the interface. The [Laravel Implementation Guide](https://github.com/packbackbooks/lti-1-3-php-library/wiki/Laravel-Implementation-Guide#cache) contains an example.
+Version 3.0 introduced changes to the `Packback\Lti1p3\Interfaces\ICache` interface, adding one method: `clearAccessToken()`. This method must be implemented to any custom implementations of the interface. The [Laravel Implementation Guide](https://github.com/packbackbooks/lti-1-3-php-library/wiki/Laravel-Implementation-Guide#cache) contains an example.
 
 ### Using GuzzleHttp\Client instead of curl
 
-The `Packback\Lti1p3\LtiServiceConnector` now uses Guzzle instead of curl to make requests. This puts control of this client and it's configuration in the hands of the developer. The section below contains information on implementing this change.
+The `Packback\Lti1p3\LtiServiceConnector` now uses Guzzle instead of curl to make requests. This puts control of this client and its configuration in the hands of the developer. The section below contains information on implementing this change.
 
 ### Changes to the LtiServiceConnector and LTI services
 

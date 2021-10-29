@@ -19,4 +19,6 @@ interface ILtiServiceConnector
         IServiceRequest $request,
         string $key
     ): array;
+
+    public function setDebuggingMode(boolean $enable): void;
 }
