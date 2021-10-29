@@ -115,13 +115,13 @@ class LtiServiceConnector implements ILtiServiceConnector
         $respBody = $response->getBody();
 
         if ($this->debuggingMode) {
-            error_log('Syncing grade for this lti_user_id: ' .
-                json_decode($request->getPayload()['body'])->userId . ' ' . print_r([
+            error_log('Syncing grade for this lti_user_id: '.
+                json_decode($request->getPayload()['body'])->userId.' '.print_r([
                     'request_method' => $request->getMethod(),
                     'request_url' => $request->getUrl(),
                     'request_body' => $request->getPayload()['body'],
                     'response_headers' => $respHeaders,
-                    'response_body' => (string)$respBody,
+                    'response_body' => (string) $respBody,
                 ], true));
         }
 
