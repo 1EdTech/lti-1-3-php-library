@@ -66,14 +66,24 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         return new LtiLineitem($createdLineItems['body']);
     }
 
-    public function getGrades(LtiLineitem $lineitem)
+    public function getGrades(LtiLineitem $lineitem = null)
     {
-        $lineitem = $this->findOrCreateLineitem($lineitem);
+        if ($lineitem !== null) {
+            $lineitem = $this->findOrCreateLineitem($lineitem);
+            $resultsUrl = $lineitem->getId();
+        } else {
+            if (empty($this->getServiceData()['lineitem'])) {
+                throw new Exception('Missing Line item');
+            }
+            $resultsUrl = $this->getServiceData()['lineitem'];
+        }
+
         // Place '/results' before url params
-        $pos = strpos($lineitem->getId(), '?');
-        $resultsUrl = $pos === false ? $lineitem->getId().'/results' : substr_replace($lineitem->getId(), '/results', $pos, 0);
+        $pos = strpos($resultsUrl, '?');
+        $resultsUrl = $pos === false ? $resultsUrl.'/results' : substr_replace($resultsUrl, '/results', $pos, 0);
+
         $request = new ServiceRequest(LtiServiceConnector::METHOD_GET, $resultsUrl);
-        $request->setAccept();
+        $request->setAccept(static::CONTENTTYPE_RESULTCONTAINER);
         $scores = $this->makeServiceRequest($request);
 
         return $scores['body'];
