@@ -136,7 +136,7 @@ class LtiServiceConnector implements ILtiServiceConnector
         ILtiRegistration $registration,
         array $scopes,
         IServiceRequest $request,
-        string $key
+        string $key = null
     ): array {
         if ($request->getMethod() !== static::METHOD_GET) {
             throw new \Exception('An invalid method was specified by an LTI service requesting all items.');
@@ -148,7 +148,8 @@ class LtiServiceConnector implements ILtiServiceConnector
         while ($nextUrl) {
             $response = $this->makeServiceRequest($registration, $scopes, $request);
 
-            $results = array_merge($results, $response['body'][$key] ?? []);
+            $page_results = $key === null ? ($response['body'] ?? []) : ($response['body'][$key] ?? []);
+            $results = array_merge($results, $page_results);
 
             $nextUrl = $this->getNextUrl($response['headers']);
             if ($nextUrl) {

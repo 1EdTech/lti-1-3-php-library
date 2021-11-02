@@ -6,6 +6,7 @@ class LtiAssignmentsGradesService extends LtiAbstractService
 {
     public const CONTENTTYPE_SCORE = 'application/vnd.ims.lis.v1.score+json';
     public const CONTENTTYPE_LINEITEM = 'application/vnd.ims.lis.v2.lineitem+json';
+    public const CONTENTTYPE_LINEITEMCONTAINER = 'application/vnd.ims.lis.v2.lineitemcontainer+json';
     public const CONTENTTYPE_RESULTCONTAINER = 'application/vnd.ims.lis.v2.resultcontainer+json';
 
     public function getScope(): array
@@ -52,7 +53,10 @@ class LtiAssignmentsGradesService extends LtiAbstractService
                 (isset($lineitem['resourceId']) && $lineitem['resourceId'] == $newLineItem->getResourceId()) ||
                 (isset($lineitem['resourceLinkId']) && $lineitem['resourceLinkId'] == $newLineItem->getResourceLinkId())
             ) {
-                if (empty($newLineItem->getTag()) || $lineitem['tag'] == $newLineItem->getTag()) {
+                if (
+                    empty($newLineItem->getTag()) ||
+                    (isset($lineitem['tag']) && $lineitem['tag'] == $newLineItem->getTag())
+                ) {
                     return new LtiLineitem($lineitem);
                 }
             }
@@ -89,9 +93,9 @@ class LtiAssignmentsGradesService extends LtiAbstractService
             LtiServiceConnector::METHOD_GET,
             $this->getServiceData()['lineitems']
         );
-        $request->setAccept(static::CONTENTTYPE_RESULTCONTAINER);
+        $request->setAccept(static::CONTENTTYPE_LINEITEMCONTAINER);
 
-        $lineitems = $this->getAll($request, 'lineitems');
+        $lineitems = $this->getAll($request);
 
         // If there is only one item, then wrap it in an array so the foreach works
         if (isset($lineitems['body']['id'])) {
