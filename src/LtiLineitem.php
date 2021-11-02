@@ -33,6 +33,7 @@ class LtiLineitem
             'scoreMaximum' => $this->score_maximum,
             'label' => $this->label,
             'resourceId' => $this->resource_id,
+            'resourceLinkId' => $this->resource_link_id,
             'tag' => $this->tag,
             'startDateTime' => $this->start_date_time,
             'endDateTime' => $this->end_date_time,
