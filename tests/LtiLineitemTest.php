@@ -182,6 +182,7 @@ class LtiLineitemTest extends TestCase
             'scoreMaximum' => 'ScoreMaximum',
             'label' => 'Label',
             'resourceId' => 'ResourceId',
+            'resourceLinkId' => 'ResourceLinkId',
             'tag' => 'Tag',
             'startDateTime' => 'StartDateTime',
             'endDateTime' => 'EndDateTime',
