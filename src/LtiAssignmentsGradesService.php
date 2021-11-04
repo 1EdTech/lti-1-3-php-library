@@ -99,9 +99,8 @@ class LtiAssignmentsGradesService extends LtiAbstractService
 
     private function isMatchingLineitem(array $lineitem, LtiLineitem $newLineItem): bool
     {
-        if (($lineitem['tag'] ?? null) != $newLineItem->getTag()) { return false; }
-        if (($lineitem['resourceId'] ?? null) != $newLineItem->getResourceId()) { return false; }
-        if (($lineitem['resourceLinkId'] ?? null) != $newLineItem->getResourceLinkId()) { return false; }
-        return true;
+        return $newLineItem->getTag() == ($lineitem['tag'] ?? null) &&
+            $newLineItem->getResourceId() == ($lineitem['resourceId'] ?? null) &&
+            $newLineItem->getResourceLinkId() == ($lineitem['resourceLinkId'] ?? null);
     }
 }
