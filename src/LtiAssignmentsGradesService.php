@@ -48,19 +48,11 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         $lineitems = $this->getLineItems();
 
         foreach ($lineitems as $lineitem) {
-            if (
-                (empty($newLineItem->getResourceId()) && empty($newLineItem->getResourceLinkId())) ||
-                (isset($lineitem['resourceId']) && $lineitem['resourceId'] == $newLineItem->getResourceId()) ||
-                (isset($lineitem['resourceLinkId']) && $lineitem['resourceLinkId'] == $newLineItem->getResourceLinkId())
-            ) {
-                if (
-                    empty($newLineItem->getTag()) ||
-                    (isset($lineitem['tag']) && $lineitem['tag'] == $newLineItem->getTag())
-                ) {
-                    return new LtiLineitem($lineitem);
-                }
+            if ($this->isMatchingLineitem($lineitem, $newLineItem)) {
+                return new LtiLineitem($lineitem);
             }
         }
+
         $request = new ServiceRequest(LtiServiceConnector::METHOD_POST, $this->getServiceData()['lineitems']);
         $request->setBody($newLineItem)
             ->setContentType(static::CONTENTTYPE_LINEITEM)
@@ -103,5 +95,13 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         }
 
         return $lineitems;
+    }
+
+    private function isMatchingLineitem(array $lineitem, LtiLineitem $newLineItem): bool
+    {
+        if (($lineitem['tag'] ?? null) != $newLineItem->getTag()) { return false; }
+        if (($lineitem['resourceId'] ?? null) != $newLineItem->getResourceId()) { return false; }
+        if (($lineitem['resourceLinkId'] ?? null) != $newLineItem->getResourceLinkId()) { return false; }
+        return true;
     }
 }
