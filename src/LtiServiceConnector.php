@@ -80,6 +80,15 @@ class LtiServiceConnector implements ILtiServiceConnector
         return $tokenData['access_token'];
     }
 
+    public function makeRequest(IServiceRequest $request)
+    {
+        return $this->client->request(
+            $request->getMethod(),
+            $request->getUrl(),
+            $request->getPayload()
+        );
+    }
+
     public function makeServiceRequest(
         ILtiRegistration $registration,
         array $scopes,
@@ -89,11 +98,7 @@ class LtiServiceConnector implements ILtiServiceConnector
         $request->setAccessToken($this->getAccessToken($registration, $scopes));
 
         try {
-            $response = $this->client->request(
-                $request->getMethod(),
-                $request->getUrl(),
-                $request->getPayload()
-            );
+            $response = $this->makeRequest($request);
         } catch (ClientException $e) {
             $status = $e->getResponse()->getStatusCode();
 

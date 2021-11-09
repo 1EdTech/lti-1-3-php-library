@@ -179,6 +179,8 @@ class LtiMessageLaunchTest extends TestCase
             ->once()->andReturn($this->issuer['client_id']);
         $this->registration->shouldReceive('getKeySetUrl')
             ->once()->andReturn($this->issuer['key_set_url']);
+        $this->serviceConnector->shouldReceive('makeRequest')
+            ->once()->andReturn(json_decode(file_get_contents(static::JWKS_FILE), true));
         $this->database->shouldReceive('findDeployment')
             ->once()->andReturn(['a deployment']);
         $this->cache->shouldReceive('cacheLaunchData')
@@ -359,6 +361,8 @@ class LtiMessageLaunchTest extends TestCase
             ->once()->andReturn($this->payload['aud']);
         $this->registration->shouldReceive('getKeySetUrl')
             ->once()->andReturn($this->issuer['key_set_url']);
+        $this->serviceConnector->shouldReceive('makeRequest')
+            ->once()->andReturn(json_decode(file_get_contents(static::JWKS_FILE), true));
 
         $this->expectException(LtiException::class);
         $this->expectExceptionMessage(LtiMessageLaunch::ERR_MISSING_DEPLOYEMENT_ID);
@@ -384,6 +388,8 @@ class LtiMessageLaunchTest extends TestCase
             ->once()->andReturn($this->payload['aud']);
         $this->registration->shouldReceive('getKeySetUrl')
             ->once()->andReturn($this->issuer['key_set_url']);
+        $this->serviceConnector->shouldReceive('makeRequest')
+            ->once()->andReturn(json_decode(file_get_contents(static::JWKS_FILE), true));
         $this->database->shouldReceive('findDeployment')
             ->once()->andReturn();
 

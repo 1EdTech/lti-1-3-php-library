@@ -6,6 +6,10 @@ interface ILtiServiceConnector
 {
     public function getAccessToken(ILtiRegistration $registration, array $scopes);
 
+    public function makeRequest(
+        IServiceRequest $request
+    );
+
     public function makeServiceRequest(
         ILtiRegistration $registration,
         array $scopes,

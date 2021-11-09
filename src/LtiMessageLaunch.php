@@ -265,18 +265,19 @@ class LtiMessageLaunch
 
     private function getPublicKey()
     {
-        $key_set_url = $this->registration->getKeySetUrl();
+        $keySetUrl = $this->registration->getKeySetUrl();
+        $request = new ServiceRequest(LtiServiceConnector::METHOD_GET, $keySetUrl);
 
         // Download key set
-        $public_key_set = json_decode(file_get_contents($key_set_url), true);
+        $publicKeySet = $this->serviceConnector->makeRequest($request);
 
-        if (empty($public_key_set)) {
+        if (empty($publicKeySet)) {
             // Failed to fetch public keyset from URL.
             throw new LtiException(static::ERR_FETCH_PUBLIC_KEY);
         }
 
         // Find key used to sign the JWT (matches the KID in the header)
-        foreach ($public_key_set['keys'] as $key) {
+        foreach ($publicKeySet['keys'] as $key) {
             if ($key['kid'] == $this->jwt['header']['kid']) {
                 try {
                     return openssl_pkey_get_details(

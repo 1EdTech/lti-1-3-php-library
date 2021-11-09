@@ -4,9 +4,11 @@ namespace Certification;
 
 use Carbon\Carbon;
 use Firebase\JWT\JWT;
+use Mockery;
 use Packback\Lti1p3\Interfaces\ICache;
 use Packback\Lti1p3\Interfaces\ICookie;
 use Packback\Lti1p3\Interfaces\IDatabase;
+use Packback\Lti1p3\Interfaces\ILtiServiceConnector;
 use Packback\Lti1p3\JwksEndpoint;
 use Packback\Lti1p3\LtiConstants;
 use Packback\Lti1p3\LtiDeployment;
@@ -217,6 +219,7 @@ class Lti13CertificationTest extends TestCase
             LtiOidcLogin::COOKIE_PREFIX.static::STATE,
             static::STATE
         );
+        $this->serviceConnector = Mockery::mock(ILtiServiceConnector::class);
     }
 
     public function buildJWT($data, $header)
@@ -345,6 +348,11 @@ class Lti13CertificationTest extends TestCase
         $casesCount = count($testCases);
         $testedCases = 0;
 
+        $this->serviceConnector->shouldReceive('makeRequest')
+            // All but one invalid cert case get the JWK
+            ->times($casesCount - 1)
+            ->andReturn(json_decode(file_get_contents(static::JWKS_FILE), true));
+
         foreach ($testCases as $testCase) {
             $testCaseDir = $testCasesDir.DIRECTORY_SEPARATOR.$testCase.DIRECTORY_SEPARATOR;
 
@@ -391,7 +399,7 @@ class Lti13CertificationTest extends TestCase
             ];
 
             try {
-                LtiMessageLaunch::new($this->db, $this->cache, $this->cookie)
+                LtiMessageLaunch::new($this->db, $this->cache, $this->cookie, $this->serviceConnector)
                     ->validate($params);
             } catch (\Exception $e) {
                 $this->assertInstanceOf(LtiException::class, $e);
@@ -440,7 +448,10 @@ class Lti13CertificationTest extends TestCase
                 'state' => static::STATE,
             ];
 
-            $result = LtiMessageLaunch::new($this->db, $this->cache, $this->cookie)
+            $this->serviceConnector->shouldReceive('makeRequest')
+                ->once()->andReturn(json_decode(file_get_contents(static::JWKS_FILE), true));
+
+            $result = LtiMessageLaunch::new($this->db, $this->cache, $this->cookie, $this->serviceConnector)
                 ->validate($params);
 
             // Assertions
@@ -474,7 +485,10 @@ class Lti13CertificationTest extends TestCase
             'state' => static::STATE,
         ];
 
-        return LtiMessageLaunch::new($this->db, $this->cache, $this->cookie)
+        $this->serviceConnector->shouldReceive('makeRequest')
+            ->once()->andReturn(json_decode(file_get_contents(static::JWKS_FILE), true));
+
+        return LtiMessageLaunch::new($this->db, $this->cache, $this->cookie, $this->serviceConnector)
             ->validate($params);
     }
 }
