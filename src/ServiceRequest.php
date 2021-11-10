@@ -6,11 +6,12 @@ use Packback\Lti1p3\Interfaces\IServiceRequest;
 
 class ServiceRequest implements IServiceRequest
 {
-    public $method;
-    public $url;
-    public $body;
-    public $contentType = 'application/json';
-    public $accept = 'application/json';
+    private $method;
+    private $url;
+    private $body;
+    private $accessToken;
+    private $contentType = 'application/json';
+    private $accept = 'application/json';
 
     public function __construct(string $method, string $url)
     {
@@ -80,9 +81,12 @@ class ServiceRequest implements IServiceRequest
     private function getHeaders(): array
     {
         $headers = [
-            'Authorization' => $this->accessToken,
             'Accept' => $this->accept,
         ];
+        
+        if (isset($this->accessToken)) {
+            $headers['Authorization'] = $this->accessToken;
+        }
 
         if ($this->getMethod() === LtiServiceConnector::METHOD_POST) {
             $headers['Content-Type'] = $this->contentType;
