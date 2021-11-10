@@ -2,7 +2,10 @@
 
 ### New method implemented on the `ILtiServiceConnector`
 
-Version 4.0 introduced changes to the `Packback\Lti1p3\Interfaces\ILtiServiceConnector` interface, adding one method: `setDebuggingMode()`.
+Version 4.0 introduced changes to the `Packback\Lti1p3\Interfaces\ILtiServiceConnector` interface, the following methods:
+
+- `setDebuggingMode()`
+- `makeRequest()`
 
 ## 2.0 to 3.0
 
