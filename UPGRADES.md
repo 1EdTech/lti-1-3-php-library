@@ -1,8 +1,8 @@
 ## 3.0 to 4.0
 
-### New method implemented on the `ILtiServiceConnector`
+### New methods implemented on the `ILtiServiceConnector`
 
-Version 4.0 introduced changes to the `Packback\Lti1p3\Interfaces\ILtiServiceConnector` interface, the following methods:
+Version 4.0 introduced changes to the `Packback\Lti1p3\Interfaces\ILtiServiceConnector` interface, adding the following methods:
 
 - `setDebuggingMode()`
 - `makeRequest()`
