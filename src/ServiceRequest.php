@@ -83,7 +83,7 @@ class ServiceRequest implements IServiceRequest
         $headers = [
             'Accept' => $this->accept,
         ];
-        
+
         if (isset($this->accessToken)) {
             $headers['Authorization'] = $this->accessToken;
         }
