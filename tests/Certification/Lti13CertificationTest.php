@@ -348,8 +348,12 @@ class Lti13CertificationTest extends TestCase
         $casesCount = count($testCases);
         $testedCases = 0;
 
+        $request = Mockery::mock();
         $this->serviceConnector->shouldReceive('makeRequest')
             // All but one invalid cert case get the JWK
+            ->times($casesCount - 1)
+            ->andReturn($request);
+        $request->shouldReceive('getBody')
             ->times($casesCount - 1)
             ->andReturn(json_decode(file_get_contents(static::JWKS_FILE), true));
 
@@ -448,7 +452,10 @@ class Lti13CertificationTest extends TestCase
                 'state' => static::STATE,
             ];
 
+            $request = Mockery::mock();
             $this->serviceConnector->shouldReceive('makeRequest')
+                ->once()->andReturn($request);
+            $request->shouldReceive('getBody')
                 ->once()->andReturn(json_decode(file_get_contents(static::JWKS_FILE), true));
 
             $result = LtiMessageLaunch::new($this->db, $this->cache, $this->cookie, $this->serviceConnector)
@@ -485,7 +492,10 @@ class Lti13CertificationTest extends TestCase
             'state' => static::STATE,
         ];
 
+        $request = Mockery::mock();
         $this->serviceConnector->shouldReceive('makeRequest')
+            ->once()->andReturn($request);
+        $request->shouldReceive('getBody')
             ->once()->andReturn(json_decode(file_get_contents(static::JWKS_FILE), true));
 
         return LtiMessageLaunch::new($this->db, $this->cache, $this->cookie, $this->serviceConnector)
