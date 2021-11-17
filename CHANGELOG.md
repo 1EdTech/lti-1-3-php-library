@@ -1,7 +1,7 @@
 ## 4.1.1
 
 * Updated `LtiMessageLaunch` to fetch JWKs via an HTTP client instead of `file_get_contents()`. ([#38](https://github.com/packbackbooks/lti-1-3-php-library/pull/38))
-* Added a new method to `ILtiServiceConnector`: `makeRequest()`. ([#38](https://github.com/packbackbooks/lti-1-3-php-library/pull/38))
+* Added new methods to `ILtiServiceConnector`: `makeRequest()`, `getRequestBody()`. ([#38](https://github.com/packbackbooks/lti-1-3-php-library/pull/38))
 
 ## 4.1.0
 

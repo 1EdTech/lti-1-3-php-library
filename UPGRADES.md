@@ -6,6 +6,7 @@ Version 4.0 introduced changes to the `Packback\Lti1p3\Interfaces\ILtiServiceCon
 
 - `setDebuggingMode()`
 - `makeRequest()`
+- `getRequestBody()`
 
 ## 2.0 to 3.0
 
