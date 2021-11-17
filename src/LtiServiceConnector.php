@@ -72,7 +72,7 @@ class LtiServiceConnector implements ILtiServiceConnector
             'form_params' => $authRequest,
         ]);
 
-        $tokenData = static::getResponseBody($response);
+        $tokenData = $this->getResponseBody($response);
 
         // Cache access token
         $this->cache->cacheAccessToken($accessTokenKey, $tokenData['access_token']);
@@ -89,9 +89,10 @@ class LtiServiceConnector implements ILtiServiceConnector
         );
     }
 
-    public static function getResponseBody(Response $response): array
+    public function getResponseBody(Response $response): array
     {
         $responseBody = (string) $response->getBody();
+
         return json_decode($responseBody, true);
     }
 
@@ -123,7 +124,7 @@ class LtiServiceConnector implements ILtiServiceConnector
         array_walk($responseHeaders, function (&$value) {
             $value = $value[0];
         });
-        $responseBody = static::getResponseBody($response);
+        $responseBody = $this->getResponseBody($response);
 
         if ($this->debuggingMode) {
             error_log('Syncing grade for this lti_user_id: '.

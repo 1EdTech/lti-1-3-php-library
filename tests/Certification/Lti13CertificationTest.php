@@ -4,6 +4,7 @@ namespace Certification;
 
 use Carbon\Carbon;
 use Firebase\JWT\JWT;
+use GuzzleHttp\Psr7\Response;
 use Mockery;
 use Packback\Lti1p3\Interfaces\ICache;
 use Packback\Lti1p3\Interfaces\ICookie;
@@ -348,12 +349,12 @@ class Lti13CertificationTest extends TestCase
         $casesCount = count($testCases);
         $testedCases = 0;
 
-        $request = Mockery::mock();
+        $request = Mockery::mock(Response::class);
         $this->serviceConnector->shouldReceive('makeRequest')
             // All but one invalid cert case get the JWK
             ->times($casesCount - 1)
             ->andReturn($request);
-        $request->shouldReceive('getBody')
+        $this->serviceConnector->shouldReceive('getResponseBody')
             ->times($casesCount - 1)
             ->andReturn(json_decode(file_get_contents(static::JWKS_FILE), true));
 
@@ -452,10 +453,10 @@ class Lti13CertificationTest extends TestCase
                 'state' => static::STATE,
             ];
 
-            $request = Mockery::mock();
+            $request = Mockery::mock(Response::class);
             $this->serviceConnector->shouldReceive('makeRequest')
                 ->once()->andReturn($request);
-            $request->shouldReceive('getBody')
+            $this->serviceConnector->shouldReceive('getResponseBody')
                 ->once()->andReturn(json_decode(file_get_contents(static::JWKS_FILE), true));
 
             $result = LtiMessageLaunch::new($this->db, $this->cache, $this->cookie, $this->serviceConnector)
@@ -492,10 +493,10 @@ class Lti13CertificationTest extends TestCase
             'state' => static::STATE,
         ];
 
-        $request = Mockery::mock();
+        $request = Mockery::mock(Response::class);
         $this->serviceConnector->shouldReceive('makeRequest')
             ->once()->andReturn($request);
-        $request->shouldReceive('getBody')
+        $this->serviceConnector->shouldReceive('getResponseBody')
             ->once()->andReturn(json_decode(file_get_contents(static::JWKS_FILE), true));
 
         return LtiMessageLaunch::new($this->db, $this->cache, $this->cookie, $this->serviceConnector)

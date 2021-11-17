@@ -6,6 +6,7 @@ use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use Packback\Lti1p3\Interfaces\ICache;
 use Packback\Lti1p3\Interfaces\ICookie;
 use Packback\Lti1p3\Interfaces\IDatabase;
@@ -269,8 +270,12 @@ class LtiMessageLaunch
         $request = new ServiceRequest(LtiServiceConnector::METHOD_GET, $keySetUrl);
 
         // Download key set
-        $response = $this->serviceConnector->makeRequest($request);
-        $publicKeySet = LtiServiceConnector::getResponseBody($response);
+        try {
+            $response = $this->serviceConnector->makeRequest($request);
+        } catch (ClientException $e) {
+            throw new LtiException(static::ERR_NO_PUBLIC_KEY);
+        }
+        $publicKeySet = $this->serviceConnector->getResponseBody($response);
 
         if (empty($publicKeySet)) {
             // Failed to fetch public keyset from URL.
