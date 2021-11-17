@@ -270,7 +270,7 @@ class LtiMessageLaunch
 
         // Download key set
         $response = $this->serviceConnector->makeRequest($request);
-        $publicKeySet = $response->getBody();
+        $publicKeySet = LtiServiceConnector::getResponseBody($response);
 
         if (empty($publicKeySet)) {
             // Failed to fetch public keyset from URL.
