@@ -5,6 +5,7 @@ namespace Packback\Lti1p3;
 use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Psr7\Response;
 use Packback\Lti1p3\Interfaces\ICache;
 use Packback\Lti1p3\Interfaces\ILtiRegistration;
 use Packback\Lti1p3\Interfaces\ILtiServiceConnector;
@@ -71,13 +72,28 @@ class LtiServiceConnector implements ILtiServiceConnector
             'form_params' => $authRequest,
         ]);
 
-        $body = (string) $response->getBody();
-        $tokenData = json_decode($body, true);
+        $tokenData = $this->getResponseBody($response);
 
         // Cache access token
         $this->cache->cacheAccessToken($accessTokenKey, $tokenData['access_token']);
 
         return $tokenData['access_token'];
+    }
+
+    public function makeRequest(IServiceRequest $request)
+    {
+        return $this->client->request(
+            $request->getMethod(),
+            $request->getUrl(),
+            $request->getPayload()
+        );
+    }
+
+    public function getResponseBody(Response $response): array
+    {
+        $responseBody = (string) $response->getBody();
+
+        return json_decode($responseBody, true);
     }
 
     public function makeServiceRequest(
@@ -89,11 +105,7 @@ class LtiServiceConnector implements ILtiServiceConnector
         $request->setAccessToken($this->getAccessToken($registration, $scopes));
 
         try {
-            $response = $this->client->request(
-                $request->getMethod(),
-                $request->getUrl(),
-                $request->getPayload()
-            );
+            $response = $this->makeRequest($request);
         } catch (ClientException $e) {
             $status = $e->getResponse()->getStatusCode();
 
@@ -108,11 +120,11 @@ class LtiServiceConnector implements ILtiServiceConnector
 
             throw $e;
         }
-        $respHeaders = $response->getHeaders();
-        array_walk($respHeaders, function (&$value) {
+        $responseHeaders = $response->getHeaders();
+        array_walk($responseHeaders, function (&$value) {
             $value = $value[0];
         });
-        $respBody = $response->getBody();
+        $responseBody = $this->getResponseBody($response);
 
         if ($this->debuggingMode) {
             error_log('Syncing grade for this lti_user_id: '.
@@ -120,14 +132,14 @@ class LtiServiceConnector implements ILtiServiceConnector
                     'request_method' => $request->getMethod(),
                     'request_url' => $request->getUrl(),
                     'request_body' => $request->getPayload()['body'],
-                    'response_headers' => $respHeaders,
-                    'response_body' => (string) $respBody,
+                    'response_headers' => $responseHeaders,
+                    'response_body' => json_encode($responseBody),
                 ], true));
         }
 
         return [
-            'headers' => $respHeaders,
-            'body' => json_decode($respBody, true),
+            'headers' => $responseHeaders,
+            'body' => $responseBody,
             'status' => $response->getStatusCode(),
         ];
     }

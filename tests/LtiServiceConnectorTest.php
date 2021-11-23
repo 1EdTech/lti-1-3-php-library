@@ -4,13 +4,14 @@ namespace Tests;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Psr7\Response;
 use Mockery;
 use Packback\Lti1p3\Interfaces\ICache;
 use Packback\Lti1p3\Interfaces\ILtiRegistration;
 use Packback\Lti1p3\Interfaces\IServiceRequest;
 use Packback\Lti1p3\LtiRegistration;
 use Packback\Lti1p3\LtiServiceConnector;
-use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 
 class LtiServiceConnectorTest extends TestCase
 {
@@ -41,7 +42,8 @@ class LtiServiceConnectorTest extends TestCase
         $this->request = Mockery::mock(IServiceRequest::class);
         $this->cache = Mockery::mock(ICache::class);
         $this->client = Mockery::mock(Client::class);
-        $this->response = Mockery::mock(ResponseInterface::class);
+        $this->response = Mockery::mock(Response::class);
+        $this->streamInterface = Mockery::mock(StreamInterface::class);
 
         $this->scopes = ['scopeKey'];
         $this->token = 'TokenOfAccess';
@@ -98,6 +100,8 @@ class LtiServiceConnectorTest extends TestCase
         $this->client->shouldReceive('post')
             ->once()->andReturn($this->response);
         $this->response->shouldReceive('getBody')
+            ->once()->andReturn($this->streamInterface);
+        $this->streamInterface->shouldReceive('__toString')
             ->once()->andReturn(json_encode(['access_token' => $this->token]));
         $this->cache->shouldReceive('cacheAccessToken')->once();
 
@@ -128,6 +132,8 @@ class LtiServiceConnectorTest extends TestCase
         $this->response->shouldReceive('getHeaders')
             ->once()->andReturn($this->responseHeaders);
         $this->response->shouldReceive('getBody')
+            ->once()->andReturn($this->streamInterface);
+        $this->streamInterface->shouldReceive('__toString')
             ->once()->andReturn(json_encode($this->responseBody));
         $this->response->shouldReceive('getStatusCode')
             ->once()->andReturn($this->responseStatus);
@@ -197,6 +203,8 @@ class LtiServiceConnectorTest extends TestCase
         $this->response->shouldReceive('getHeaders')
             ->once()->andReturn($this->responseHeaders);
         $this->response->shouldReceive('getBody')
+            ->once()->andReturn($this->streamInterface);
+        $this->streamInterface->shouldReceive('__toString')
             ->once()->andReturn(json_encode($this->responseBody));
         $this->response->shouldReceive('getStatusCode')
             ->once()->andReturn($this->responseStatus);
@@ -301,6 +309,8 @@ class LtiServiceConnectorTest extends TestCase
             ->with($method, $this->url, $this->requestPayload)
             ->twice()->andReturn($this->response);
         $this->response->shouldReceive('getBody')
+            ->twice()->andReturn($this->streamInterface);
+        $this->streamInterface->shouldReceive('__toString')
             ->twice()->andReturn($responseBody);
         $this->response->shouldReceive('getStatusCode')
             ->twice()->andReturn($this->responseStatus);
@@ -330,7 +340,7 @@ class LtiServiceConnectorTest extends TestCase
     private function mockRequestReturnsA401()
     {
         $mockError = Mockery::mock(ClientException::class);
-        $mockResponse = Mockery::mock(ResponseInterface::class);
+        $mockResponse = Mockery::mock(Response::class);
         $mockError->shouldReceive('getResponse')
             ->once()->andReturn($mockResponse);
         $mockResponse->shouldReceive('getStatusCode')

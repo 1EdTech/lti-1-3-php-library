@@ -6,6 +6,7 @@ use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\TransferException;
 use Packback\Lti1p3\Interfaces\ICache;
 use Packback\Lti1p3\Interfaces\ICookie;
 use Packback\Lti1p3\Interfaces\IDatabase;
@@ -265,18 +266,24 @@ class LtiMessageLaunch
 
     private function getPublicKey()
     {
-        $key_set_url = $this->registration->getKeySetUrl();
+        $keySetUrl = $this->registration->getKeySetUrl();
+        $request = new ServiceRequest(LtiServiceConnector::METHOD_GET, $keySetUrl);
 
         // Download key set
-        $public_key_set = json_decode(file_get_contents($key_set_url), true);
+        try {
+            $response = $this->serviceConnector->makeRequest($request);
+        } catch (TransferException $e) {
+            throw new LtiException(static::ERR_NO_PUBLIC_KEY);
+        }
+        $publicKeySet = $this->serviceConnector->getResponseBody($response);
 
-        if (empty($public_key_set)) {
+        if (empty($publicKeySet)) {
             // Failed to fetch public keyset from URL.
             throw new LtiException(static::ERR_FETCH_PUBLIC_KEY);
         }
 
         // Find key used to sign the JWT (matches the KID in the header)
-        foreach ($public_key_set['keys'] as $key) {
+        foreach ($publicKeySet['keys'] as $key) {
             if ($key['kid'] == $this->jwt['header']['kid']) {
                 try {
                     return openssl_pkey_get_details(
