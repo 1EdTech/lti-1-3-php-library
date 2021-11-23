@@ -272,7 +272,7 @@ class LtiMessageLaunch
         // Download key set
         try {
             $response = $this->serviceConnector->makeRequest($request);
-        } catch (ClientException $e) {
+        } catch (TransferException $e) {
             throw new LtiException(static::ERR_NO_PUBLIC_KEY);
         }
         $publicKeySet = $this->serviceConnector->getResponseBody($response);
