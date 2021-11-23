@@ -6,7 +6,7 @@ use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\TransferException;
 use Packback\Lti1p3\Interfaces\ICache;
 use Packback\Lti1p3\Interfaces\ICookie;
 use Packback\Lti1p3\Interfaces\IDatabase;
