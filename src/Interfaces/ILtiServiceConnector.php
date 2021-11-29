@@ -10,7 +10,7 @@ interface ILtiServiceConnector
 
     public function makeRequest(IServiceRequest $request);
 
-    public function getResponseBody(Response $request): array;
+    public function getResponseBody(Response $request): ?array;
 
     public function makeServiceRequest(
         ILtiRegistration $registration,

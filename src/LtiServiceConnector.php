@@ -89,7 +89,7 @@ class LtiServiceConnector implements ILtiServiceConnector
         );
     }
 
-    public function getResponseBody(Response $response): array
+    public function getResponseBody(Response $response): ?array
     {
         $responseBody = (string) $response->getBody();
 
