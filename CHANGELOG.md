@@ -1,3 +1,7 @@
+## 4.1.2
+
+Fixed a typing error when the response body of a request is null.
+
 ## 4.1.1
 
 * Updated `LtiMessageLaunch` to fetch JWKs via an HTTP client instead of `file_get_contents()`. ([#38](https://github.com/packbackbooks/lti-1-3-php-library/pull/38))
