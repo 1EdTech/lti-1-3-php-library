@@ -1,6 +1,10 @@
+## 4.1.3
+
+Updated the ImsCache to properly retrieve the nonce and request body.  ([#40](https://github.com/packbackbooks/lti-1-3-php-library/pull/40))
+
 ## 4.1.2
 
-Fixed a typing error when the response body of a request is null.
+Fixed a typing error when the response body of a request is null. ([#39](https://github.com/packbackbooks/lti-1-3-php-library/pull/39))
 
 ## 4.1.1
 
