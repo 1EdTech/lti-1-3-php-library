@@ -12,41 +12,38 @@ class ImsCache implements ICache
     {
         $this->loadCache();
 
-        return $this->cache[$key];
+        return $this->cache[$key] ?? null;
     }
 
     public function cacheLaunchData($key, $jwtBody)
     {
+        $this->loadCache();
+
         $this->cache[$key] = $jwtBody;
         $this->saveCache();
-
-        return $this;
     }
 
     public function cacheNonce($nonce)
     {
+        $this->loadCache();
+
         $this->cache['nonce'][$nonce] = true;
         $this->saveCache();
-
-        return $this;
     }
 
     public function checkNonce($nonce)
     {
         $this->loadCache();
-        if (!isset($this->cache['nonce'][$nonce])) {
-            return false;
-        }
 
-        return true;
+        return isset($this->cache['nonce'][$nonce]);
     }
 
     public function cacheAccessToken($key, $accessToken)
     {
+        $this->loadCache();
+
         $this->cache[$key] = $accessToken;
         $this->saveCache();
-
-        return $this;
     }
 
     public function getAccessToken($key)
@@ -59,6 +56,7 @@ class ImsCache implements ICache
     public function clearAccessToken($key)
     {
         $this->loadCache();
+
         unset($this->cache[$key]);
         $this->saveCache();
 
