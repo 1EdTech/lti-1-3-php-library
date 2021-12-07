@@ -348,7 +348,7 @@ class LtiMessageLaunch
         if (!isset($this->jwt['body']['nonce'])) {
             throw new LtiException(static::ERR_MISSING_NONCE);
         }
-        if (!$this->cache->checkNonce($this->jwt['body']['nonce'])) {
+        if (!$this->cache->checkNonceIsValid($this->jwt['body']['nonce'], $this->request['state'])) {
             throw new LtiException(static::ERR_INVALID_NONCE);
         }
 

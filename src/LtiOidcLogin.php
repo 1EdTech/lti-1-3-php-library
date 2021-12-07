@@ -68,12 +68,12 @@ class LtiOidcLogin
 
         // Generate State.
         // Set cookie (short lived)
-        $state = str_replace('.', '_', uniqid('state-', true));
+        $state = str_replace('.', '_', static::secureRandomString('state-'));
         $this->cookie->setCookie(static::COOKIE_PREFIX.$state, $state, 60);
 
         // Generate Nonce.
-        $nonce = uniqid('nonce-', true);
-        $this->cache->cacheNonce($nonce);
+        $nonce = static::secureRandomString('nonce-');
+        $this->cache->cacheNonce($nonce, $state);
 
         // Build Response.
         $auth_params = [
@@ -122,5 +122,10 @@ class LtiOidcLogin
 
         // Return Registration.
         return $registration;
+    }
+
+    public static function secureRandomString(string $prefix = ''): string
+    {
+        return $prefix.hash('sha256', random_bytes(64));
     }
 }
