@@ -25,7 +25,7 @@ class LtiDeepLink
             'aud' => [$this->registration->getIssuer()],
             'exp' => time() + 600,
             'iat' => time(),
-            'nonce' => 'nonce'.hash('sha256', random_bytes(64)),
+            'nonce' => LtiOidcLogin::secureRandomString('nonce-'),
             LtiConstants::DEPLOYMENT_ID => $this->deployment_id,
             LtiConstants::MESSAGE_TYPE => 'LtiDeepLinkingResponse',
             LtiConstants::VERSION => LtiConstants::V1_3,

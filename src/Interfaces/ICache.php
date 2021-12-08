@@ -4,17 +4,17 @@ namespace Packback\Lti1p3\Interfaces;
 
 interface ICache
 {
-    public function getLaunchData($key);
+    public function getLaunchData(string $key): ?array;
 
-    public function cacheLaunchData($key, $jwtBody);
+    public function cacheLaunchData(string $key, array $jwtBody): void;
 
-    public function cacheNonce($nonce);
+    public function cacheNonce(string $nonce, string $state): void;
 
-    public function checkNonce($nonce);
+    public function checkNonceIsValid(string $nonce, string $state): bool;
 
-    public function cacheAccessToken($key, $accessToken);
+    public function cacheAccessToken(string $key, string $accessToken): void;
 
-    public function getAccessToken($key);
+    public function getAccessToken(string $key): ?string;
 
-    public function clearAccessToken($key);
+    public function clearAccessToken(string $key): void;
 }

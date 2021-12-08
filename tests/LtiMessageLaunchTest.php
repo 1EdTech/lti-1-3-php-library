@@ -172,7 +172,7 @@ class LtiMessageLaunchTest extends TestCase
 
         $this->cookie->shouldReceive('getCookie')
             ->once()->andReturn($params['state']);
-        $this->cache->shouldReceive('checkNonce')
+        $this->cache->shouldReceive('checkNonceIsValid')
             ->once()->andReturn(true);
         $this->database->shouldReceive('findRegistrationByIssuer')
             ->once()->andReturn($this->registration);
@@ -270,7 +270,7 @@ class LtiMessageLaunchTest extends TestCase
         ];
         $this->cookie->shouldReceive('getCookie')
             ->once()->andReturn($payload['state']);
-        $this->cache->shouldReceive('checkNonce')
+        $this->cache->shouldReceive('checkNonceIsValid')
             ->once()->andReturn(false);
 
         $this->expectException(LtiException::class);
@@ -288,7 +288,7 @@ class LtiMessageLaunchTest extends TestCase
         ];
         $this->cookie->shouldReceive('getCookie')
             ->once()->andReturn($payload['state']);
-        $this->cache->shouldReceive('checkNonce')
+        $this->cache->shouldReceive('checkNonceIsValid')
             ->once()->andReturn(true);
         $this->database->shouldReceive('findRegistrationByIssuer')
             ->once()->andReturn();
@@ -308,7 +308,7 @@ class LtiMessageLaunchTest extends TestCase
         ];
         $this->cookie->shouldReceive('getCookie')
             ->once()->andReturn($payload['state']);
-        $this->cache->shouldReceive('checkNonce')
+        $this->cache->shouldReceive('checkNonceIsValid')
             ->once()->andReturn(true);
         $this->database->shouldReceive('findRegistrationByIssuer')
             ->once()->andReturn($this->registration);
@@ -332,7 +332,7 @@ class LtiMessageLaunchTest extends TestCase
         ];
         $this->cookie->shouldReceive('getCookie')
             ->once()->andReturn($payload['state']);
-        $this->cache->shouldReceive('checkNonce')
+        $this->cache->shouldReceive('checkNonceIsValid')
             ->once()->andReturn(true);
         $this->database->shouldReceive('findRegistrationByIssuer')
             ->once()->andReturn($this->registration);
@@ -356,7 +356,7 @@ class LtiMessageLaunchTest extends TestCase
         ];
         $this->cookie->shouldReceive('getCookie')
             ->once()->andReturn($payload['state']);
-        $this->cache->shouldReceive('checkNonce')
+        $this->cache->shouldReceive('checkNonceIsValid')
             ->once()->andReturn(true);
         $this->database->shouldReceive('findRegistrationByIssuer')
             ->once()->andReturn($this->registration);
@@ -385,7 +385,7 @@ class LtiMessageLaunchTest extends TestCase
         ];
         $this->cookie->shouldReceive('getCookie')
             ->once()->andReturn($payload['state']);
-        $this->cache->shouldReceive('checkNonce')
+        $this->cache->shouldReceive('checkNonceIsValid')
             ->once()->andReturn(true);
         $this->database->shouldReceive('findRegistrationByIssuer')
             ->once()->andReturn($this->registration);

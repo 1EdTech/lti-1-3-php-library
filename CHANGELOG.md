@@ -1,6 +1,15 @@
+## 5.0.0
+
+Implemented several changes to comply with (OpenID Connect Core)[https://openid.net/specs/openid-connect-core-1_0.html]. Nonce validation changed such that it now verifies that the nonce and state associated with an LTI Message Launch request matches the state associated with the nonce and state created during the OIDC login request.
+
+* Implement cryptographically secure methods for generating cookies and nonces for OIDC login requests.
+* Fix an issue with nonce validation not checking against the value in the Authentication Request.
+* Add stricter typing to `ICache` and `ICookie`.
+* Rename the `ICache::getNonce()` method to `ICache::checkNonceIsValid()`.
+
 ## 4.1.3
 
-Updated the ImsCache to properly retrieve the nonce and request body.  ([#40](https://github.com/packbackbooks/lti-1-3-php-library/pull/40))
+Updated the ImsCache to properly retrieve the nonce and request body. ([#40](https://github.com/packbackbooks/lti-1-3-php-library/pull/40))
 
 ## 4.1.2
 

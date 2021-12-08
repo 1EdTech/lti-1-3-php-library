@@ -24,45 +24,39 @@ class TestCache implements ICache
     private $launchData = [];
     private $nonce;
 
-    public function getLaunchData($key)
+    public function getLaunchData(string $key): ?array
     {
         return $this->launchData[$key] ?? null;
     }
 
-    public function cacheLaunchData($key, $jwt_body)
+    public function cacheLaunchData(string $key, array $jwtBody): void
     {
-        $this->launchData[$key] = $jwt_body;
-
-        return $this;
+        $this->launchData[$key] = $jwtBody;
     }
 
-    public function cacheNonce($nonce)
+    public function cacheNonce(string $nonce, string $state): void
     {
-        $this->nonce = $nonce;
+        $this->nonce = $state;
     }
 
-    public function checkNonce($nonce)
+    public function checkNonceIsValid(string $nonce, string $state): bool
     {
-        return $this->nonce === $nonce;
+        return $this->nonce === $state;
     }
 
-    public function cacheAccessToken($key, $accessToken)
+    public function cacheAccessToken(string $key, string $accessToken): void
     {
         $this->launchData[$key] = $accessToken;
-
-        return $this;
     }
 
-    public function getAccessToken($key)
+    public function getAccessToken(string $key): ?string
     {
         return $this->launchData[$key] ?? null;
     }
 
-    public function clearAccessToken($key)
+    public function clearAccessToken(string $key): void
     {
         $this->launchData[$key] = null;
-
-        return $this->launchData;
     }
 }
 
@@ -70,16 +64,14 @@ class TestCookie implements ICookie
 {
     private $cookies = [];
 
-    public function getCookie($name)
+    public function getCookie(string $name): ?string
     {
         return $this->cookies[$name];
     }
 
-    public function setCookie($name, $value, $exp = 3600, $options = [])
+    public function setCookie(string $name, string $value, $exp = 3600, $options = []): void
     {
         $this->cookies[$name] = $value;
-
-        return $this;
     }
 }
 
@@ -394,7 +386,7 @@ class Lti13CertificationTest extends TestCase
 
             $jwt = $this->buildJWT($payload, $this->issuer, $jwtHeader);
             if (isset($payload['nonce'])) {
-                $this->cache->cacheNonce($payload['nonce']);
+                $this->cache->cacheNonce($payload['nonce'], static::STATE);
             }
 
             $params = [
@@ -445,7 +437,7 @@ class Lti13CertificationTest extends TestCase
             echo PHP_EOL."--> TESTING VALID TEST CASE: ${testCase}";
 
             $jwt = $this->buildJWT($payload, $this->issuer);
-            $this->cache->cacheNonce($payload['nonce']);
+            $this->cache->cacheNonce($payload['nonce'], static::STATE);
 
             $params = [
                 'utf8' => '✓',
@@ -484,7 +476,7 @@ class Lti13CertificationTest extends TestCase
     {
         $jwt = $this->buildJWT($payload, $this->issuer);
         if (isset($payload['nonce'])) {
-            $this->cache->cacheNonce($payload['nonce']);
+            $this->cache->cacheNonce($payload['nonce'], static::STATE);
         }
 
         $params = [

@@ -4,7 +4,7 @@ namespace Packback\Lti1p3\Interfaces;
 
 interface ICookie
 {
-    public function getCookie($name);
+    public function getCookie(string $name): ?string;
 
-    public function setCookie($name, $value, $exp = 3600, $options = []);
+    public function setCookie(string $name, string $value, $exp = 3600, $options = []): void;
 }
