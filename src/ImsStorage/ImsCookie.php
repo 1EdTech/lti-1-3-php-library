@@ -15,6 +15,8 @@ class ImsCookie implements ICookie
         if (isset($_COOKIE['LEGACY_'.$name])) {
             return $_COOKIE['LEGACY_'.$name];
         }
+
+        return null;
     }
 
     public function setCookie(string $name, string $value, $exp = 3600, $options = []): void

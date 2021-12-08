@@ -68,7 +68,7 @@ class LtiOidcLogin
 
         // Generate State.
         // Set cookie (short lived)
-        $state = str_replace('.', '_', static::secureRandomString('state-'));
+        $state = static::secureRandomString('state-');
         $this->cookie->setCookie(static::COOKIE_PREFIX.$state, $state, 60);
 
         // Generate Nonce.
