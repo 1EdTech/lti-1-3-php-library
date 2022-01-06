@@ -35,10 +35,8 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         }
 
         // If the line item already contains the Id, we do not need to find or create it.
-        if ($lineitem !== null) {
-            if (empty($lineitem->getId())) {
-                $lineitem = $this->findOrCreateLineitem($lineitem);
-            }
+        if ($lineitem !== null && empty($lineitem->getId())) {
+            $lineitem = $this->findOrCreateLineitem($lineitem);
         }
 
         // Otherwise, if no line item is passed in, attempt to use the one associated with
@@ -92,12 +90,7 @@ class LtiAssignmentsGradesService extends LtiAbstractService
 
     public function findOrCreateLineitem(LtiLineitem $newLineItem): LtiLineitem
     {
-        $lineitem = $this->findLineItem($newLineItem);
-        if ($lineitem !== null) {
-            return $lineitem;
-        }
-
-        return $this->createLineitem($newLineItem);
+        return $this->findLineItem($newLineItem) ?? $this->createLineitem($newLineItem);
     }
 
     public function getGrades(LtiLineitem $lineitem = null)
