@@ -25,8 +25,7 @@ class LtiAssignmentsGradesService extends LtiAbstractService
             return null;
         }
 
-        $lineitem = LtiLineitem::new()->setId($serviceData['lineitem']);
-        return $lineitem;
+        return LtiLineitem::new()->setId($serviceData['lineitem']);
     }
 
     public function putGrade(LtiGrade $grade, LtiLineitem $lineitem = null)
@@ -94,7 +93,9 @@ class LtiAssignmentsGradesService extends LtiAbstractService
     public function findOrCreateLineitem(LtiLineitem $newLineItem): LtiLineitem
     {
         $lineitem = $this->findLineItem($newLineItem);
-        if ($lineitem !== null) { return $lineitem; }
+        if ($lineitem !== null) {
+            return $lineitem;
+        }
 
         return $this->createLineitem($newLineItem);
     }
@@ -107,8 +108,7 @@ class LtiAssignmentsGradesService extends LtiAbstractService
                 $lineitem = $this->findOrCreateLineitem($lineitem);
             }
             $resultsUrl = $lineitem->getId();
-        }
-        else {
+        } else {
             if (empty($this->getServiceData()['lineitem'])) {
                 throw new Exception('Missing Line item');
             }
