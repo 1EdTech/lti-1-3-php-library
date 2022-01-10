@@ -34,22 +34,7 @@ class LtiAssignmentsGradesService extends LtiAbstractService
             throw new LtiException('Missing required scope', 1);
         }
 
-        // If the line item already contains the Id, we do not need to find or create it.
-        if ($lineitem !== null && empty($lineitem->getId())) {
-            $lineitem = $this->findOrCreateLineitem($lineitem);
-        }
-
-        // Otherwise, if no line item is passed in, attempt to use the one associated with
-        // this launch. If none exists, create a default line item.
-        else {
-            $lineitem = $this->getResourceLaunchLineItem();
-            if (!$lineitem || empty($lineitem->getId())) {
-                $lineitem = LtiLineitem::new()
-                    ->setLabel('default')
-                    ->setScoreMaximum(100);
-                $lineitem = $this->findOrCreateLineitem($lineitem);
-            }
-        }
+        $lineitem = $this->ensureLineItemExists($lineitem);
 
         $scoreUrl = $lineitem->getId();
 
@@ -62,6 +47,30 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         $request->setContentType(static::CONTENTTYPE_SCORE);
 
         return $this->makeServiceRequest($request);
+    }
+
+    public function ensureLineItemExists(LtiLineitem $lineitem = null): LtiLineitem
+    {
+        // If no line item is passed in, attempt to use the one associated with
+        // this launch.
+        if (!isset($lineitem)) {
+            $lineitem = $this->getResourceLaunchLineItem();
+        }
+
+        // If none exists still, create a default line item.
+        if (!isset($lineitem)) {
+            $defaultLineitem = LtiLineitem::new()
+                ->setLabel('default')
+                ->setScoreMaximum(100);
+            $lineitem = $this->createLineitem($defaultLineitem);
+        }
+
+        // If the line item does not contain an ID, find or create it.
+        if (empty($lineitem->getId())) {
+            $lineitem = $this->findOrCreateLineitem($lineitem);
+        }
+
+        return $lineitem;
     }
 
     public function findLineItem(LtiLineitem $newLineItem): ?LtiLineitem
