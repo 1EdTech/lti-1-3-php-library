@@ -49,30 +49,6 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         return $this->makeServiceRequest($request);
     }
 
-    public function ensureLineItemExists(LtiLineitem $lineitem = null): LtiLineitem
-    {
-        // If no line item is passed in, attempt to use the one associated with
-        // this launch.
-        if (!isset($lineitem)) {
-            $lineitem = $this->getResourceLaunchLineItem();
-        }
-
-        // If none exists still, create a default line item.
-        if (!isset($lineitem)) {
-            $defaultLineitem = LtiLineitem::new()
-                ->setLabel('default')
-                ->setScoreMaximum(100);
-            $lineitem = $this->createLineitem($defaultLineitem);
-        }
-
-        // If the line item does not contain an ID, find or create it.
-        if (empty($lineitem->getId())) {
-            $lineitem = $this->findOrCreateLineitem($lineitem);
-        }
-
-        return $lineitem;
-    }
-
     public function findLineItem(LtiLineitem $newLineItem): ?LtiLineitem
     {
         $lineitems = $this->getLineItems();
@@ -104,11 +80,8 @@ class LtiAssignmentsGradesService extends LtiAbstractService
 
     public function getGrades(LtiLineitem $lineitem = null)
     {
-        if ($lineitem !== null) {
-            // Skip line item lookup/creation if we already know the Id
-            if (empty($lineitem->getId())) {
-                $lineitem = $this->findOrCreateLineitem($lineitem);
-            }
+        if (isset($lineitem)) {
+            $lineitem = $this->ensureLineItemExists($lineitem);
             $resultsUrl = $lineitem->getId();
         } else {
             if (empty($this->getServiceData()['lineitem'])) {
@@ -148,6 +121,30 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         }
 
         return $lineitems;
+    }
+
+    private function ensureLineItemExists(LtiLineitem $lineitem = null): LtiLineitem
+    {
+        // If no line item is passed in, attempt to use the one associated with
+        // this launch.
+        if (!isset($lineitem)) {
+            $lineitem = $this->getResourceLaunchLineItem();
+        }
+
+        // If none exists still, create a default line item.
+        if (!isset($lineitem)) {
+            $defaultLineitem = LtiLineitem::new()
+                ->setLabel('default')
+                ->setScoreMaximum(100);
+            $lineitem = $this->createLineitem($defaultLineitem);
+        }
+
+        // If the line item does not contain an ID, find or create it.
+        if (empty($lineitem->getId())) {
+            $lineitem = $this->findOrCreateLineitem($lineitem);
+        }
+
+        return $lineitem;
     }
 
     private function isMatchingLineitem(array $lineitem, LtiLineitem $newLineItem): bool
