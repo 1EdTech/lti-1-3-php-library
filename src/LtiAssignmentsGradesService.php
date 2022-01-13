@@ -80,15 +80,8 @@ class LtiAssignmentsGradesService extends LtiAbstractService
 
     public function getGrades(LtiLineitem $lineitem = null)
     {
-        if (isset($lineitem)) {
-            $lineitem = $this->ensureLineItemExists($lineitem);
-            $resultsUrl = $lineitem->getId();
-        } else {
-            if (empty($this->getServiceData()['lineitem'])) {
-                throw new Exception('Missing Line item');
-            }
-            $resultsUrl = $this->getServiceData()['lineitem'];
-        }
+        $lineitem = $this->ensureLineItemExists($lineitem);
+        $resultsUrl = $lineitem->getId();
 
         // Place '/results' before url params
         $pos = strpos($resultsUrl, '?');
