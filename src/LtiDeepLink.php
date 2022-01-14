@@ -30,8 +30,13 @@ class LtiDeepLink
             LtiConstants::MESSAGE_TYPE => 'LtiDeepLinkingResponse',
             LtiConstants::VERSION => LtiConstants::V1_3,
             LtiConstants::DL_CONTENT_ITEMS => array_map(function ($resource) { return $resource->toArray(); }, $resources),
-            LtiConstants::DL_DATA => $this->deep_link_settings['data'],
         ];
+
+        # https://www.imsglobal.org/spec/lti-dl/v2p0/#deep-linking-request-message
+        # 'data' is an optional property which, if it exists, must be returned by the tool
+        if (isset($this->deep_link_settings['data'])) {
+            $message_jwt[LtiConstants::DL_DATA] = $this->deep_link_settings['data'];
+        }
 
         return JWT::encode($message_jwt, $this->registration->getToolPrivateKey(), 'RS256', $this->registration->getKid());
     }
