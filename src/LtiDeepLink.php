@@ -32,8 +32,8 @@ class LtiDeepLink
             LtiConstants::DL_CONTENT_ITEMS => array_map(function ($resource) { return $resource->toArray(); }, $resources),
         ];
 
-        # https://www.imsglobal.org/spec/lti-dl/v2p0/#deep-linking-request-message
-        # 'data' is an optional property which, if it exists, must be returned by the tool
+        // https://www.imsglobal.org/spec/lti-dl/v2p0/#deep-linking-request-message
+        // 'data' is an optional property which, if it exists, must be returned by the tool
         if (isset($this->deep_link_settings['data'])) {
             $message_jwt[LtiConstants::DL_DATA] = $this->deep_link_settings['data'];
         }
