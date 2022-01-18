@@ -2,10 +2,16 @@
 
 ### Changes to `ICache` methods
 
-Version 4.0 introduced changes to the `Packback\Lti1p3\Interfaces\ICache` interface.
+Version 5.0 introduced changes to the `Packback\Lti1p3\Interfaces\ICache` interface.
 
 * The method `checkNonce()` was renamed to `checkNonceIsValid()`.
 * A second required argument (`$state`) was added to the `cacheNonce()` and `checkNonceIsValid()` methods.
+* Stricter typing was introduced for several methods: `getLaunchData`, `cacheLaunchData`, `cacheNonce`, `cacheAccessToken`, `getAccessToken`, and `clearAccessToken`.
+
+Stricter typing was added to methods on several interfaces.
+
+* On `ICache` the following methods are now more strictly typed: `getLaunchData`, `cacheLaunchData`, `cacheNonce`, `cacheAccessToken`, `getAccessToken`, and `clearAccessToken`.
+* On `ICookie` the following methods are now more strictly typed: `getCookie`, and `setCookie`.
 
 ### Stricter typing on `ICache` and `ICookie` methods
 

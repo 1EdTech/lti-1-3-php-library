@@ -14,23 +14,29 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         return $this->getServiceData()['scope'];
     }
 
+    // https://www.imsglobal.org/spec/lti-ags/v2p0#assignment-and-grade-service-claim
+    // When an LTI message is launching a resource associated to one and only one lineitem,
+    // the claim must include the endpoint URL for accessing the associated line item;
+    // in all other cases, this property must be either blank or not included in the claim.
+    public function getResourceLaunchLineItem(): ?LtiLineitem
+    {
+        $serviceData = $this->getServiceData();
+        if (empty($serviceData['lineitem'])) {
+            return null;
+        }
+
+        return LtiLineitem::new()->setId($serviceData['lineitem']);
+    }
+
     public function putGrade(LtiGrade $grade, LtiLineitem $lineitem = null)
     {
         if (!in_array(LtiConstants::AGS_SCOPE_SCORE, $this->getScope())) {
             throw new LtiException('Missing required scope', 1);
         }
-        if ($lineitem !== null && empty($lineitem->getId())) {
-            $lineitem = $this->findOrCreateLineitem($lineitem);
-            $scoreUrl = $lineitem->getId();
-        } elseif ($lineitem === null && !empty($this->getServiceData()['lineitem'])) {
-            $scoreUrl = $this->getServiceData()['lineitem'];
-        } else {
-            $lineitem = LtiLineitem::new()
-                ->setLabel('default')
-                ->setScoreMaximum(100);
-            $lineitem = $this->findOrCreateLineitem($lineitem);
-            $scoreUrl = $lineitem->getId();
-        }
+
+        $lineitem = $this->ensureLineItemExists($lineitem);
+
+        $scoreUrl = $lineitem->getId();
 
         // Place '/scores' before url params
         $pos = strpos($scoreUrl, '?');
@@ -43,7 +49,7 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         return $this->makeServiceRequest($request);
     }
 
-    public function findOrCreateLineitem(LtiLineitem $newLineItem)
+    public function findLineItem(LtiLineitem $newLineItem): ?LtiLineitem
     {
         $lineitems = $this->getLineItems();
 
@@ -53,6 +59,11 @@ class LtiAssignmentsGradesService extends LtiAbstractService
             }
         }
 
+        return null;
+    }
+
+    public function createLineitem(LtiLineitem $newLineItem): LtiLineitem
+    {
         $request = new ServiceRequest(LtiServiceConnector::METHOD_POST, $this->getServiceData()['lineitems']);
         $request->setBody($newLineItem)
             ->setContentType(static::CONTENTTYPE_LINEITEM)
@@ -62,17 +73,15 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         return new LtiLineitem($createdLineItems['body']);
     }
 
+    public function findOrCreateLineitem(LtiLineitem $newLineItem): LtiLineitem
+    {
+        return $this->findLineItem($newLineItem) ?? $this->createLineitem($newLineItem);
+    }
+
     public function getGrades(LtiLineitem $lineitem = null)
     {
-        if ($lineitem !== null) {
-            $lineitem = $this->findOrCreateLineitem($lineitem);
-            $resultsUrl = $lineitem->getId();
-        } else {
-            if (empty($this->getServiceData()['lineitem'])) {
-                throw new Exception('Missing Line item');
-            }
-            $resultsUrl = $this->getServiceData()['lineitem'];
-        }
+        $lineitem = $this->ensureLineItemExists($lineitem);
+        $resultsUrl = $lineitem->getId();
 
         // Place '/results' before url params
         $pos = strpos($resultsUrl, '?');
@@ -105,6 +114,30 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         }
 
         return $lineitems;
+    }
+
+    private function ensureLineItemExists(LtiLineitem $lineitem = null): LtiLineitem
+    {
+        // If no line item is passed in, attempt to use the one associated with
+        // this launch.
+        if (!isset($lineitem)) {
+            $lineitem = $this->getResourceLaunchLineItem();
+        }
+
+        // If none exists still, create a default line item.
+        if (!isset($lineitem)) {
+            $defaultLineitem = LtiLineitem::new()
+                ->setLabel('default')
+                ->setScoreMaximum(100);
+            $lineitem = $this->createLineitem($defaultLineitem);
+        }
+
+        // If the line item does not contain an ID, find or create it.
+        if (empty($lineitem->getId())) {
+            $lineitem = $this->findOrCreateLineitem($lineitem);
+        }
+
+        return $lineitem;
     }
 
     private function isMatchingLineitem(array $lineitem, LtiLineitem $newLineItem): bool

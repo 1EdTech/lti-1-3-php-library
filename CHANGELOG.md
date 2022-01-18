@@ -6,6 +6,7 @@ Implemented several changes to comply with (OpenID Connect Core)[https://openid.
 * Fix an issue with nonce validation not checking against the value in the Authentication Request.
 * Add stricter typing to `ICache` and `ICookie`.
 * Rename the `ICache::getNonce()` method to `ICache::checkNonceIsValid()`.
+* Improve how line items are fetched and created when putting a grade to a line item. ([#44](https://github.com/packbackbooks/lti-1-3-php-library/pull/44))
 
 ## 4.1.3
 
