@@ -54,4 +54,14 @@ abstract class LtiAbstractService
             $key
         );
     }
+
+    protected function get(IServiceRequest $request, string $key = null): LtiLineitem
+    {
+        return $this->serviceConnector->get(
+            $this->registration,
+            $this->getScope(),
+            $request,
+            $key
+        );
+    }
 }

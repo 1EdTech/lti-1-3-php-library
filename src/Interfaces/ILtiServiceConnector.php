@@ -3,6 +3,7 @@
 namespace Packback\Lti1p3\Interfaces;
 
 use GuzzleHttp\Psr7\Response;
+use Packback\Lti1p3\LtiLineitem;
 
 interface ILtiServiceConnector
 {
@@ -25,6 +26,13 @@ interface ILtiServiceConnector
         IServiceRequest $request,
         string $key
     ): array;
+
+    public function get(
+        ILtiRegistration $registration,
+        array $scopes,
+        IServiceRequest $request,
+        string $key
+    ): LtiLineitem;
 
     public function setDebuggingMode(bool $enable): void;
 }
