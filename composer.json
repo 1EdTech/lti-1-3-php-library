@@ -20,7 +20,7 @@
         }
     ],
     "require": {
-        "firebase/php-jwt": "^5.2 || ^6.0",
+        "firebase/php-jwt": "^6.0",
         "guzzlehttp/guzzle": "^7.0",
         "phpseclib/phpseclib": "^2.0"
     },
