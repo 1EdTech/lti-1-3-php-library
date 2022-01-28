@@ -178,8 +178,11 @@ class LtiServiceConnector implements ILtiServiceConnector
         array $scopes,
         IServiceRequest $request
     ): LtiLineitem {
-        $response = $this->makeServiceRequest($registration, $scopes, $request);
+        if ($request->getMethod() !== static::METHOD_GET) {
+            throw new \Exception('An invalid method was specified by an LTI service requesting one item.');
+        }
 
+        $response = $this->makeServiceRequest($registration, $scopes, $request);
         return new LtiLineitem($response['body']);
     }
 

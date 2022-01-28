@@ -9,6 +9,7 @@ use Mockery;
 use Packback\Lti1p3\Interfaces\ICache;
 use Packback\Lti1p3\Interfaces\ILtiRegistration;
 use Packback\Lti1p3\Interfaces\IServiceRequest;
+use Packback\Lti1p3\LtiLineitem;
 use Packback\Lti1p3\LtiRegistration;
 use Packback\Lti1p3\LtiServiceConnector;
 use Psr\Http\Message\StreamInterface;
@@ -322,6 +323,52 @@ class LtiServiceConnectorTest extends TestCase
             ->once()->andReturn($this->responseHeaders);
 
         $result = $this->connector->getAll($this->registration, $this->scopes, $this->request, $key);
+
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testItGetsSingleLineItem()
+    {
+        $method = LtiServiceConnector::METHOD_GET;
+        $ltiLineitemData = [
+            'id' => 'testId'
+        ];
+
+        $responseBody = json_encode($ltiLineitemData);
+        $expected = new LtiLineitem($ltiLineitemData);
+
+        // Sets the access token on one request
+        $this->registration->shouldReceive('getClientId')
+            ->once()->andReturn('client_id');
+        $this->registration->shouldReceive('getIssuer')
+            ->once()->andReturn('issuer');
+        $this->cache->shouldReceive('getAccessToken')
+            ->once()->andReturn($this->token);
+        $this->request->shouldReceive('setAccessToken')
+            ->once()->andReturn($this->request);
+
+        $this->request->shouldReceive('getMethod')
+            ->twice()->andReturn($method);
+        $this->request->shouldReceive('getUrl')
+            ->once()->andReturn($this->url);
+        $this->request->shouldReceive('getPayload')
+            ->once()->andReturn($this->requestPayload);
+
+        // one response
+        $this->client->shouldReceive('request')
+            ->with($method, $this->url, $this->requestPayload)
+            ->once()->andReturn($this->response);
+        $this->response->shouldReceive('getBody')
+            ->once()->andReturn($this->streamInterface);
+        $this->streamInterface->shouldReceive('__toString')
+            ->once()->andReturn($responseBody);
+        $this->response->shouldReceive('getStatusCode')
+            ->once()->andReturn($this->responseStatus);
+
+        $this->response->shouldReceive('getHeaders')
+            ->once()->andReturn($this->responseHeaders);
+
+        $result = $this->connector->get($this->registration, $this->scopes, $this->request);
 
         $this->assertEquals($expected, $result);
     }
