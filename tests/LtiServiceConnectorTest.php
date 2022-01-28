@@ -331,7 +331,7 @@ class LtiServiceConnectorTest extends TestCase
     {
         $method = LtiServiceConnector::METHOD_GET;
         $ltiLineitemData = [
-            'id' => 'testId'
+            'id' => 'testId',
         ];
 
         $responseBody = json_encode($ltiLineitemData);

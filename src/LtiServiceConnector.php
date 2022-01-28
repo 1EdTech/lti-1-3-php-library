@@ -183,6 +183,7 @@ class LtiServiceConnector implements ILtiServiceConnector
         }
 
         $response = $this->makeServiceRequest($registration, $scopes, $request);
+
         return new LtiLineitem($response['body']);
     }
 
