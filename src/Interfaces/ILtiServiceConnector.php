@@ -30,8 +30,7 @@ interface ILtiServiceConnector
     public function get(
         ILtiRegistration $registration,
         array $scopes,
-        IServiceRequest $request,
-        string $key
+        IServiceRequest $request
     ): LtiLineitem;
 
     public function setDebuggingMode(bool $enable): void;

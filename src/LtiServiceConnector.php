@@ -2,7 +2,6 @@
 
 namespace Packback\Lti1p3;
 
-use Couchbase\BaseException;
 use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -174,15 +173,14 @@ class LtiServiceConnector implements ILtiServiceConnector
         return $results;
     }
 
-    public function get(ILtiRegistration $registration, array $scopes, IServiceRequest $request, string $key = null): LtiLineitem
-    {
-        throw new \Exception('Not implemented');
-//        if ($request->getMethod() !== static::METHOD_GET) {
-//            throw new \Exception('An invalid method was specified by an LTI service requesting all items.');
-//        }
-//
-//        $response = $this->makeServiceRequest($registration, $scopes, $request);
-//        $result = $response['body'] ?? [];
+    public function get(
+        ILtiRegistration $registration,
+        array $scopes,
+        IServiceRequest $request
+    ): LtiLineitem {
+        $response = $this->makeServiceRequest($registration, $scopes, $request);
+
+        return new LtiLineitem($response['body']);
     }
 
     private function getAccessTokenCacheKey(ILtiRegistration $registration, array $scopes)
