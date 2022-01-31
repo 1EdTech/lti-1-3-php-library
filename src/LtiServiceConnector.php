@@ -17,7 +17,6 @@ class LtiServiceConnector implements ILtiServiceConnector
 
     public const METHOD_GET = 'GET';
     public const METHOD_POST = 'POST';
-    public const METHOD_DELETE = 'DELETE';
 
     private $cache;
     private $client;
@@ -171,20 +170,6 @@ class LtiServiceConnector implements ILtiServiceConnector
         }
 
         return $results;
-    }
-
-    public function get(
-        ILtiRegistration $registration,
-        array $scopes,
-        IServiceRequest $request
-    ): LtiLineitem {
-        if ($request->getMethod() !== static::METHOD_GET) {
-            throw new \Exception('An invalid method was specified by an LTI service requesting one item.');
-        }
-
-        $response = $this->makeServiceRequest($registration, $scopes, $request);
-
-        return new LtiLineitem($response['body']);
     }
 
     private function getAccessTokenCacheKey(ILtiRegistration $registration, array $scopes)

@@ -116,7 +116,7 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         return $lineitems;
     }
 
-    public function getLineItem(string $url): LtiLineitem
+    public function getLineItem(string $url): array
     {
         if (!in_array(LtiConstants::AGS_SCOPE_LINEITEM, $this->getScope())) {
             throw new LtiException('Missing required scope', 1);
@@ -125,9 +125,7 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         $request = new ServiceRequest(LtiServiceConnector::METHOD_GET, $url);
         $request->setAccept(static::CONTENTTYPE_LINEITEM);
 
-        $lineItem = $this->get($request);
-
-        return $lineItem;
+        return $this->makeServiceRequest($request)['body'];
     }
 
     private function ensureLineItemExists(LtiLineitem $lineitem = null): LtiLineitem
