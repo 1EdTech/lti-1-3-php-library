@@ -126,6 +126,7 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         $request->setAccept(static::CONTENTTYPE_LINEITEM);
 
         $response = $this->makeServiceRequest($request)['body'];
+
         return new LtiLineitem($response);
     }
 
