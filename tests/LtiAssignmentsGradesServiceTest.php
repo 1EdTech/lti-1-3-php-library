@@ -7,6 +7,7 @@ use Packback\Lti1p3\Interfaces\ILtiRegistration;
 use Packback\Lti1p3\Interfaces\ILtiServiceConnector;
 use Packback\Lti1p3\LtiAssignmentsGradesService;
 use Packback\Lti1p3\LtiConstants;
+use Packback\Lti1p3\LtiLineitem;
 
 class LtiAssignmentsGradesServiceTest extends TestCase
 {
@@ -42,7 +43,7 @@ class LtiAssignmentsGradesServiceTest extends TestCase
         $this->connector->shouldReceive('makeServiceRequest')
             ->once()->andReturn($response);
 
-        $expected = $ltiLineitemData;
+        $expected = new LtiLineitem($ltiLineitemData);
 
         $result = $service->getLineItem('someUrl');
 
