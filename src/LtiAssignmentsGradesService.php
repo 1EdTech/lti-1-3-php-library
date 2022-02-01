@@ -116,6 +116,20 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         return $lineitems;
     }
 
+    public function getLineItem(string $url): LtiLineitem
+    {
+        if (!in_array(LtiConstants::AGS_SCOPE_LINEITEM, $this->getScope())) {
+            throw new LtiException('Missing required scope', 1);
+        }
+
+        $request = new ServiceRequest(LtiServiceConnector::METHOD_GET, $url);
+        $request->setAccept(static::CONTENTTYPE_LINEITEM);
+
+        $response = $this->makeServiceRequest($request)['body'];
+
+        return new LtiLineitem($response);
+    }
+
     private function ensureLineItemExists(LtiLineitem $lineitem = null): LtiLineitem
     {
         // If no line item is passed in, attempt to use the one associated with
