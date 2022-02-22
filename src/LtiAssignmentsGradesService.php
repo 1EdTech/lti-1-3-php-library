@@ -2,8 +2,6 @@
 
 namespace Packback\Lti1p3;
 
-use Packback\Lti1p3\Helpers\RequestLogger;
-
 class LtiAssignmentsGradesService extends LtiAbstractService
 {
     public const CONTENTTYPE_SCORE = 'application/vnd.ims.lis.v1.score+json';
@@ -48,7 +46,7 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         $request->setBody($grade);
         $request->setContentType(static::CONTENTTYPE_SCORE);
 
-        return $this->makeServiceRequest($request, RequestLogger::SYNC_GRADE_REQUEST);
+        return $this->makeServiceRequest($request, LtiServiceConnector::SYNC_GRADE_REQUEST);
     }
 
     public function findLineItem(LtiLineitem $newLineItem): ?LtiLineitem
@@ -70,7 +68,7 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         $request->setBody($newLineItem)
             ->setContentType(static::CONTENTTYPE_LINEITEM)
             ->setAccept(static::CONTENTTYPE_LINEITEM);
-        $createdLineItem = $this->makeServiceRequest($request, RequestLogger::CREATE_LINEITEM_REQUEST);
+        $createdLineItem = $this->makeServiceRequest($request, LtiServiceConnector::CREATE_LINEITEM_REQUEST);
 
         return new LtiLineitem($createdLineItem['body']);
     }

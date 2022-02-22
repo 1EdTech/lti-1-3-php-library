@@ -6,7 +6,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Response;
 use Mockery;
-use Packback\Lti1p3\Helpers\RequestLogger;
 use Packback\Lti1p3\Interfaces\ICache;
 use Packback\Lti1p3\Interfaces\ILtiRegistration;
 use Packback\Lti1p3\Interfaces\IServiceRequest;
@@ -31,10 +30,6 @@ class LtiServiceConnectorTest extends TestCase
     /**
      * @var Mockery\MockInterface
      */
-    private $requestLogger;
-    /**
-     * @var Mockery\MockInterface
-     */
     private $response;
     /**
      * @var LtiServiceConnector
@@ -47,7 +42,6 @@ class LtiServiceConnectorTest extends TestCase
         $this->request = Mockery::mock(IServiceRequest::class);
         $this->cache = Mockery::mock(ICache::class);
         $this->client = Mockery::mock(Client::class);
-        $this->requestLogger = Mockery::mock(RequestLogger::class);
         $this->response = Mockery::mock(Response::class);
         $this->streamInterface = Mockery::mock(StreamInterface::class);
 
@@ -72,7 +66,7 @@ class LtiServiceConnectorTest extends TestCase
         $this->responseBody = ['some' => 'response'];
         $this->responseStatus = 200;
 
-        $this->connector = new LtiServiceConnector($this->cache, $this->client, $this->requestLogger);
+        $this->connector = new LtiServiceConnector($this->cache, $this->client);
     }
 
     public function testItInstantiates()
@@ -329,6 +323,33 @@ class LtiServiceConnectorTest extends TestCase
         $result = $this->connector->getAll($this->registration, $this->scopes, $this->request, $key);
 
         $this->assertEquals($expected, $result);
+    }
+
+    public function testItLogsRequests()
+    {
+        $this->request->shouldReceive('getPayload')
+            ->once()
+            ->andReturn([
+                'body' => json_encode(['userId' => 'id']),
+            ]);
+        $this->request->shouldReceive('getMethod')
+            ->once()
+            ->andReturn('GET');
+        $this->request->shouldReceive('getUrl')
+            ->once()
+            ->andReturn('/test.com/test');
+        $connector = Mockery::mock(LtiServiceConnector::class)->makePartial();
+        $connector->shouldReceive('errorLog')
+            ->once();
+
+        $result = $connector->logRequest(
+            LtiServiceConnector::UNSUPPORTED_REQUEST,
+            $this->request,
+            $this->responseHeaders,
+            $this->responseBody
+        );
+
+        $this->assertNull($result);
     }
 
     private function mockMakeRequest()
