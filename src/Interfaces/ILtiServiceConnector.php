@@ -16,6 +16,7 @@ interface ILtiServiceConnector
         ILtiRegistration $registration,
         array $scopes,
         IServiceRequest $request,
+        ?int $requestType = null,
         bool $shouldRetry = true
     ): array;
 

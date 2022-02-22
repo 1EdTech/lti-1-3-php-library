@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Response;
 use Mockery;
+use Packback\Lti1p3\Helpers\RequestLogger;
 use Packback\Lti1p3\Interfaces\ICache;
 use Packback\Lti1p3\Interfaces\ILtiRegistration;
 use Packback\Lti1p3\Interfaces\IServiceRequest;
@@ -30,6 +31,10 @@ class LtiServiceConnectorTest extends TestCase
     /**
      * @var Mockery\MockInterface
      */
+    private $requestLogger;
+    /**
+     * @var Mockery\MockInterface
+     */
     private $response;
     /**
      * @var LtiServiceConnector
@@ -42,6 +47,7 @@ class LtiServiceConnectorTest extends TestCase
         $this->request = Mockery::mock(IServiceRequest::class);
         $this->cache = Mockery::mock(ICache::class);
         $this->client = Mockery::mock(Client::class);
+        $this->requestLogger = Mockery::mock(RequestLogger::class);
         $this->response = Mockery::mock(Response::class);
         $this->streamInterface = Mockery::mock(StreamInterface::class);
 
@@ -66,7 +72,7 @@ class LtiServiceConnectorTest extends TestCase
         $this->responseBody = ['some' => 'response'];
         $this->responseStatus = 200;
 
-        $this->connector = new LtiServiceConnector($this->cache, $this->client);
+        $this->connector = new LtiServiceConnector($this->cache, $this->client, $this->requestLogger);
     }
 
     public function testItInstantiates()
@@ -93,7 +99,6 @@ class LtiServiceConnectorTest extends TestCase
             'kid' => 'kid',
             'authTokenUrl' => 'auth_token_url',
         ]);
-        $connector = new LtiServiceConnector($this->cache, $this->client);
 
         $this->cache->shouldReceive('getAccessToken')
             ->once()->andReturn(false);
@@ -105,7 +110,7 @@ class LtiServiceConnectorTest extends TestCase
             ->once()->andReturn(json_encode(['access_token' => $this->token]));
         $this->cache->shouldReceive('cacheAccessToken')->once();
 
-        $result = $connector->getAccessToken($registration, ['scopeKey']);
+        $result = $this->connector->getAccessToken($registration, ['scopeKey']);
 
         $this->assertEquals($result, $this->token);
     }

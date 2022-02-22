@@ -6,6 +6,7 @@ use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Response;
+use Packback\Lti1p3\Helpers\RequestLogger;
 use Packback\Lti1p3\Interfaces\ICache;
 use Packback\Lti1p3\Interfaces\ILtiRegistration;
 use Packback\Lti1p3\Interfaces\ILtiServiceConnector;
@@ -20,12 +21,17 @@ class LtiServiceConnector implements ILtiServiceConnector
 
     private $cache;
     private $client;
+    private $requestLogger;
     private $debuggingMode = false;
 
-    public function __construct(ICache $cache, Client $client)
-    {
+    public function __construct(
+        ICache $cache,
+        Client $client,
+        RequestLogger $requestLogger
+    ) {
         $this->cache = $cache;
         $this->client = $client;
+        $this->requestLogger = $requestLogger;
     }
 
     public function setDebuggingMode(bool $enable): void
@@ -100,8 +106,15 @@ class LtiServiceConnector implements ILtiServiceConnector
         ILtiRegistration $registration,
         array $scopes,
         IServiceRequest $request,
+        ?int $requestType = null,
         bool $shouldRetry = true
     ): array {
+        // Set $requestType here, since static properties cannot be evaluated
+        // as parameters
+        if (!isset($requestType)) {
+            $requestType = RequestLogger::UNSUPPORTED_REQUEST;
+        }
+
         $request->setAccessToken($this->getAccessToken($registration, $scopes));
 
         try {
@@ -115,7 +128,7 @@ class LtiServiceConnector implements ILtiServiceConnector
                 $key = $this->getAccessTokenCacheKey($registration, $scopes);
                 $this->cache->clearAccessToken($key);
 
-                return $this->makeServiceRequest($registration, $scopes, $request, false);
+                return $this->makeServiceRequest($registration, $scopes, $request, $requestType, false);
             }
 
             throw $e;
@@ -127,14 +140,12 @@ class LtiServiceConnector implements ILtiServiceConnector
         $responseBody = $this->getResponseBody($response);
 
         if ($this->debuggingMode) {
-            error_log('Syncing grade for this lti_user_id: '.
-                json_decode($request->getPayload()['body'])->userId.' '.print_r([
-                    'request_method' => $request->getMethod(),
-                    'request_url' => $request->getUrl(),
-                    'request_body' => $request->getPayload()['body'],
-                    'response_headers' => $responseHeaders,
-                    'response_body' => json_encode($responseBody),
-                ], true));
+            $this->requestLogger->logRequest(
+                $requestType,
+                $request,
+                $responseHeaders,
+                $responseBody
+            );
         }
 
         return [
