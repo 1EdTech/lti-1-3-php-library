@@ -2,8 +2,6 @@
 
 namespace Packback\Lti1p3;
 
-use Packback\Lti1p3\Interfaces\IServiceRequest;
-
 class LtiAssignmentsGradesService extends LtiAbstractService
 {
     public const CONTENTTYPE_SCORE = 'application/vnd.ims.lis.v1.score+json';
