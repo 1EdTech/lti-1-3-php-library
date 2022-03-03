@@ -46,7 +46,7 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         $request->setBody($grade);
         $request->setContentType(static::CONTENTTYPE_SCORE);
 
-        return $this->makeServiceRequest($request);
+        return $this->makeServiceRequest($request, LtiServiceConnector::SYNC_GRADE_REQUEST);
     }
 
     public function findLineItem(LtiLineitem $newLineItem): ?LtiLineitem
@@ -68,9 +68,9 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         $request->setBody($newLineItem)
             ->setContentType(static::CONTENTTYPE_LINEITEM)
             ->setAccept(static::CONTENTTYPE_LINEITEM);
-        $createdLineItems = $this->makeServiceRequest($request);
+        $createdLineItem = $this->makeServiceRequest($request, LtiServiceConnector::CREATE_LINEITEM_REQUEST);
 
-        return new LtiLineitem($createdLineItems['body']);
+        return new LtiLineitem($createdLineItem['body']);
     }
 
     public function findOrCreateLineitem(LtiLineitem $newLineItem): LtiLineitem
@@ -106,7 +106,7 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         );
         $request->setAccept(static::CONTENTTYPE_LINEITEMCONTAINER);
 
-        $lineitems = $this->getAll($request);
+        $lineitems = $this->getAll($request, null, LtiServiceConnector::GET_LINEITEMS_REQUEST);
 
         // If there is only one item, then wrap it in an array so the foreach works
         if (isset($lineitems['body']['id'])) {

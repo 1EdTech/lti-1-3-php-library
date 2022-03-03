@@ -18,14 +18,30 @@ class LtiServiceConnector implements ILtiServiceConnector
     public const METHOD_GET = 'GET';
     public const METHOD_POST = 'POST';
 
+    // Supported request types which map to an error log message
+    public const UNSUPPORTED_REQUEST = 0;
+    public const SYNC_GRADE_REQUEST = 1;
+    public const CREATE_LINEITEM_REQUEST = 2;
+    public const GET_LINEITEMS_REQUEST = 3;
+
     private $cache;
     private $client;
     private $debuggingMode = false;
+    private $errorMessages;
 
-    public function __construct(ICache $cache, Client $client)
-    {
+    public function __construct(
+        ICache $cache,
+        Client $client
+    ) {
         $this->cache = $cache;
         $this->client = $client;
+
+        $this->errorMessages = [
+            static::UNSUPPORTED_REQUEST => 'Logging request data: ',
+            static::SYNC_GRADE_REQUEST => 'Syncing grade for this lti_user_id: ',
+            static::CREATE_LINEITEM_REQUEST => 'Creating lineitem: ',
+            static::GET_LINEITEMS_REQUEST => 'Getting lineitems: ',
+        ];
     }
 
     public function setDebuggingMode(bool $enable): void
@@ -100,8 +116,15 @@ class LtiServiceConnector implements ILtiServiceConnector
         ILtiRegistration $registration,
         array $scopes,
         IServiceRequest $request,
+        ?int $requestType = null,
         bool $shouldRetry = true
     ): array {
+        // Set $requestType here, since static properties cannot be evaluated
+        // as parameters
+        if (!isset($requestType)) {
+            $requestType = self::UNSUPPORTED_REQUEST;
+        }
+
         $request->setAccessToken($this->getAccessToken($registration, $scopes));
 
         try {
@@ -115,7 +138,7 @@ class LtiServiceConnector implements ILtiServiceConnector
                 $key = $this->getAccessTokenCacheKey($registration, $scopes);
                 $this->cache->clearAccessToken($key);
 
-                return $this->makeServiceRequest($registration, $scopes, $request, false);
+                return $this->makeServiceRequest($registration, $scopes, $request, $requestType, false);
             }
 
             throw $e;
@@ -127,14 +150,12 @@ class LtiServiceConnector implements ILtiServiceConnector
         $responseBody = $this->getResponseBody($response);
 
         if ($this->debuggingMode) {
-            error_log('Syncing grade for this lti_user_id: '.
-                json_decode($request->getPayload()['body'])->userId.' '.print_r([
-                    'request_method' => $request->getMethod(),
-                    'request_url' => $request->getUrl(),
-                    'request_body' => $request->getPayload()['body'],
-                    'response_headers' => $responseHeaders,
-                    'response_body' => json_encode($responseBody),
-                ], true));
+            $this->logRequest(
+                $requestType,
+                $request,
+                $responseHeaders,
+                $responseBody
+            );
         }
 
         return [
@@ -148,7 +169,8 @@ class LtiServiceConnector implements ILtiServiceConnector
         ILtiRegistration $registration,
         array $scopes,
         IServiceRequest $request,
-        string $key = null
+        string $key = null,
+        ?int $requestType = null
     ): array {
         if ($request->getMethod() !== static::METHOD_GET) {
             throw new \Exception('An invalid method was specified by an LTI service requesting all items.');
@@ -158,7 +180,7 @@ class LtiServiceConnector implements ILtiServiceConnector
         $nextUrl = $request->getUrl();
 
         while ($nextUrl) {
-            $response = $this->makeServiceRequest($registration, $scopes, $request);
+            $response = $this->makeServiceRequest($registration, $scopes, $request, $requestType);
 
             $page_results = $key === null ? ($response['body'] ?? []) : ($response['body'][$key] ?? []);
             $results = array_merge($results, $page_results);
@@ -170,6 +192,32 @@ class LtiServiceConnector implements ILtiServiceConnector
         }
 
         return $results;
+    }
+
+    private function logRequest(
+        int $requestType,
+        IServiceRequest $request,
+        array $responseHeaders,
+        ?array $responseBody
+    ): void {
+        $contextArray = [
+            'request_method' => $request->getMethod(),
+            'request_url' => $request->getUrl(),
+            'response_headers' => $responseHeaders,
+            'response_body' => json_encode($responseBody),
+        ];
+
+        $requestBody = $request->getPayload()['body'] ?? '';
+
+        if (!empty($requestBody)) {
+            $contextArray['request_body'] = $requestBody;
+        }
+
+        $userId = json_decode($requestBody)->userId ?? '';
+
+        $logMsg = $this->errorMessages[$requestType];
+
+        error_log($logMsg.$userId.' '.print_r($contextArray, true));
     }
 
     private function getAccessTokenCacheKey(ILtiRegistration $registration, array $scopes)
