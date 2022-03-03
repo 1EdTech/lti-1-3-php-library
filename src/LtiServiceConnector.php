@@ -215,17 +215,6 @@ class LtiServiceConnector implements ILtiServiceConnector
 
         $userId = json_decode($requestBody)->userId ?? '';
 
-        $this->errorLog($requestType, $userId, $contextArray);
-    }
-
-    /**
-     * A wrapper for the PHP error_log function to facilitate testing.
-     */
-    public function errorLog(
-        int $requestType,
-        string $userId,
-        array $contextArray
-    ): void {
         $logMsg = $this->errorMessages[$requestType];
 
         error_log($logMsg.$userId.' '.print_r($contextArray, true));
