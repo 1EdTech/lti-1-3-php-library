@@ -22,6 +22,7 @@ class LtiServiceConnector implements ILtiServiceConnector
     public const UNSUPPORTED_REQUEST = 0;
     public const SYNC_GRADE_REQUEST = 1;
     public const CREATE_LINEITEM_REQUEST = 2;
+    public const GET_LINEITEMS_REQUEST = 3;
 
     private $cache;
     private $client;
@@ -38,7 +39,8 @@ class LtiServiceConnector implements ILtiServiceConnector
         $this->errorMessages = [
             static::UNSUPPORTED_REQUEST => 'Logging request data: ',
             static::SYNC_GRADE_REQUEST => 'Syncing grade for this lti_user_id: ',
-            static::CREATE_LINEITEM_REQUEST => 'Creating lineitem for this lti_user_id: ',
+            static::CREATE_LINEITEM_REQUEST => 'Creating lineitem: ',
+            static::GET_LINEITEMS_REQUEST => 'Getting lineitems: ',
         ];
     }
 
@@ -167,7 +169,8 @@ class LtiServiceConnector implements ILtiServiceConnector
         ILtiRegistration $registration,
         array $scopes,
         IServiceRequest $request,
-        string $key = null
+        string $key = null,
+        ?int $requestType = null
     ): array {
         if ($request->getMethod() !== static::METHOD_GET) {
             throw new \Exception('An invalid method was specified by an LTI service requesting all items.');
@@ -177,7 +180,7 @@ class LtiServiceConnector implements ILtiServiceConnector
         $nextUrl = $request->getUrl();
 
         while ($nextUrl) {
-            $response = $this->makeServiceRequest($registration, $scopes, $request);
+            $response = $this->makeServiceRequest($registration, $scopes, $request, $requestType);
 
             $page_results = $key === null ? ($response['body'] ?? []) : ($response['body'][$key] ?? []);
             $results = array_merge($results, $page_results);
@@ -197,23 +200,33 @@ class LtiServiceConnector implements ILtiServiceConnector
         array $responseHeaders,
         ?array $responseBody
     ): void {
-        $requestBody = $request->getPayload()['body'];
-
         $contextArray = [
             'request_method' => $request->getMethod(),
             'request_url' => $request->getUrl(),
-            'request_body' => $requestBody,
             'response_headers' => $responseHeaders,
             'response_body' => json_encode($responseBody),
         ];
+        $userId = '';
 
-        $this->errorLog(json_decode($requestBody)->userId, $contextArray);
+        $payload = $request->getPayload();
+        if (isset($payload['body'])) {
+            $requestBody = $payload['body'];
+
+            $contextArray['request_body'] = $requestBody;
+
+            if (isset(json_decode($requestBody)->userId)) {
+                $userId = json_decode($requestBody)->userId;
+            }
+        }
+
+        $this->errorLog($requestType, $userId, $contextArray);
     }
 
     /**
      * A wrapper for the PHP error_log function to facilitate testing.
      */
     public function errorLog(
+        int $requestType,
         string $userId,
         array $contextArray
     ): void {
