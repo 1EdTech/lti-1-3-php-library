@@ -194,7 +194,7 @@ class LtiServiceConnector implements ILtiServiceConnector
         return $results;
     }
 
-    public function logRequest(
+    private function logRequest(
         int $requestType,
         IServiceRequest $request,
         array $responseHeaders,
@@ -206,18 +206,14 @@ class LtiServiceConnector implements ILtiServiceConnector
             'response_headers' => $responseHeaders,
             'response_body' => json_encode($responseBody),
         ];
-        $userId = '';
 
-        $payload = $request->getPayload();
-        if (isset($payload['body'])) {
-            $requestBody = $payload['body'];
+        $requestBody = $request->getPayload()['body'] ?? '';
 
+        if (!empty($requestBody)) {
             $contextArray['request_body'] = $requestBody;
-
-            if (isset(json_decode($requestBody)->userId)) {
-                $userId = json_decode($requestBody)->userId;
-            }
         }
+
+        $userId = json_decode($requestBody)->userId ?? '';
 
         $this->errorLog($requestType, $userId, $contextArray);
     }

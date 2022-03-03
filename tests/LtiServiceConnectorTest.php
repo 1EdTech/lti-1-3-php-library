@@ -325,33 +325,6 @@ class LtiServiceConnectorTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testItLogsRequests()
-    {
-        $this->request->shouldReceive('getPayload')
-            ->once()
-            ->andReturn([
-                'body' => json_encode(['userId' => 'id']),
-            ]);
-        $this->request->shouldReceive('getMethod')
-            ->once()
-            ->andReturn('GET');
-        $this->request->shouldReceive('getUrl')
-            ->once()
-            ->andReturn('/test.com/test');
-        $connector = Mockery::mock(LtiServiceConnector::class)->makePartial();
-        $connector->shouldReceive('errorLog')
-            ->once();
-
-        $result = $connector->logRequest(
-            LtiServiceConnector::UNSUPPORTED_REQUEST,
-            $this->request,
-            $this->responseHeaders,
-            $this->responseBody
-        );
-
-        $this->assertNull($result);
-    }
-
     private function mockMakeRequest()
     {
         // It makes another request
