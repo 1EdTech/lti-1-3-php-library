@@ -93,7 +93,6 @@ class LtiServiceConnectorTest extends TestCase
             'kid' => 'kid',
             'authTokenUrl' => 'auth_token_url',
         ]);
-        $connector = new LtiServiceConnector($this->cache, $this->client);
 
         $this->cache->shouldReceive('getAccessToken')
             ->once()->andReturn(false);
@@ -105,7 +104,7 @@ class LtiServiceConnectorTest extends TestCase
             ->once()->andReturn(json_encode(['access_token' => $this->token]));
         $this->cache->shouldReceive('cacheAccessToken')->once();
 
-        $result = $connector->getAccessToken($registration, ['scopeKey']);
+        $result = $this->connector->getAccessToken($registration, ['scopeKey']);
 
         $this->assertEquals($result, $this->token);
     }

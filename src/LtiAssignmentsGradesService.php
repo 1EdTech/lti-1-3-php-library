@@ -46,7 +46,7 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         $request->setBody($grade);
         $request->setContentType(static::CONTENTTYPE_SCORE);
 
-        return $this->makeServiceRequest($request);
+        return $this->makeServiceRequest($request, LtiServiceConnector::SYNC_GRADE_REQUEST);
     }
 
     public function findLineItem(LtiLineitem $newLineItem): ?LtiLineitem
@@ -68,9 +68,9 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         $request->setBody($newLineItem)
             ->setContentType(static::CONTENTTYPE_LINEITEM)
             ->setAccept(static::CONTENTTYPE_LINEITEM);
-        $createdLineItems = $this->makeServiceRequest($request);
+        $createdLineItem = $this->makeServiceRequest($request, LtiServiceConnector::CREATE_LINEITEM_REQUEST);
 
-        return new LtiLineitem($createdLineItems['body']);
+        return new LtiLineitem($createdLineItem['body']);
     }
 
     public function findOrCreateLineitem(LtiLineitem $newLineItem): LtiLineitem
@@ -106,7 +106,7 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         );
         $request->setAccept(static::CONTENTTYPE_LINEITEMCONTAINER);
 
-        $lineitems = $this->getAll($request);
+        $lineitems = $this->getAll($request, null, LtiServiceConnector::GET_LINEITEMS_REQUEST);
 
         // If there is only one item, then wrap it in an array so the foreach works
         if (isset($lineitems['body']['id'])) {
@@ -114,6 +114,20 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         }
 
         return $lineitems;
+    }
+
+    public function getLineItem(string $url): LtiLineitem
+    {
+        if (!in_array(LtiConstants::AGS_SCOPE_LINEITEM, $this->getScope())) {
+            throw new LtiException('Missing required scope', 1);
+        }
+
+        $request = new ServiceRequest(LtiServiceConnector::METHOD_GET, $url);
+        $request->setAccept(static::CONTENTTYPE_LINEITEM);
+
+        $response = $this->makeServiceRequest($request)['body'];
+
+        return new LtiLineitem($response);
     }
 
     private function ensureLineItemExists(LtiLineitem $lineitem = null): LtiLineitem
