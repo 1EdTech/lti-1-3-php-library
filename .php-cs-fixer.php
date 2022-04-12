@@ -2,7 +2,7 @@
 
 require __DIR__.'/vendor/autoload.php';
 
-return (new \MattAllan\LaravelCodeStyle\Config())
+return (new \Jubeki\LaravelCodeStyle\Config())
     ->setFinder(
         \PhpCsFixer\Finder::create()
             ->exclude(['bootstrap', 'docker', 'public', 'resources', 'storage'])
