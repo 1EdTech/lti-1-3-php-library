@@ -297,9 +297,7 @@ class LtiMessageLaunch
         // Find key used to sign the JWT (matches the KID in the header)
         foreach ($publicKeySet['keys'] as $key) {
             if ($key['kid'] == $this->jwt['header']['kid']) {
-                // If alg is omitted from the JWK, infer it from the JWT header alg.
-                // See https://datatracker.ietf.org/doc/html/rfc7517#section-4.4.
-                $key['alg'] = $this->inferKeyAlgorithm($key);
+                $key['alg'] = $this->getKeyAlgorithm($key);
 
                 try {
                     $keySet = JWK::parseKeySet([
@@ -319,8 +317,12 @@ class LtiMessageLaunch
         throw new LtiException(static::ERR_NO_PUBLIC_KEY);
     }
 
-    private function inferKeyAlgorithm(array $key): string
-    {
+    /**
+     * If alg is omitted from the JWK, infer it from the JWT header alg.
+     * See https://datatracker.ietf.org/doc/html/rfc7517#section-4.4.
+     */
+    private function getKeyAlgorithm(array $key): string
+    { 
         if (isset($key['alg'])) {
             return $key['alg'];
         }
@@ -338,7 +340,7 @@ class LtiMessageLaunch
         $jwtAlg = $this->jwt['header']['alg'];
 
         return isset(static::$ltiSupportedAlgs[$jwtAlg]) &&
-            static::$ltiSupportedAlgs[$jwtAlg] == $key['kty'];
+            static::$ltiSupportedAlgs[$jwtAlg] === $key['kty'];
     }
 
     private function cacheLaunchData()
