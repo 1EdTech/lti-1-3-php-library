@@ -322,7 +322,7 @@ class LtiMessageLaunch
      * See https://datatracker.ietf.org/doc/html/rfc7517#section-4.4.
      */
     private function getKeyAlgorithm(array $key): string
-    { 
+    {
         if (isset($key['alg'])) {
             return $key['alg'];
         }
