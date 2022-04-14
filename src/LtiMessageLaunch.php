@@ -38,6 +38,8 @@ class LtiMessageLaunch
     public const ERR_VALIDATOR_CONFLICT = 'Validator conflict.';
     public const ERR_UNRECOGNIZED_MESSAGE_TYPE = 'Unrecognized message type.';
     public const ERR_INVALID_MESSAGE = 'Message validation failed.';
+    public const ERR_INVALID_ALG = 'Invalid alg was specified in the JWT header.';
+    public const ERR_MISMATCHED_ALG_KEY = 'The alg specified in the JWT header is incompatible with the JWK key type.';
 
     private $db;
     private $cache;
@@ -47,6 +49,16 @@ class LtiMessageLaunch
     private $jwt;
     private $registration;
     private $launch_id;
+
+    // See https://www.imsglobal.org/spec/security/v1p1#approved-jwt-signing-algorithms.
+    private static $ltiSupportedAlgs = [
+        'RS256' => 'RSA',
+        'RS384' => 'RSA',
+        'RS512' => 'RSA',
+        'ES256' => 'EC',
+        'ES384' => 'EC',
+        'ES512' => 'EC',
+    ];
 
     /**
      * Constructor.
@@ -285,6 +297,8 @@ class LtiMessageLaunch
         // Find key used to sign the JWT (matches the KID in the header)
         foreach ($publicKeySet['keys'] as $key) {
             if ($key['kid'] == $this->jwt['header']['kid']) {
+                $key['alg'] = $this->getKeyAlgorithm($key);
+
                 try {
                     $keySet = JWK::parseKeySet([
                         'keys' => [$key],
@@ -301,6 +315,32 @@ class LtiMessageLaunch
 
         // Could not find public key with a matching kid and alg.
         throw new LtiException(static::ERR_NO_PUBLIC_KEY);
+    }
+
+    /**
+     * If alg is omitted from the JWK, infer it from the JWT header alg.
+     * See https://datatracker.ietf.org/doc/html/rfc7517#section-4.4.
+     */
+    private function getKeyAlgorithm(array $key): string
+    {
+        if (isset($key['alg'])) {
+            return $key['alg'];
+        }
+
+        // The header alg must match the key type (family) specified in the JWK's kty.
+        if ($this->jwtAlgMatchesJwkKty($key)) {
+            return $this->jwt['header']['alg'];
+        }
+
+        throw new LtiException(static::ERR_MISMATCHED_ALG_KEY);
+    }
+
+    private function jwtAlgMatchesJwkKty($key): bool
+    {
+        $jwtAlg = $this->jwt['header']['alg'];
+
+        return isset(static::$ltiSupportedAlgs[$jwtAlg]) &&
+            static::$ltiSupportedAlgs[$jwtAlg] === $key['kty'];
     }
 
     private function cacheLaunchData()
