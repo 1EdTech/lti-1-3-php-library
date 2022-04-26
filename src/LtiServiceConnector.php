@@ -42,6 +42,7 @@ class LtiServiceConnector implements ILtiServiceConnector
             static::SYNC_GRADE_REQUEST => 'Syncing grade for this lti_user_id: ',
             static::CREATE_LINEITEM_REQUEST => 'Creating lineitem: ',
             static::GET_LINEITEMS_REQUEST => 'Getting lineitems: ',
+            static::AUTH_REQUEST => 'Authenticating: ',
         ];
     }
 
