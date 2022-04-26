@@ -23,6 +23,7 @@ class LtiServiceConnector implements ILtiServiceConnector
     public const SYNC_GRADE_REQUEST = 1;
     public const CREATE_LINEITEM_REQUEST = 2;
     public const GET_LINEITEMS_REQUEST = 3;
+    public const AUTH_REQUEST = 3;
 
     private $cache;
     private $client;
@@ -106,7 +107,7 @@ class LtiServiceConnector implements ILtiServiceConnector
 
         if ($this->debuggingMode) {
             $this->logRequest(
-                $request->getMethod(),
+                static::AUTH_REQUEST,
                 $request,
                 $this->getResponseHeaders($response),
                 $this->getResponseBody($response)
