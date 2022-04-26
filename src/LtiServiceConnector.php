@@ -84,9 +84,9 @@ class LtiServiceConnector implements ILtiServiceConnector
         $url = $registration->getAuthTokenUrl();
 
         // Get Access
-        $response = $this->client->post($url, [
-            'form_params' => $authRequest,
-        ]);
+        $request = new ServiceRequest(static::METHOD_POST, $url);
+        $request->setBody(json_encode($authRequest));
+        $response = $this->makeRequest($request);
 
         $tokenData = $this->getResponseBody($response);
 
@@ -98,11 +98,32 @@ class LtiServiceConnector implements ILtiServiceConnector
 
     public function makeRequest(IServiceRequest $request)
     {
-        return $this->client->request(
+        $response = $this->client->request(
             $request->getMethod(),
             $request->getUrl(),
             $request->getPayload()
         );
+
+        if ($this->debuggingMode) {
+            $this->logRequest(
+                $request->getMethod(),
+                $request,
+                $this->getResponseHeaders($response),
+                $this->getResponseBody($response)
+            );
+        }
+
+        return $response;
+    }
+
+    public function getResponseHeaders(Response $response): ?array
+    {
+        $responseHeaders = $response->getHeaders();
+        array_walk($responseHeaders, function (&$value) {
+            $value = $value[0];
+        });
+
+        return $responseHeaders;
     }
 
     public function getResponseBody(Response $response): ?array
@@ -143,24 +164,10 @@ class LtiServiceConnector implements ILtiServiceConnector
 
             throw $e;
         }
-        $responseHeaders = $response->getHeaders();
-        array_walk($responseHeaders, function (&$value) {
-            $value = $value[0];
-        });
-        $responseBody = $this->getResponseBody($response);
-
-        if ($this->debuggingMode) {
-            $this->logRequest(
-                $requestType,
-                $request,
-                $responseHeaders,
-                $responseBody
-            );
-        }
 
         return [
-            'headers' => $responseHeaders,
-            'body' => $responseBody,
+            'headers' => $this->getResponseHeaders($response),
+            'body' => $this->getResponseBody($response),
             'status' => $response->getStatusCode(),
         ];
     }
