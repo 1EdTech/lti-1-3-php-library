@@ -96,7 +96,7 @@ class LtiServiceConnectorTest extends TestCase
 
         $this->cache->shouldReceive('getAccessToken')
             ->once()->andReturn(false);
-        $this->client->shouldReceive('post')
+        $this->client->shouldReceive('request')
             ->once()->andReturn($this->response);
         $this->response->shouldReceive('getBody')
             ->once()->andReturn($this->streamInterface);
