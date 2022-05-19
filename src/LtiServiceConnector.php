@@ -87,7 +87,9 @@ class LtiServiceConnector implements ILtiServiceConnector
 
         // Get Access
         $request = new ServiceRequest(static::METHOD_POST, $url);
-        $request->setBody(json_encode($authRequest));
+        $request->setBody(json_encode([
+            'form-params' => $authRequest,
+        ]));
         $response = $this->makeRequest($request);
 
         $tokenData = $this->getResponseBody($response);
