@@ -9,6 +9,7 @@ class ServiceRequest implements IServiceRequest
     private $method;
     private $url;
     private $body;
+    private $payload;
     private $accessToken;
     private $contentType = 'application/json';
     private $accept = 'application/json';
@@ -31,6 +32,10 @@ class ServiceRequest implements IServiceRequest
 
     public function getPayload(): array
     {
+        if (isset($this->payload)) {
+            return $this->payload;
+        }
+
         $payload = [
             'headers' => $this->getHeaders(),
         ];
@@ -60,6 +65,13 @@ class ServiceRequest implements IServiceRequest
     public function setBody(string $body): IServiceRequest
     {
         $this->body = $body;
+
+        return $this;
+    }
+
+    public function setPayload(array $payload): IServiceRequest
+    {
+        $this->payload = $payload;
 
         return $this;
     }
