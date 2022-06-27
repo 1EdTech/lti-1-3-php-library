@@ -17,13 +17,15 @@ class LtiServiceConnector implements ILtiServiceConnector
 
     public const METHOD_GET = 'GET';
     public const METHOD_POST = 'POST';
+    public const METHOD_PUT = 'PUT';
 
     // Supported request types which map to an error log message
     public const UNSUPPORTED_REQUEST = 0;
     public const SYNC_GRADE_REQUEST = 1;
     public const CREATE_LINEITEM_REQUEST = 2;
     public const GET_LINEITEMS_REQUEST = 3;
-    public const AUTH_REQUEST = 3;
+    public const UPDATE_LINEITEM_REQUEST = 4;
+    public const AUTH_REQUEST = 5;
 
     private $cache;
     private $client;
@@ -42,6 +44,7 @@ class LtiServiceConnector implements ILtiServiceConnector
             static::SYNC_GRADE_REQUEST => 'Syncing grade for this lti_user_id: ',
             static::CREATE_LINEITEM_REQUEST => 'Creating lineitem: ',
             static::GET_LINEITEMS_REQUEST => 'Getting lineitems: ',
+            static::UPDATE_LINEITEM_REQUEST => 'Updating lineitem: ',
             static::AUTH_REQUEST => 'Authenticating: ',
         ];
     }

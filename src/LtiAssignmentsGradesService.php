@@ -62,6 +62,17 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         return null;
     }
 
+    public function updateLineItem(LtiLineItem $updatedLineitem): LtiLineitem
+    {
+        $request = new ServiceRequest(LtiServiceConnector::METHOD_PUT, $this->getServiceData()['lineitems']);
+        $request->setBody($updatedLineitem)
+            ->setContentType(static::CONTENTTYPE_LINEITEM)
+            ->setAccept(static::CONTENTTYPE_LINEITEM);
+        $updatedLineitem = $this->makeServiceRequest($request, LtiServiceConnector::UPDATE_LINEITEM_REQUEST);
+
+        return new LtiLineitem($updatedLineitem['body']);
+    }
+
     public function createLineitem(LtiLineitem $newLineItem): LtiLineitem
     {
         $request = new ServiceRequest(LtiServiceConnector::METHOD_POST, $this->getServiceData()['lineitems']);
