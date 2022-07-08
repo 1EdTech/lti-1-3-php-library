@@ -9,7 +9,7 @@ class LtiDeepLinkResource
     private $text;
     private $url;
     private $lineitem;
-    private $custom_params = [];
+    private $custom_params = (object) null;
     private $target = 'iframe';
 
     public static function new()
