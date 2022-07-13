@@ -2,6 +2,7 @@
 
 namespace Packback\Lti1p3;
 
+use Packback\Lti1p3\Enums\RequestTypes;
 use Packback\Lti1p3\Interfaces\IServiceRequest;
 
 class ServiceRequest implements IServiceRequest
@@ -13,11 +14,17 @@ class ServiceRequest implements IServiceRequest
     private $accessToken;
     private $contentType = 'application/json';
     private $accept = 'application/json';
+    private RequestTypes $requestType;
 
-    public function __construct(string $method, string $url)
+    public function __construct(string $method, string $url, ?RequestTypes $requestType = null)
     {
+        if (!isset($requestType)) {
+            $requestType = RequestTypes::UNSUPPORTED_REQUEST;
+        }
+
         $this->method = $method;
         $this->url = $url;
+        $this->requestType = $requestType;
     }
 
     public function getMethod(): string
@@ -46,6 +53,11 @@ class ServiceRequest implements IServiceRequest
         }
 
         return $payload;
+    }
+
+    public function getRequestType(): RequestTypes
+    {
+        return $this->requestType;
     }
 
     public function setUrl(string $url): IServiceRequest
@@ -100,7 +112,8 @@ class ServiceRequest implements IServiceRequest
             $headers['Authorization'] = $this->accessToken;
         }
 
-        if ($this->getMethod() === LtiServiceConnector::METHOD_POST) {
+        // Include Content-Type for POST and PUT requests
+        if (in_array($this->getMethod(), [LtiServiceConnector::METHOD_POST, LtiServiceConnector::METHOD_PUT])) {
             $headers['Content-Type'] = $this->contentType;
         }
 
