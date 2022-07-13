@@ -278,8 +278,11 @@ class LtiMessageLaunch
 
     private function getPublicKey()
     {
-        $keySetUrl = $this->registration->getKeySetUrl();
-        $request = new ServiceRequest(LtiServiceConnector::METHOD_GET, $keySetUrl);
+        $request = new ServiceRequest(
+            ServiceRequest::METHOD_GET,
+            $this->registration->getKeySetUrl(),
+            ServiceRequest::TYPE_GET_KEYSET
+        );
 
         // Download key set
         try {
