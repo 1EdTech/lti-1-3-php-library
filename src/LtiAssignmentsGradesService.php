@@ -2,6 +2,8 @@
 
 namespace Packback\Lti1p3;
 
+use Packback\Lti1p3\Enums\RequestTypes;
+
 class LtiAssignmentsGradesService extends LtiAbstractService
 {
     public const CONTENTTYPE_SCORE = 'application/vnd.ims.lis.v1.score+json';
@@ -42,11 +44,11 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         $pos = strpos($scoreUrl, '?');
         $scoreUrl = $pos === false ? $scoreUrl.'/scores' : substr_replace($scoreUrl, '/scores', $pos, 0);
 
-        $request = new ServiceRequest(LtiServiceConnector::METHOD_POST, $scoreUrl);
+        $request = new ServiceRequest(LtiServiceConnector::METHOD_POST, $scoreUrl, RequestTypes::SYNC_GRADE_REQUEST);
         $request->setBody($grade);
         $request->setContentType(static::CONTENTTYPE_SCORE);
 
-        return $this->makeServiceRequest($request, LtiServiceConnector::SYNC_GRADE_REQUEST);
+        return $this->makeServiceRequest($request);
     }
 
     public function findLineItem(LtiLineitem $newLineItem): ?LtiLineitem
@@ -64,24 +66,24 @@ class LtiAssignmentsGradesService extends LtiAbstractService
 
     public function updateLineitem(LtiLineItem $lineitemToUpdate): LtiLineitem
     {
-        $request = new ServiceRequest(LtiServiceConnector::METHOD_PUT, $this->getServiceData()['lineitems']);
+        $request = new ServiceRequest(LtiServiceConnector::METHOD_PUT, $this->getServiceData()['lineitems'], RequestTypes::UPDATE_LINEITEM_REQUEST);
 
         $request->setBody($lineitemToUpdate)
             ->setContentType(static::CONTENTTYPE_LINEITEM)
             ->setAccept(static::CONTENTTYPE_LINEITEM);
 
-        $updatedLineitem = $this->makeServiceRequest($request, LtiServiceConnector::UPDATE_LINEITEM_REQUEST);
+        $updatedLineitem = $this->makeServiceRequest($request);
 
         return new LtiLineitem($updatedLineitem['body']);
     }
 
     public function createLineitem(LtiLineitem $newLineItem): LtiLineitem
     {
-        $request = new ServiceRequest(LtiServiceConnector::METHOD_POST, $this->getServiceData()['lineitems']);
+        $request = new ServiceRequest(LtiServiceConnector::METHOD_POST, $this->getServiceData()['lineitems'], RequestTypes::CREATE_LINEITEM_REQUEST);
         $request->setBody($newLineItem)
             ->setContentType(static::CONTENTTYPE_LINEITEM)
             ->setAccept(static::CONTENTTYPE_LINEITEM);
-        $createdLineItem = $this->makeServiceRequest($request, LtiServiceConnector::CREATE_LINEITEM_REQUEST);
+        $createdLineItem = $this->makeServiceRequest($request, LtiServiceConnector);
 
         return new LtiLineitem($createdLineItem['body']);
     }
@@ -115,11 +117,12 @@ class LtiAssignmentsGradesService extends LtiAbstractService
 
         $request = new ServiceRequest(
             LtiServiceConnector::METHOD_GET,
-            $this->getServiceData()['lineitems']
+            $this->getServiceData()['lineitems'],
+            RequestTypes::GET_LINEITEMS_REQUEST
         );
         $request->setAccept(static::CONTENTTYPE_LINEITEMCONTAINER);
 
-        $lineitems = $this->getAll($request, null, LtiServiceConnector::GET_LINEITEMS_REQUEST);
+        $lineitems = $this->getAll($request, null);
 
         // If there is only one item, then wrap it in an array so the foreach works
         if (isset($lineitems['body']['id'])) {

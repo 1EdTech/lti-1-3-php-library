@@ -19,18 +19,9 @@ class LtiServiceConnector implements ILtiServiceConnector
     public const METHOD_POST = 'POST';
     public const METHOD_PUT = 'PUT';
 
-    // Supported request types which map to an error log message
-    public const UNSUPPORTED_REQUEST = 0;
-    public const SYNC_GRADE_REQUEST = 1;
-    public const CREATE_LINEITEM_REQUEST = 2;
-    public const GET_LINEITEMS_REQUEST = 3;
-    public const UPDATE_LINEITEM_REQUEST = 4;
-    public const AUTH_REQUEST = 5;
-
     private $cache;
     private $client;
     private $debuggingMode = false;
-    private $errorMessages;
 
     public function __construct(
         ICache $cache,
@@ -38,15 +29,6 @@ class LtiServiceConnector implements ILtiServiceConnector
     ) {
         $this->cache = $cache;
         $this->client = $client;
-
-        $this->errorMessages = [
-            static::UNSUPPORTED_REQUEST => 'Logging request data: ',
-            static::SYNC_GRADE_REQUEST => 'Syncing grade for this lti_user_id: ',
-            static::CREATE_LINEITEM_REQUEST => 'Creating lineitem: ',
-            static::GET_LINEITEMS_REQUEST => 'Getting lineitems: ',
-            static::UPDATE_LINEITEM_REQUEST => 'Updating lineitem: ',
-            static::AUTH_REQUEST => 'Authenticating: ',
-        ];
     }
 
     public function setDebuggingMode(bool $enable): void
@@ -111,7 +93,6 @@ class LtiServiceConnector implements ILtiServiceConnector
 
         if ($this->debuggingMode) {
             $this->logRequest(
-                static::AUTH_REQUEST,
                 $request,
                 $this->getResponseHeaders($response),
                 $this->getResponseBody($response)
@@ -142,15 +123,8 @@ class LtiServiceConnector implements ILtiServiceConnector
         ILtiRegistration $registration,
         array $scopes,
         IServiceRequest $request,
-        ?int $requestType = null,
         bool $shouldRetry = true
     ): array {
-        // Set $requestType here, since static properties cannot be evaluated
-        // as parameters
-        if (!isset($requestType)) {
-            $requestType = self::UNSUPPORTED_REQUEST;
-        }
-
         $request->setAccessToken($this->getAccessToken($registration, $scopes));
 
         try {
@@ -164,7 +138,7 @@ class LtiServiceConnector implements ILtiServiceConnector
                 $key = $this->getAccessTokenCacheKey($registration, $scopes);
                 $this->cache->clearAccessToken($key);
 
-                return $this->makeServiceRequest($registration, $scopes, $request, $requestType, false);
+                return $this->makeServiceRequest($registration, $scopes, $request, false);
             }
 
             throw $e;
@@ -181,8 +155,7 @@ class LtiServiceConnector implements ILtiServiceConnector
         ILtiRegistration $registration,
         array $scopes,
         IServiceRequest $request,
-        string $key = null,
-        ?int $requestType = null
+        string $key = null
     ): array {
         if ($request->getMethod() !== static::METHOD_GET) {
             throw new \Exception('An invalid method was specified by an LTI service requesting all items.');
@@ -192,7 +165,7 @@ class LtiServiceConnector implements ILtiServiceConnector
         $nextUrl = $request->getUrl();
 
         while ($nextUrl) {
-            $response = $this->makeServiceRequest($registration, $scopes, $request, $requestType);
+            $response = $this->makeServiceRequest($registration, $scopes, $request);
 
             $page_results = $key === null ? ($response['body'] ?? []) : ($response['body'][$key] ?? []);
             $results = array_merge($results, $page_results);
@@ -207,7 +180,6 @@ class LtiServiceConnector implements ILtiServiceConnector
     }
 
     private function logRequest(
-        int $requestType,
         IServiceRequest $request,
         array $responseHeaders,
         ?array $responseBody
@@ -227,7 +199,7 @@ class LtiServiceConnector implements ILtiServiceConnector
 
         $userId = json_decode($requestBody)->userId ?? '';
 
-        $logMsg = $this->errorMessages[$requestType];
+        $logMsg = $request->getRequestType()->error();
 
         error_log($logMsg.$userId.' '.print_r($contextArray, true));
     }
