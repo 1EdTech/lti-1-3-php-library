@@ -17,12 +17,12 @@ enum RequestTypes
     public function error(): string
     {
         return match ($this) {
-            RequestType::UNSUPPORTED_REQUEST => 'Logging request data: ',
-            RequestType::SYNC_GRADE_REQUEST => 'Syncing grade for this lti_user_id: ',
-            RequestType::CREATE_LINEITEM_REQUEST => 'Creating lineitem: ',
-            RequestType::GET_LINEITEMS_REQUEST => 'Getting lineitems: ',
-            RequestType::UPDATE_LINEITEM_REQUEST => 'Updating lineitem: ',
-            RequestType::AUTH_REQUEST => 'Authenticating: ',
+            RequestTypes::UNSUPPORTED_REQUEST => 'Logging request data: ',
+            RequestTypes::SYNC_GRADE_REQUEST => 'Syncing grade for this lti_user_id: ',
+            RequestTypes::CREATE_LINEITEM_REQUEST => 'Creating lineitem: ',
+            RequestTypes::GET_LINEITEMS_REQUEST => 'Getting lineitems: ',
+            RequestTypes::UPDATE_LINEITEM_REQUEST => 'Updating lineitem: ',
+            RequestTypes::AUTH_REQUEST => 'Authenticating: ',
         };
     }
 }
