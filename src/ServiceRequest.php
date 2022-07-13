@@ -100,7 +100,8 @@ class ServiceRequest implements IServiceRequest
             $headers['Authorization'] = $this->accessToken;
         }
 
-        if ($this->getMethod() === LtiServiceConnector::METHOD_POST) {
+        // Include Content-Type for POST and PUT requests
+        if (in_array($this->getMethod(), [LtiServiceConnector::METHOD_POST, LtiServiceConnector::METHOD_PUT])) {
             $headers['Content-Type'] = $this->contentType;
         }
 

@@ -66,9 +66,8 @@ class LtiAssignmentsGradesService extends LtiAbstractService
     {
         $request = new ServiceRequest(LtiServiceConnector::METHOD_PUT, $this->getServiceData()['lineitems']);
 
-        // Note: Content type is left as `application/json` since Blackboard
-        // throws 415 errors with content type `static::CONTENTTYPE_LINEITEM`
         $request->setBody($lineitemToUpdate)
+            ->setContentType(static::CONTENTTYPE_LINEITEM)
             ->setAccept(static::CONTENTTYPE_LINEITEM);
 
         $updatedLineitem = $this->makeServiceRequest($request, LtiServiceConnector::UPDATE_LINEITEM_REQUEST);
