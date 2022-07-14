@@ -147,7 +147,6 @@ class LtiDeepLinkResourceTest extends TestCase
             'presentation' => [
                 'documentTarget' => 'iframe',
             ],
-            'custom' => [],
             'lineItem' => [
                 'scoreMaximum' => 80,
                 'label' => 'lineitem_label',
@@ -167,5 +166,12 @@ class LtiDeepLinkResourceTest extends TestCase
         $result = $this->deepLinkResource->toArray();
 
         $this->assertEquals($expected, $result);
+        
+        // Test again with custom params
+        $expected['custom'] = ['a_key' => 'a_value'];
+        $this->deepLinkResource->setCustomParams(['a_key' => 'a_value']);
+        $result = $this->deepLinkResource->toArray();
+        $this->assertEquals($expected, $result);
+        
     }
 }
