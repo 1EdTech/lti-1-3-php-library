@@ -16,7 +16,6 @@ interface ILtiServiceConnector
         ILtiRegistration $registration,
         array $scopes,
         IServiceRequest $request,
-        ?int $requestType = null,
         bool $shouldRetry = true
     ): array;
 
@@ -24,8 +23,7 @@ interface ILtiServiceConnector
         ILtiRegistration $registration,
         array $scopes,
         IServiceRequest $request,
-        string $key,
-        ?int $requestType = null
+        string $key
     ): array;
 
     public function setDebuggingMode(bool $enable): void;

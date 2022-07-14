@@ -42,11 +42,15 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         $pos = strpos($scoreUrl, '?');
         $scoreUrl = $pos === false ? $scoreUrl.'/scores' : substr_replace($scoreUrl, '/scores', $pos, 0);
 
-        $request = new ServiceRequest(LtiServiceConnector::METHOD_POST, $scoreUrl);
+        $request = new ServiceRequest(
+            ServiceRequest::METHOD_POST,
+            $scoreUrl,
+            ServiceRequest::TYPE_SYNC_GRADE
+        );
         $request->setBody($grade);
         $request->setContentType(static::CONTENTTYPE_SCORE);
 
-        return $this->makeServiceRequest($request, LtiServiceConnector::SYNC_GRADE_REQUEST);
+        return $this->makeServiceRequest($request);
     }
 
     public function findLineItem(LtiLineitem $newLineItem): ?LtiLineitem
@@ -64,24 +68,32 @@ class LtiAssignmentsGradesService extends LtiAbstractService
 
     public function updateLineitem(LtiLineItem $lineitemToUpdate): LtiLineitem
     {
-        $request = new ServiceRequest(LtiServiceConnector::METHOD_PUT, $this->getServiceData()['lineitems']);
+        $request = new ServiceRequest(
+            ServiceRequest::METHOD_PUT,
+            $this->getServiceData()['lineitems'],
+            ServiceRequest::TYPE_UPDATE_LINEITEM
+        );
 
         $request->setBody($lineitemToUpdate)
             ->setContentType(static::CONTENTTYPE_LINEITEM)
             ->setAccept(static::CONTENTTYPE_LINEITEM);
 
-        $updatedLineitem = $this->makeServiceRequest($request, LtiServiceConnector::UPDATE_LINEITEM_REQUEST);
+        $updatedLineitem = $this->makeServiceRequest($request);
 
         return new LtiLineitem($updatedLineitem['body']);
     }
 
     public function createLineitem(LtiLineitem $newLineItem): LtiLineitem
     {
-        $request = new ServiceRequest(LtiServiceConnector::METHOD_POST, $this->getServiceData()['lineitems']);
+        $request = new ServiceRequest(
+            ServiceRequest::METHOD_POST,
+            $this->getServiceData()['lineitems'],
+            ServiceRequest::TYPE_CREATE_LINEITEM
+        );
         $request->setBody($newLineItem)
             ->setContentType(static::CONTENTTYPE_LINEITEM)
             ->setAccept(static::CONTENTTYPE_LINEITEM);
-        $createdLineItem = $this->makeServiceRequest($request, LtiServiceConnector::CREATE_LINEITEM_REQUEST);
+        $createdLineItem = $this->makeServiceRequest($request);
 
         return new LtiLineitem($createdLineItem['body']);
     }
@@ -100,7 +112,11 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         $pos = strpos($resultsUrl, '?');
         $resultsUrl = $pos === false ? $resultsUrl.'/results' : substr_replace($resultsUrl, '/results', $pos, 0);
 
-        $request = new ServiceRequest(LtiServiceConnector::METHOD_GET, $resultsUrl);
+        $request = new ServiceRequest(
+            ServiceRequest::METHOD_GET,
+            $resultsUrl,
+            ServiceRequest::TYPE_GET_GRADES
+        );
         $request->setAccept(static::CONTENTTYPE_RESULTCONTAINER);
         $scores = $this->makeServiceRequest($request);
 
@@ -114,12 +130,13 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         }
 
         $request = new ServiceRequest(
-            LtiServiceConnector::METHOD_GET,
-            $this->getServiceData()['lineitems']
+            ServiceRequest::METHOD_GET,
+            $this->getServiceData()['lineitems'],
+            ServiceRequest::TYPE_GET_LINEITEMS
         );
         $request->setAccept(static::CONTENTTYPE_LINEITEMCONTAINER);
 
-        $lineitems = $this->getAll($request, null, LtiServiceConnector::GET_LINEITEMS_REQUEST);
+        $lineitems = $this->getAll($request);
 
         // If there is only one item, then wrap it in an array so the foreach works
         if (isset($lineitems['body']['id'])) {
@@ -135,7 +152,11 @@ class LtiAssignmentsGradesService extends LtiAbstractService
             throw new LtiException('Missing required scope', 1);
         }
 
-        $request = new ServiceRequest(LtiServiceConnector::METHOD_GET, $url);
+        $request = new ServiceRequest(
+            ServiceRequest::METHOD_GET,
+            $url,
+            ServiceRequest::TYPE_GET_LINEITEM
+        );
         $request->setAccept(static::CONTENTTYPE_LINEITEM);
 
         $response = $this->makeServiceRequest($request)['body'];
