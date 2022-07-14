@@ -130,7 +130,7 @@ class ServiceRequest implements IServiceRequest
             static::TYPE_UPDATE_LINEITEM => 'Updating lineitem:',
             static::TYPE_GET_GROUPS => 'Getting groups:',
             static::TYPE_GET_SETS => 'Getting sets:',
-            static::TYPE_GET_MEMBERSHIPS => 'Getting memberships',
+            static::TYPE_GET_MEMBERSHIPS => 'Getting memberships:',
         ];
 
         return $errorMessages[$this->type] ?? $defaultMessage;
