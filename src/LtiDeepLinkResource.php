@@ -9,7 +9,7 @@ class LtiDeepLinkResource
     private $text;
     private $url;
     private $lineitem;
-    private $custom_params = (object) null;
+    private $custom_params = [];
     private $target = 'iframe';
 
     public static function new()
@@ -113,6 +113,9 @@ class LtiDeepLinkResource
             ],
             'custom' => $this->custom_params,
         ];
+        if(!empty($this->custom_params)) {
+            $resource['custom'] = $this->custom_params;
+        }
         if ($this->lineitem !== null) {
             $resource['lineItem'] = [
                 'scoreMaximum' => $this->lineitem->getScoreMaximum(),
