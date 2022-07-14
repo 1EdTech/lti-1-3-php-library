@@ -136,7 +136,7 @@ class LtiAssignmentsGradesService extends LtiAbstractService
         );
         $request->setAccept(static::CONTENTTYPE_LINEITEMCONTAINER);
 
-        $lineitems = $this->getAll($request, null, LtiServiceConnector::GET_LINEITEMS_REQUEST);
+        $lineitems = $this->getAll($request);
 
         // If there is only one item, then wrap it in an array so the foreach works
         if (isset($lineitems['body']['id'])) {
