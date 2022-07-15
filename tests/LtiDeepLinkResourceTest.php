@@ -154,9 +154,9 @@ class LtiDeepLinkResourceTest extends TestCase
         ];
         $lineitem = Mockery::mock(LtiLineitem::class);
         $lineitem->shouldReceive('getScoreMaximum')
-            ->once()->andReturn($expected['lineItem']['scoreMaximum']);
+            ->twice()->andReturn($expected['lineItem']['scoreMaximum']);
         $lineitem->shouldReceive('getLabel')
-            ->once()->andReturn($expected['lineItem']['label']);
+            ->twice()->andReturn($expected['lineItem']['label']);
 
         $this->deepLinkResource->setTitle($expected['title']);
         $this->deepLinkResource->setText($expected['text']);
