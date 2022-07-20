@@ -283,7 +283,7 @@ class LtiMessageLaunch
         return $this->launch_id;
     }
 
-    public function getMissingRegistrationErrorMsg(string $issuerUrl, string $clientId): string
+    public static function getMissingRegistrationErrorMsg(string $issuerUrl, string $clientId): string
     {
         $search = [':issuerUrl', ':clientId'];
         $replace = [$issuerUrl, $clientId];
