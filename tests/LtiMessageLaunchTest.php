@@ -294,7 +294,8 @@ class LtiMessageLaunchTest extends TestCase
             ->once()->andReturn();
 
         $this->expectException(LtiException::class);
-        $this->expectExceptionMessage(LtiMessageLaunch::ERR_MISSING_REGISTRATION);
+        $expectedMsg = $this->messageLaunch->getMissingRegistrationErrorMsg($this->issuer['issuer'], $this->issuer['client_id']);
+        $this->expectExceptionMessage($expectedMsg);
 
         $actual = $this->messageLaunch->validate($payload);
     }
