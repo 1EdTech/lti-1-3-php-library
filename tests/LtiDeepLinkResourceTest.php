@@ -185,12 +185,12 @@ class LtiDeepLinkResourceTest extends TestCase
             'icon' => [
                 'url' => $icon->getUrl(),
                 'width' => $icon->getWidth(),
-                'height' => $icon->getHeight()
+                'height' => $icon->getHeight(),
             ],
             'thumbnail' => [
                 'url' => $icon->getUrl(),
                 'width' => $icon->getWidth(),
-                'height' => $icon->getHeight()
+                'height' => $icon->getHeight(),
             ],
             'presentation' => [
                 'documentTarget' => 'iframe',
@@ -198,7 +198,7 @@ class LtiDeepLinkResourceTest extends TestCase
             'lineItem' => [
                 'scoreMaximum' => 80,
                 'label' => 'lineitem_label',
-            ]
+            ],
         ];
 
         $lineitem = Mockery::mock(LtiLineitem::class);
