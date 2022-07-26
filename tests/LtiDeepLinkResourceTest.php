@@ -147,7 +147,6 @@ class LtiDeepLinkResourceTest extends TestCase
             'presentation' => [
                 'documentTarget' => 'iframe',
             ],
-            'custom' => [],
             'lineItem' => [
                 'scoreMaximum' => 80,
                 'label' => 'lineitem_label',
@@ -155,9 +154,9 @@ class LtiDeepLinkResourceTest extends TestCase
         ];
         $lineitem = Mockery::mock(LtiLineitem::class);
         $lineitem->shouldReceive('getScoreMaximum')
-            ->once()->andReturn($expected['lineItem']['scoreMaximum']);
+            ->twice()->andReturn($expected['lineItem']['scoreMaximum']);
         $lineitem->shouldReceive('getLabel')
-            ->once()->andReturn($expected['lineItem']['label']);
+            ->twice()->andReturn($expected['lineItem']['label']);
 
         $this->deepLinkResource->setTitle($expected['title']);
         $this->deepLinkResource->setText($expected['text']);
@@ -166,6 +165,12 @@ class LtiDeepLinkResourceTest extends TestCase
 
         $result = $this->deepLinkResource->toArray();
 
+        $this->assertEquals($expected, $result);
+
+        // Test again with custom params
+        $expected['custom'] = ['a_key' => 'a_value'];
+        $this->deepLinkResource->setCustomParams(['a_key' => 'a_value']);
+        $result = $this->deepLinkResource->toArray();
         $this->assertEquals($expected, $result);
     }
 }
