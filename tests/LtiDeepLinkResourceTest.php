@@ -166,12 +166,11 @@ class LtiDeepLinkResourceTest extends TestCase
         $result = $this->deepLinkResource->toArray();
 
         $this->assertEquals($expected, $result);
-        
+
         // Test again with custom params
         $expected['custom'] = ['a_key' => 'a_value'];
         $this->deepLinkResource->setCustomParams(['a_key' => 'a_value']);
         $result = $this->deepLinkResource->toArray();
         $this->assertEquals($expected, $result);
-        
     }
 }
