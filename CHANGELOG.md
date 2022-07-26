@@ -1,3 +1,11 @@
+## 5.1.7
+
+Add `AssignmentGradesService::updateLineitem()` to update a line item [#58](https://github.com/packbackbooks/lti-1-3-php-library/pull/58).
+
+## 5.1.0
+
+Add `AssignmentGradesService::getLineItem()` to fetch a single line item [#47](https://github.com/packbackbooks/lti-1-3-php-library/pull/47).
+
 ## 5.0.0
 
 Implemented several changes to comply with (OpenID Connect Core)[https://openid.net/specs/openid-connect-core-1_0.html]. Nonce validation changed such that it now verifies that the nonce and state associated with an LTI Message Launch request matches the state associated with the nonce and state created during the OIDC login request.

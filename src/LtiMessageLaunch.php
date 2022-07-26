@@ -28,7 +28,14 @@ class LtiMessageLaunch
     public const ERR_INVALID_ID_TOKEN = 'Invalid id_token, JWT must contain 3 parts';
     public const ERR_MISSING_NONCE = 'Missing Nonce.';
     public const ERR_INVALID_NONCE = 'Invalid Nonce.';
-    public const ERR_MISSING_REGISTRATION = 'Registration not found. Please have your admin confirm your Issuer URL, client ID, and deployment ID.';
+
+    /**
+     * :issuerUrl and :clientId are used to substitute the queried issuerUrl
+     * and clientId. Do not change those substrings without changing how the
+     * error message is built.
+     */
+    public const ERR_MISSING_REGISTRATION = 'LTI 1.3 Registration not found for Issuer :issuerUrl and Client ID :clientId. Please make sure the LMS has provided the right information, and that the LMS has been registered correctly in the tool.';
+
     public const ERR_CLIENT_NOT_REGISTERED = 'Client id not registered for this issuer.';
     public const ERR_NO_KID = 'No KID specified in the JWT Header.';
     public const ERR_INVALID_SIGNATURE = 'Invalid signature on id_token';
@@ -91,7 +98,7 @@ class LtiMessageLaunch
         ICache $cache = null,
         ICookie $cookie = null,
         ILtiServiceConnector $serviceConnector = null
-        ) {
+    ) {
         return new LtiMessageLaunch($database, $cache, $cookie, $serviceConnector);
     }
 
@@ -276,10 +283,26 @@ class LtiMessageLaunch
         return $this->launch_id;
     }
 
+    public static function getMissingRegistrationErrorMsg(string $issuerUrl, ?string $clientId = null): string
+    {
+        // Guard against client ID being null
+        if (!isset($clientId)) {
+            $clientId = '(N/A)';
+        }
+
+        $search = [':issuerUrl', ':clientId'];
+        $replace = [$issuerUrl, $clientId];
+
+        return str_replace($search, $replace, static::ERR_MISSING_REGISTRATION);
+    }
+
     private function getPublicKey()
     {
-        $keySetUrl = $this->registration->getKeySetUrl();
-        $request = new ServiceRequest(LtiServiceConnector::METHOD_GET, $keySetUrl);
+        $request = new ServiceRequest(
+            ServiceRequest::METHOD_GET,
+            $this->registration->getKeySetUrl(),
+            ServiceRequest::TYPE_GET_KEYSET
+        );
 
         // Download key set
         try {
@@ -400,15 +423,16 @@ class LtiMessageLaunch
     private function validateRegistration()
     {
         // Find registration.
-        $client_id = is_array($this->jwt['body']['aud']) ? $this->jwt['body']['aud'][0] : $this->jwt['body']['aud'];
-        $this->registration = $this->db->findRegistrationByIssuer($this->jwt['body']['iss'], $client_id);
+        $clientId = is_array($this->jwt['body']['aud']) ? $this->jwt['body']['aud'][0] : $this->jwt['body']['aud'];
+        $issuerUrl = $this->jwt['body']['iss'];
+        $this->registration = $this->db->findRegistrationByIssuer($issuerUrl, $clientId);
 
         if (empty($this->registration)) {
-            throw new LtiException(static::ERR_MISSING_REGISTRATION);
+            throw new LtiException($this->getMissingRegistrationErrorMsg($issuerUrl, $clientId));
         }
 
         // Check client id.
-        if ($client_id !== $this->registration->getClientId()) {
+        if ($clientId !== $this->registration->getClientId()) {
             // Client not registered.
             throw new LtiException(static::ERR_CLIENT_NOT_REGISTERED);
         }

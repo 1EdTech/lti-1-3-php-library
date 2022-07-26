@@ -36,24 +36,22 @@ abstract class LtiAbstractService
 
     abstract public function getScope(): array;
 
-    protected function makeServiceRequest(IServiceRequest $request, ?int $requestType = null): array
+    protected function makeServiceRequest(IServiceRequest $request): array
     {
         return $this->serviceConnector->makeServiceRequest(
             $this->registration,
             $this->getScope(),
             $request,
-            $requestType
         );
     }
 
-    protected function getAll(IServiceRequest $request, string $key = null, ?int $requestType = null): array
+    protected function getAll(IServiceRequest $request, string $key = null): array
     {
         return $this->serviceConnector->getAll(
             $this->registration,
             $this->getScope(),
             $request,
-            $key,
-            $requestType
+            $key
         );
     }
 }

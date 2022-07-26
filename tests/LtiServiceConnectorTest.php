@@ -11,6 +11,7 @@ use Packback\Lti1p3\Interfaces\ILtiRegistration;
 use Packback\Lti1p3\Interfaces\IServiceRequest;
 use Packback\Lti1p3\LtiRegistration;
 use Packback\Lti1p3\LtiServiceConnector;
+use Packback\Lti1p3\ServiceRequest;
 use Psr\Http\Message\StreamInterface;
 
 class LtiServiceConnectorTest extends TestCase
@@ -47,7 +48,7 @@ class LtiServiceConnectorTest extends TestCase
 
         $this->scopes = ['scopeKey'];
         $this->token = 'TokenOfAccess';
-        $this->method = LtiServiceConnector::METHOD_POST;
+        $this->method = ServiceRequest::METHOD_POST;
         $this->url = 'https://example.com';
         $this->body = json_encode(['userId' => 'id']);
         $this->requestHeaders = [
@@ -144,7 +145,7 @@ class LtiServiceConnectorTest extends TestCase
 
     public function testItRetriesServiceRequestOn401Error()
     {
-        $this->method = LtiServiceConnector::METHOD_POST;
+        $this->method = ServiceRequest::METHOD_POST;
         $this->url = 'https://example.com';
         $this->body = json_encode(['userId' => 'id']);
         $this->requestHeaders = [
@@ -214,7 +215,7 @@ class LtiServiceConnectorTest extends TestCase
 
     public function testItThrowsOnRepeated401Errors()
     {
-        $this->method = LtiServiceConnector::METHOD_POST;
+        $this->method = ServiceRequest::METHOD_POST;
         $this->url = 'https://example.com';
         $this->body = json_encode(['post' => 'body']);
         $this->requestHeaders = [
@@ -271,7 +272,7 @@ class LtiServiceConnectorTest extends TestCase
 
     public function testItGetsAll()
     {
-        $method = LtiServiceConnector::METHOD_GET;
+        $method = ServiceRequest::METHOD_GET;
         $key = 'lineitems';
         $lineitems = ['lineitem'];
         $firstResponseHeaders = [

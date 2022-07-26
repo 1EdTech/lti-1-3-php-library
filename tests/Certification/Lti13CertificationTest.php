@@ -382,7 +382,7 @@ class Lti13CertificationTest extends TestCase
             }
 
             // I couldn't find a better output function
-            echo PHP_EOL."--> TESTING INVALID TEST CASE: ${testCase}";
+            echo PHP_EOL."--> TESTING INVALID TEST CASE: {$testCase}";
 
             $jwt = $this->buildJWT($payload, $this->issuer, $jwtHeader);
             if (isset($payload['nonce'])) {
@@ -434,7 +434,7 @@ class Lti13CertificationTest extends TestCase
             $payload['sub'] = 'lms-user-id';
 
             // I couldn't find a better output function
-            echo PHP_EOL."--> TESTING VALID TEST CASE: ${testCase}";
+            echo PHP_EOL."--> TESTING VALID TEST CASE: {$testCase}";
 
             $jwt = $this->buildJWT($payload, $this->issuer);
             $this->cache->cacheNonce($payload['nonce'], static::STATE);
