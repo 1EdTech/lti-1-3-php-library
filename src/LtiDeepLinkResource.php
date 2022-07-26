@@ -9,19 +9,32 @@ class LtiDeepLinkResource
     private $text;
     private $url;
     private $lineitem;
+    private $icon;
+    private $thumbnail;
     private $custom_params = [];
     private $target = 'iframe';
 
+    /**
+     * @return LtiDeepLinkResource
+     */
     public static function new()
     {
         return new LtiDeepLinkResource();
     }
 
+    /**
+     * @return string
+     */
     public function getType()
     {
         return $this->type;
     }
 
+    /**
+     * @param $value string
+     *
+     * @return $this
+     */
     public function setType($value)
     {
         $this->type = $value;
@@ -29,11 +42,19 @@ class LtiDeepLinkResource
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getTitle()
     {
         return $this->title;
     }
 
+    /**
+     * @param $value string
+     *
+     * @return $this
+     */
     public function setTitle($value)
     {
         $this->title = $value;
@@ -41,11 +62,19 @@ class LtiDeepLinkResource
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getText()
     {
         return $this->text;
     }
 
+    /**
+     * @param $value string
+     *
+     * @return $this
+     */
     public function setText($value)
     {
         $this->text = $value;
@@ -53,11 +82,19 @@ class LtiDeepLinkResource
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getUrl()
     {
         return $this->url;
     }
 
+    /**
+     * @param $value string
+     *
+     * @return $this
+     */
     public function setUrl($value)
     {
         $this->url = $value;
@@ -65,23 +102,79 @@ class LtiDeepLinkResource
         return $this;
     }
 
+    /**
+     * @return LtiLineitem
+     */
     public function getLineitem()
     {
         return $this->lineitem;
     }
 
-    public function setLineitem(LtiLineitem $value)
+    /**
+     * @param $value LtiLineitem
+     *
+     * @return $this
+     */
+    public function setLineitem($value)
     {
         $this->lineitem = $value;
 
         return $this;
     }
 
+    /**
+     * @param $icon LtiDeepLinkResourceIcon
+     *
+     * @return $this
+     */
+    public function setIcon($icon)
+    {
+        $this->icon = $icon;
+
+        return $this;
+    }
+
+    /**
+     * @return LtiDeepLinkResourceIcon
+     */
+    public function getIcon()
+    {
+        return $this->icon;
+    }
+
+    /**
+     * @param $thumbnail LtiDeepLinkResourceIcon
+     *
+     * @return $this
+     */
+    public function setThumbnail($thumbnail)
+    {
+        $this->thumbnail = $thumbnail;
+
+        return $this;
+    }
+
+    /**
+     * @return LtiDeepLinkResourceIcon
+     */
+    public function getThumbnail()
+    {
+        return $this->thumbnail;
+    }
+
+    /**
+     * @return array
+     */
     public function getCustomParams()
     {
         return $this->custom_params;
     }
 
+    /**
+     * @param $value array
+     *
+     * @return $this
+     */
     public function setCustomParams($value)
     {
         $this->custom_params = $value;
@@ -89,11 +182,19 @@ class LtiDeepLinkResource
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getTarget()
     {
         return $this->target;
     }
 
+    /**
+     * @param $value string
+     *
+     * @return $this
+     */
     public function setTarget($value)
     {
         $this->target = $value;
@@ -101,6 +202,9 @@ class LtiDeepLinkResource
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function toArray()
     {
         $resource = [
@@ -114,6 +218,12 @@ class LtiDeepLinkResource
         ];
         if (!empty($this->custom_params)) {
             $resource['custom'] = $this->custom_params;
+        }
+        if (isset($this->icon)) {
+            $resource['icon'] = $this->icon->toArray();
+        }
+        if (isset($this->thumbnail)) {
+            $resource['thumbnail'] = $this->thumbnail->toArray();
         }
         if ($this->lineitem !== null) {
             $resource['lineItem'] = [
