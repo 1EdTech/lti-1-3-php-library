@@ -137,7 +137,7 @@ class LtiDeepLinkResource
     /**
      * @return LtiDeepLinkResourceIcon
      */
-    public function getIcon()
+    public function getIcon(): LtiDeepLinkResourceIcon
     {
         return $this->icon;
     }
