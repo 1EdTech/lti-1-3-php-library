@@ -11,6 +11,7 @@ class LtiDeepLinkResourceTest extends TestCase
 {
     public function setUp(): void
     {
+        $this->imageUrl = 'https://example.com/image.png';
         $this->deepLinkResource = new LtiDeepLinkResource();
     }
 
@@ -172,10 +173,7 @@ class LtiDeepLinkResourceTest extends TestCase
 
     public function testItCastsToArray()
     {
-        $icon = LtiDeepLinkResourceIcon::new()
-            ->setUrl('a_url')
-            ->setWidth(100)
-            ->setHeight(200);
+        $icon = LtiDeepLinkResourceIcon::new($this->imageUrl, 100, 200);
 
         $expected = [
             'type' => 'ltiResourceLink',

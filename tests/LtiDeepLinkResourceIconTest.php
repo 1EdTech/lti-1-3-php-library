@@ -8,7 +8,8 @@ class LtiDeepLinkResourceIconTest extends TestCase
 {
     public function setUp(): void
     {
-        $this->deepLinkResourceIcon = new LtiDeepLinkResourceIcon('https://example.com');
+        $this->imageUrl = 'https://example.com/image.png';
+        $this->deepLinkResourceIcon = new LtiDeepLinkResourceIcon($this->imageUrl);
     }
 
     public function testItInstantiates()
@@ -18,7 +19,7 @@ class LtiDeepLinkResourceIconTest extends TestCase
 
     public function testItCreatesANewInstance()
     {
-        $deepLinkResource = LtiDeepLinkResourceIcon::new();
+        $deepLinkResource = LtiDeepLinkResourceIcon::new($this->imageUrl);
 
         $this->assertInstanceOf(LtiDeepLinkResourceIcon::class, $deepLinkResource);
     }
@@ -27,7 +28,7 @@ class LtiDeepLinkResourceIconTest extends TestCase
     {
         $result = $this->deepLinkResourceIcon->getUrl();
 
-        $this->assertEquals('https://example.com', $result);
+        $this->assertEquals($this->imageUrl, $result);
     }
 
     public function testItSetsUrl()
@@ -74,7 +75,7 @@ class LtiDeepLinkResourceIconTest extends TestCase
     public function testItCastsToArray()
     {
         $expected = [
-            'url' => 'https://example.com/icon.png',
+            'url' => $this->imageUrl,
             'width' => 100,
             'height' => 200,
         ];

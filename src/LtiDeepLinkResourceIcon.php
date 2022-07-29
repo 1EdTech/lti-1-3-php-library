@@ -15,9 +15,9 @@ class LtiDeepLinkResourceIcon
         $this->height = $height;
     }
 
-    public static function new(): LtiDeepLinkResourceIcon
+    public static function new(string $url, ?int $width = null, ?int $height = null): LtiDeepLinkResourceIcon
     {
-        return new LtiDeepLinkResourceIcon('');
+        return new LtiDeepLinkResourceIcon($url, $width, $height);
     }
 
     public function setUrl(string $url): LtiDeepLinkResourceIcon
