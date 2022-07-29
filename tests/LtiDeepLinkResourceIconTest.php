@@ -43,7 +43,7 @@ class LtiDeepLinkResourceIconTest extends TestCase
     {
         $result = $this->deepLinkResourceIcon->getWidth();
 
-        $this->assertEquals(null, $result);
+        $this->assertNull($result);
     }
 
     public function testItSetsWidth()
