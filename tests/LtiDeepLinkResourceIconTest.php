@@ -59,7 +59,7 @@ class LtiDeepLinkResourceIconTest extends TestCase
     {
         $result = $this->deepLinkResourceIcon->getHeight();
 
-        $this->assertEquals(null, $result);
+        $this->assertNull($result);
     }
 
     public function testItSetsHeight()
