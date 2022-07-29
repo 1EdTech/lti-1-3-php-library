@@ -115,7 +115,7 @@ class LtiDeepLinkResource
      *
      * @return $this
      */
-    public function setLineitem($value)
+    public function setLineitem(LtiLineitem $value)
     {
         $this->lineitem = $value;
 
