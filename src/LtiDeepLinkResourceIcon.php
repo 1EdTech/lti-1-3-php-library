@@ -79,7 +79,7 @@ class LtiDeepLinkResourceIcon
     /**
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return [
             'url' => $this->url,
