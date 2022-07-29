@@ -172,7 +172,7 @@ class LtiDeepLinkResourceTest extends TestCase
 
     public function testItCastsToArray()
     {
-        $icon = (new LtiDeepLinkResourceIcon())
+        $icon = LtiDeepLinkResourceIcon::new()
             ->setUrl('a_url')
             ->setWidth(100)
             ->setHeight(200);
