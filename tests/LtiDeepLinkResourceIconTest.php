@@ -27,7 +27,7 @@ class LtiDeepLinkResourceIconTest extends TestCase
     {
         $result = $this->deepLinkResourceIcon->getUrl();
 
-        $this->assertEquals(null, $result);
+        $this->assertNull($result);
     }
 
     public function testItSetsUrl()
