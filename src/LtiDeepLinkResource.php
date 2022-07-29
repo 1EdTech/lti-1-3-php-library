@@ -127,7 +127,7 @@ class LtiDeepLinkResource
      *
      * @return $this
      */
-    public function setIcon($icon)
+    public function setIcon(LtiDeepLinkResourceIcon $icon)
     {
         $this->icon = $icon;
 
