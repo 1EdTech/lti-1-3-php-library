@@ -8,7 +8,7 @@ class LtiDeepLinkResourceIconTest extends TestCase
 {
     public function setUp(): void
     {
-        $this->deepLinkResourceIcon = new LtiDeepLinkResourceIcon();
+        $this->deepLinkResourceIcon = new LtiDeepLinkResourceIcon('https://example.com');
     }
 
     public function testItInstantiates()
@@ -27,7 +27,7 @@ class LtiDeepLinkResourceIconTest extends TestCase
     {
         $result = $this->deepLinkResourceIcon->getUrl();
 
-        $this->assertNull($result);
+        $this->assertEquals('https://example.com', $result);
     }
 
     public function testItSetsUrl()

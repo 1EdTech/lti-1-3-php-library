@@ -92,7 +92,7 @@ class LtiDeepLinkResourceTest extends TestCase
 
     public function testItGetsLineitem()
     {
-        $result = $this->deepLinkResource->getLineitem();
+        $result = $this->deepLinkResource->getLineItem();
 
         $this->assertNull($result);
     }
@@ -101,9 +101,9 @@ class LtiDeepLinkResourceTest extends TestCase
     {
         $expected = Mockery::mock(LtiLineitem::class);
 
-        $this->deepLinkResource->setLineitem($expected);
+        $this->deepLinkResource->setLineItem($expected);
 
-        $this->assertEquals($expected, $this->deepLinkResource->getLineitem());
+        $this->assertEquals($expected, $this->deepLinkResource->getLineItem());
     }
 
     public function testItGetsIcon()
@@ -147,7 +147,7 @@ class LtiDeepLinkResourceTest extends TestCase
 
     public function testItSetsCustomParams()
     {
-        $expected = 'expected';
+        $expected = ['a_key' => 'a_value'];
 
         $this->deepLinkResource->setCustomParams($expected);
 
@@ -212,7 +212,7 @@ class LtiDeepLinkResourceTest extends TestCase
         $this->deepLinkResource->setUrl($expected['url']);
         $this->deepLinkResource->setIcon($icon);
         $this->deepLinkResource->setThumbnail($icon);
-        $this->deepLinkResource->setLineitem($lineitem);
+        $this->deepLinkResource->setLineItem($lineitem);
 
         $result = $this->deepLinkResource->toArray();
 

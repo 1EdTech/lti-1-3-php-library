@@ -8,77 +8,54 @@ class LtiDeepLinkResourceIcon
     private $width;
     private $height;
 
-    /**
-     * @return LtiDeepLinkResourceIcon
-     */
-    public static function new()
+    public function __construct(string $url, ?int $width = null, ?int $height = null)
     {
-        return new LtiDeepLinkResourceIcon();
+        $this->url = $url;
+        $this->width = $width;
+        $this->height = $height;
     }
 
-    /**
-     * @param $url string
-     *
-     * @return $this
-     */
-    public function setUrl($url)
+    public static function new(): LtiDeepLinkResourceIcon
+    {
+        return new LtiDeepLinkResourceIcon('');
+    }
+
+    public function setUrl(string $url): LtiDeepLinkResourceIcon
     {
         $this->url = $url;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getUrl()
+    public function getUrl(): string
     {
         return $this->url;
     }
 
-    /**
-     * @param $width int
-     *
-     * @return $this
-     */
-    public function setWidth($width)
+    public function setWidth(?int $width): LtiDeepLinkResourceIcon
     {
         $this->width = $width;
 
         return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getWidth()
+    public function getWidth(): ?int
     {
         return $this->width;
     }
 
-    /**
-     * @param $height int
-     *
-     * @return $this
-     */
-    public function setHeight($height)
+    public function setHeight(?int $height): LtiDeepLinkResourceIcon
     {
         $this->height = $height;
 
         return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getHeight()
+    public function getHeight(): ?int
     {
         return $this->height;
     }
 
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         return [

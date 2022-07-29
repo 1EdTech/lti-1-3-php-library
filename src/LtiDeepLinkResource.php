@@ -8,204 +8,126 @@ class LtiDeepLinkResource
     private $title;
     private $text;
     private $url;
-    private $lineitem;
+    private $line_item;
     private $icon;
     private $thumbnail;
     private $custom_params = [];
     private $target = 'iframe';
 
-    /**
-     * @return LtiDeepLinkResource
-     */
-    public static function new()
+    public static function new(): LtiDeepLinkResource
     {
         return new LtiDeepLinkResource();
     }
 
-    /**
-     * @return string
-     */
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * @param $value string
-     *
-     * @return $this
-     */
-    public function setType($value)
+    public function setType(string $value): LtiDeepLinkResource
     {
         $this->type = $value;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getTitle()
+    public function getTitle(): ?string
     {
         return $this->title;
     }
 
-    /**
-     * @param $value string
-     *
-     * @return $this
-     */
-    public function setTitle($value)
+    public function setTitle(?string $value): LtiDeepLinkResource
     {
         $this->title = $value;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getText()
+    public function getText(): ?string
     {
         return $this->text;
     }
 
-    /**
-     * @param $value string
-     *
-     * @return $this
-     */
-    public function setText($value)
+    public function setText(?string $value): LtiDeepLinkResource
     {
         $this->text = $value;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getUrl()
+    public function getUrl(): ?string
     {
         return $this->url;
     }
 
-    /**
-     * @param $value string
-     *
-     * @return $this
-     */
-    public function setUrl($value)
+    public function setUrl(?string $value): LtiDeepLinkResource
     {
         $this->url = $value;
 
         return $this;
     }
 
-    /**
-     * @return LtiLineitem
-     */
-    public function getLineitem()
+    public function getLineItem(): ?LtiLineitem
     {
-        return $this->lineitem;
+        return $this->line_item;
     }
 
-    /**
-     * @param $value LtiLineitem
-     *
-     * @return $this
-     */
-    public function setLineitem(LtiLineitem $value)
+    public function setLineItem(?LtiLineitem $value): LtiDeepLinkResource
     {
-        $this->lineitem = $value;
+        $this->line_item = $value;
 
         return $this;
     }
 
-    /**
-     * @param $icon LtiDeepLinkResourceIcon
-     *
-     * @return $this
-     */
-    public function setIcon(LtiDeepLinkResourceIcon $icon)
+    public function setIcon(?LtiDeepLinkResourceIcon $icon): LtiDeepLinkResource
     {
         $this->icon = $icon;
 
         return $this;
     }
 
-    /**
-     * @return LtiDeepLinkResourceIcon
-     */
-    public function getIcon(): LtiDeepLinkResourceIcon
+    public function getIcon(): ?LtiDeepLinkResourceIcon
     {
         return $this->icon;
     }
 
-    /**
-     * @param $thumbnail LtiDeepLinkResourceIcon
-     *
-     * @return $this
-     */
-    public function setThumbnail(LtiDeepLinkResourceIcon $thumbnail)
+    public function setThumbnail(?LtiDeepLinkResourceIcon $thumbnail): LtiDeepLinkResource
     {
         $this->thumbnail = $thumbnail;
 
         return $this;
     }
 
-    /**
-     * @return LtiDeepLinkResourceIcon
-     */
-    public function getThumbnail(): LtiDeepLinkResourceIcon
+    public function getThumbnail(): ?LtiDeepLinkResourceIcon
     {
         return $this->thumbnail;
     }
 
-    /**
-     * @return array
-     */
-    public function getCustomParams()
+    public function getCustomParams(): array
     {
         return $this->custom_params;
     }
 
-    /**
-     * @param $value array
-     *
-     * @return $this
-     */
-    public function setCustomParams($value)
+    public function setCustomParams(array $value): LtiDeepLinkResource
     {
         $this->custom_params = $value;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getTarget()
+    public function getTarget(): string
     {
         return $this->target;
     }
 
-    /**
-     * @param $value string
-     *
-     * @return $this
-     */
-    public function setTarget($value)
+    public function setTarget(string $value): LtiDeepLinkResource
     {
         $this->target = $value;
 
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function toArray()
+    public function toArray(): array
     {
         $resource = [
             'type' => $this->type,
@@ -225,10 +147,10 @@ class LtiDeepLinkResource
         if (isset($this->thumbnail)) {
             $resource['thumbnail'] = $this->thumbnail->toArray();
         }
-        if ($this->lineitem !== null) {
+        if ($this->line_item !== null) {
             $resource['lineItem'] = [
-                'scoreMaximum' => $this->lineitem->getScoreMaximum(),
-                'label' => $this->lineitem->getLabel(),
+                'scoreMaximum' => $this->line_item->getScoreMaximum(),
+                'label' => $this->line_item->getLabel(),
             ];
         }
 
