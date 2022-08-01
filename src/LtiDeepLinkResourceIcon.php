@@ -8,14 +8,14 @@ class LtiDeepLinkResourceIcon
     private $width;
     private $height;
 
-    public function __construct(string $url, ?int $width = null, ?int $height = null)
+    public function __construct(string $url, int $width, int $height)
     {
         $this->url = $url;
         $this->width = $width;
         $this->height = $height;
     }
 
-    public static function new(string $url, ?int $width = null, ?int $height = null): LtiDeepLinkResourceIcon
+    public static function new(string $url, int $width, int $height): LtiDeepLinkResourceIcon
     {
         return new LtiDeepLinkResourceIcon($url, $width, $height);
     }
@@ -32,26 +32,26 @@ class LtiDeepLinkResourceIcon
         return $this->url;
     }
 
-    public function setWidth(?int $width): LtiDeepLinkResourceIcon
+    public function setWidth(int $width): LtiDeepLinkResourceIcon
     {
         $this->width = $width;
 
         return $this;
     }
 
-    public function getWidth(): ?int
+    public function getWidth(): int
     {
         return $this->width;
     }
 
-    public function setHeight(?int $height): LtiDeepLinkResourceIcon
+    public function setHeight(int $height): LtiDeepLinkResourceIcon
     {
         $this->height = $height;
 
         return $this;
     }
 
-    public function getHeight(): ?int
+    public function getHeight(): int
     {
         return $this->height;
     }
