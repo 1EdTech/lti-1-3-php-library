@@ -153,7 +153,7 @@ class LtiServiceConnector implements ILtiServiceConnector
         ILtiRegistration $registration,
         array $scopes,
         IServiceRequest $request,
-        string $key = null,
+        string $key = null
     ): array {
         if ($request->getMethod() !== ServiceRequest::METHOD_GET) {
             throw new \Exception('An invalid method was specified by an LTI service requesting all items.');
