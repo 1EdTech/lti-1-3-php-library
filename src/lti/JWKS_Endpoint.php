@@ -1,7 +1,7 @@
 <?php
 namespace IMSGlobal\LTI;
 
-use phpseclib\Crypt\RSA;
+use phpseclib3\Crypt\RSA;
 use \Firebase\JWT\JWT;
 
 class JWKS_Endpoint {
@@ -28,21 +28,24 @@ class JWKS_Endpoint {
     public function get_public_jwks() {
         $jwks = [];
         foreach ($this->keys as $kid => $private_key) {
-            $key = new RSA();
-            $key->setHash("sha256");
-            $key->loadKey($private_key);
-            $key->setPublicKey(false, RSA::PUBLIC_FORMAT_PKCS8);
-            if ( !$key->publicExponent ) {
-                continue;
-            }
-            $components = array(
+			$public_key = RSA::loadPrivateKey( $private_key )->getPublicKey();
+
+			$public_key_reflection = new \ReflectionClass( $public_key );
+
+			$exponent_property = $public_key_reflection->getProperty( 'publicExponent' )->setAccessible( true );
+			$public_exponent = $exponent_property->getValue( $public_key );
+
+			$modulus_property = $public_key_reflection->getProperty( 'modulus' )->setAccessible( true );
+			$modulus = $modulus_property->getValue( $public_key );
+
+            $components = [
                 'kty' => 'RSA',
                 'alg' => 'RS256',
                 'use' => 'sig',
-                'e' => JWT::urlsafeB64Encode($key->publicExponent->toBytes()),
-                'n' => JWT::urlsafeB64Encode($key->modulus->toBytes()),
+                'e' => JWT::urlsafeB64Encode( $public_exponent->toBytes() ),
+                'n' => JWT::urlsafeB64Encode( $modulus->toBytes() ),
                 'kid' => $kid,
-            );
+            ];
             $jwks[] = $components;
         }
         return ['keys' => $jwks];
