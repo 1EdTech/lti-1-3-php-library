@@ -32,10 +32,12 @@ class JWKS_Endpoint {
 
 			$public_key_reflection = new \ReflectionClass( $public_key );
 
-			$exponent_property = $public_key_reflection->getProperty( 'publicExponent' )->setAccessible( true );
+			$exponent_property = $public_key_reflection->getProperty( 'publicExponent' );
+			$exponent_property->setAccessible( true );
 			$public_exponent = $exponent_property->getValue( $public_key );
 
-			$modulus_property = $public_key_reflection->getProperty( 'modulus' )->setAccessible( true );
+			$modulus_property = $public_key_reflection->getProperty( 'modulus' );
+			$modulus_property->setAccessible( true );
 			$modulus = $modulus_property->getValue( $public_key );
 
             $components = [
