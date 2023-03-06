@@ -76,9 +76,22 @@ class LTI_Service_Connector {
         }
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         $response = curl_exec($ch);
-        if (curl_errno($ch)){
-            echo 'Request Error:' . curl_error($ch);
-        }
+
+		$curl_error = curl_error($ch);
+		if ($curl_error){
+			\error_log('LTI Service Connector CURL Error:' . $curl_error);
+			echo 'Request Error:' . $curl_error;
+		}
+
+		$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		if ($http_code !== 200) {
+			\error_log('LTI Service Connector response error. HTTP response status code: ' . $http_code .
+				'. Request body: ' . strval($body) .
+				'. Request headers: ' . implode(', ', $headers) .
+				'. Response: ' . $response
+			);
+		}
+
         $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         curl_close ($ch);
 
