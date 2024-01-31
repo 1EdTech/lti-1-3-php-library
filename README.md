@@ -199,7 +199,7 @@ $resource = LTI\LTI_Deep_Link_Resource::new()
 
 Everything is set to return the resource to the platform. There are two methods of doing this.
 
-The following method will output the html for an aut-posting form for you.
+The following method will output the html for an auto-posting form for you.
 ```php
 $dl->output_response_form([$resource]);
 ```
@@ -207,6 +207,12 @@ $dl->output_response_form([$resource]);
 Alternatively you can just request the signed JWT that will need posting back to the platform by calling.
 ```php
 $dl->get_response_jwt([$resource]);
+```
+
+If you've created a JWKS endpoint with `LTI\JWKS_Endpoint::new()`, the kid used in the endpoint can be provided as an additional parameter.
+```php
+$dl->get_response_jwt([$resource], 'a_unique_KID');
+
 ```
 
 ## Calling Services
