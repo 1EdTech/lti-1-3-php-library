@@ -42,5 +42,9 @@ class LTI_Deep_Link {
         </script>
         <?php
     }
+
+    public function get_deep_link_settings() {
+        return $this->deep_link_settings;
+    }
 }
 ?>
