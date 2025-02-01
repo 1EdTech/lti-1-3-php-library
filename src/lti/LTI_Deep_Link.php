@@ -14,10 +14,10 @@ class LTI_Deep_Link {
         $this->deep_link_settings = $deep_link_settings;
     }
 
-    public function get_response_jwt($resources) {
+    public function get_response_jwt($resources, string $kid = null) {
         $message_jwt = [
             "iss" => $this->registration->get_client_id(),
-            "aud" => [$this->registration->get_issuer()],
+            "aud" => $this->registration->get_issuer(),
             "exp" => time() + 600,
             "iat" => time(),
             "nonce" => 'nonce' . hash('sha256', random_bytes(64)),
@@ -25,13 +25,19 @@ class LTI_Deep_Link {
             "https://purl.imsglobal.org/spec/lti/claim/message_type" => "LtiDeepLinkingResponse",
             "https://purl.imsglobal.org/spec/lti/claim/version" => "1.3.0",
             "https://purl.imsglobal.org/spec/lti-dl/claim/content_items" => array_map(function($resource) { return $resource->to_array(); }, $resources),
-            "https://purl.imsglobal.org/spec/lti-dl/claim/data" => $this->deep_link_settings['data'],
+            "https://purl.imsglobal.org/spec/lti-dl/claim/data" => $this->deep_link_settings['data']?? "",
         ];
-        return JWT::encode($message_jwt, $this->registration->get_tool_private_key(), 'RS256', $this->registration->get_kid());
+
+        return JWT::encode(
+            $message_jwt,
+            $this->registration->get_tool_private_key(),
+            'RS256',
+            is_null($kid) ?  $this->registration->get_kid() : $kid
+        );
     }
 
-    public function output_response_form($resources) {
-        $jwt = $this->get_response_jwt($resources);
+    public function output_response_form($resources, string $kid = null) {
+        $jwt = $this->get_response_jwt($resources, $kid);
         ?>
         <form id="auto_submit" action="<?= $this->deep_link_settings['deep_link_return_url']; ?>" method="POST">
             <input type="hidden" name="JWT" value="<?= $jwt ?>" />
@@ -41,6 +47,10 @@ class LTI_Deep_Link {
             document.getElementById('auto_submit').submit();
         </script>
         <?php
+    }
+
+    public function get_deep_link_settings() {
+        return $this->deep_link_settings;
     }
 }
 ?>

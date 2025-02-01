@@ -11,7 +11,7 @@ class LTI_Deep_Link_Resource {
     private $target = 'iframe';
 
     public static function new() {
-        return new LTI_Deep_Link_Resource();
+        return new static();
     }
 
     public function get_type() {
@@ -76,13 +76,13 @@ class LTI_Deep_Link_Resource {
             "presentation" => [
                 "documentTarget" => $this->target,
             ],
-            "custom" => $this->custom_params,
         ];
+        if (count($this->custom_params) > 0) {
+            $resource["custom"] = $this->custom_params;
+        }
+
         if ($this->lineitem !== null) {
-            $resource["lineItem"] = [
-                "scoreMaximum" => $this->lineitem->get_score_maximum(),
-                "label" => $this->lineitem->get_label(),
-            ];
+            $resource["lineItem"]  = $this->lineitem->to_array();
         }
         return $resource;
     }

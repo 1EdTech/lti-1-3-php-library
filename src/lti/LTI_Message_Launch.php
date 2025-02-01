@@ -3,6 +3,7 @@ namespace IMSGlobal\LTI;
 
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 
 JWT::$leeway = 5;
 
@@ -43,7 +44,7 @@ class LTI_Message_Launch {
      * Static function to allow for method chaining without having to assign to a variable first.
      */
     public static function new(Database $database, Cache $cache = null, Cookie $cookie = null) {
-        return new LTI_Message_Launch($database, $cache, $cookie);
+        return new static($database, $cache, $cookie);
     }
 
     /**
@@ -57,7 +58,7 @@ class LTI_Message_Launch {
      * @return LTI_Message_Launch   A populated and validated LTI_Message_Launch.
      */
     public static function from_cache($launch_id, Database $database, Cache $cache = null) {
-        $new = new LTI_Message_Launch($database, $cache, null);
+        $new = new static($database, $cache, null);
         $new->launch_id = $launch_id;
         $new->jwt = [ 'body' => $new->cache->get_launch_data($launch_id) ];
         return $new->validate_registration();
@@ -220,7 +221,7 @@ class LTI_Message_Launch {
         foreach ($public_key_set['keys'] as $key) {
             if ($key['kid'] == $this->jwt['header']['kid']) {
                 try {
-                    return openssl_pkey_get_details(JWK::parseKey($key));
+                    return openssl_pkey_get_details(JWK::parseKey($key, 'RS256')->getKeyMaterial());
                 } catch(\Exception $e) {
                     return false;
                 }
@@ -238,8 +239,8 @@ class LTI_Message_Launch {
 
     private function validate_state() {
         // Check State for OIDC.
-        if ($this->cookie->get_cookie('lti1p3_' . $this->request['state']) !== $this->request['state']) {
-            // Error if state doesn't match
+        if (!isset($this->request['state']) || $this->cookie->get_cookie('lti1p3_' . $this->request['state']) !== $this->request['state']) {
+            // Error if state is not set, or doesn't match
             throw new LTI_Exception("State not found", 1);
         }
         return $this;
@@ -270,7 +271,7 @@ class LTI_Message_Launch {
 
     private function validate_nonce() {
         if (!$this->cache->check_nonce($this->jwt['body']['nonce'])) {
-            //throw new LTI_Exception("Invalid Nonce");
+            throw new LTI_Exception("Invalid Nonce");
         }
         return $this;
     }
@@ -299,9 +300,8 @@ class LTI_Message_Launch {
 
         // Validate JWT signature
         try {
-            JWT::decode($this->request['id_token'], $public_key['key'], array('RS256'));
+            JWT::decode($this->request['id_token'], new Key($public_key['key'], 'RS256'));
         } catch(\Exception $e) {
-            var_dump($e);
             // Error validating signature.
             throw new LTI_Exception("Invalid signature on id_token", 1);
         }
