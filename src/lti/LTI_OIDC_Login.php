@@ -42,14 +42,10 @@ class LTI_OIDC_Login {
      *
      * @return Redirect Returns a redirect object containing the fully formed OIDC login URL.
      */
-    public function do_oidc_login_redirect($launch_url, array $request = null) {
+    public function do_oidc_login_redirect(string $launch_url = "", array $request = null) {
 
         if ($request === null) {
             $request = $_REQUEST;
-        }
-
-        if (empty($launch_url)) {
-            throw new OIDC_Exception("No launch URL configured", 1);
         }
 
         // Validate Request Data.
@@ -75,7 +71,7 @@ class LTI_OIDC_Login {
             'response_mode' => 'form_post', // OIDC response is always a form post.
             'prompt'        => 'none', // Don't prompt user on redirect.
             'client_id'     => $registration->get_client_id(), // Registered client id.
-            'redirect_uri'  => $launch_url, // URL to return to after login.
+            'redirect_uri'  => $launch_url?: $request['target_link_uri'], // URL to return to after login.
             'state'         => $state, // State to identify browser session.
             'nonce'         => $nonce, // Prevent replay attacks.
             'login_hint'    => $request['login_hint'] // Login hint to identify platform session.
