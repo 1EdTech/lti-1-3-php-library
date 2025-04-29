@@ -209,7 +209,17 @@ class LTI_Message_Launch {
         $key_set_url = $this->registration->get_key_set_url();
 
         // Download key set
-        $public_key_set = json_decode(file_get_contents($key_set_url), true);
+        // Prevent PHP Warning:  file_get_contents(https://moodletesting.tiltroleplay.com/mod/lti/certs.php): failed to open stream: HTTP request failed! HTTP/1.1 403 Forbidden
+        $options = [
+            'http' => [
+                'method' => 'GET',
+                'header' => "User-Agent: PHP\r\n"
+            ]
+        ];
+
+        $context = stream_context_create($options);
+        
+        $public_key_set = json_decode(file_get_contents($key_set_url,false,$context), true);
 
         if (empty($public_key_set)) {
             // Failed to fetch public keyset from URL.
