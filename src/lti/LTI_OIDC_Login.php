@@ -108,8 +108,22 @@ class LTI_OIDC_Login
             throw new OIDC_Exception("Could not find login hint", 1);
         }
 
+        // Validate Client ID.
+        if (empty($request['client_id'])) {
+            throw new OIDC_Exception("Could not find Client ID", 1);
+        }
+
+        // Validate Deployment ID.
+        if (empty($request['deployment_id'])) {
+            throw new OIDC_Exception("Could not find Deployment ID", 1);
+        }
+
         // Fetch Registration Details.
-        $registration = $this->db->find_registration_by_issuer_client_id($request['iss'], $request['client_id']);
+        $registration = $this->db->find_registration_by__issuer_client_id_deployment(
+            $request['iss'],
+            $request['client_id'],
+            $request['deployment_id']
+        );;
 
         // Check we got something.
         if (empty($registration)) {
