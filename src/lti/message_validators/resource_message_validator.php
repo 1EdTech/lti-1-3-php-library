@@ -2,11 +2,11 @@
 namespace IMSGlobal\LTI;
 
 class Resource_Message_Validator implements Message_Validator {
-    public function can_validate($jwt_body) {
+    public function can_validate(array $jwt_body): bool {
         return $jwt_body['https://purl.imsglobal.org/spec/lti/claim/message_type'] === 'LtiResourceLinkRequest';
     }
 
-    public function validate($jwt_body) {
+    public function validate(array $jwt_body): bool {
         if (empty($jwt_body['sub'])) {
             throw new LTI_Exception('Must have a user (sub)');
         }
@@ -23,4 +23,3 @@ class Resource_Message_Validator implements Message_Validator {
         return true;
     }
 }
-?>

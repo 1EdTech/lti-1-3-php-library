@@ -3,15 +3,22 @@ namespace IMSGlobal\LTI;
 
 class LTI_Course_Groups_Service {
 
-    private $service_connector;
-    private $service_data;
+    private LTI_Service_Connector $service_connector;
+    /** @var array<mixed> $service_data */
+    private array $service_data;
 
-    public function __construct(LTI_Service_Connector $service_connector, $service_data) {
+    /**
+     * @param array<mixed> $service_data
+     */
+    public function __construct(LTI_Service_Connector $service_connector, array $service_data) {
         $this->service_connector = $service_connector;
         $this->service_data = $service_data;
     }
 
-    public function get_groups() {
+    /**
+     * @return array<mixed>
+     */
+    public function get_groups(): array {
 
         $groups = [];
 
@@ -23,7 +30,7 @@ class LTI_Course_Groups_Service {
                 'GET',
                 $next_page,
                 null,
-                null,
+                'application/json',
                 'application/vnd.ims.lti-gs.v1.contextgroupcontainer+json'
             );
 
@@ -41,7 +48,10 @@ class LTI_Course_Groups_Service {
 
     }
 
-    public function get_sets() {
+    /**
+     * @return array<mixed>
+     */
+    public function get_sets(): array {
 
         $sets = [];
 
@@ -58,7 +68,7 @@ class LTI_Course_Groups_Service {
                 'GET',
                 $next_page,
                 null,
-                null,
+                'application/json',
                 'application/vnd.ims.lti-gs.v1.contextgroupcontainer+json'
             );
 
@@ -76,6 +86,9 @@ class LTI_Course_Groups_Service {
 
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function get_groups_by_set() {
         $groups = $this->get_groups();
         $sets = $this->get_sets();
@@ -107,4 +120,3 @@ class LTI_Course_Groups_Service {
         return $groups_by_set;
     }
 }
-?>

@@ -1,0 +1,19 @@
+parameters:
+  parallel:
+    maximumNumberOfProcesses: 1
+  tmpDir: /tmp/phpstan-%env.USER%
+  ignoreErrors:
+    - '%Access to constant PUBLIC_FORMAT_PKCS8 on an unknown class phpseclib\\Crypt\\RSA\.%'
+    - '%Access to property \$modulus on an unknown class phpseclib\\Crypt\\RSA%'
+    - '%Access to property \$publicExponent on an unknown class phpseclib\\Crypt\\RSA.%'
+    - '%Access to static property \$leeway on an unknown class Firebase\\JWT\\JWT\.%'
+    - '%Call to method loadKey\(\) on an unknown class phpseclib\\Crypt\\RSA\.%'
+    - '%Call to method setHash\(\) on an unknown class phpseclib\\Crypt\\RSA\.%'
+    - '%Call to method setPublicKey\(\) on an unknown class phpseclib\\Crypt\\RSA\.%'
+    - '%Call to static method decode\(\) on an unknown class Firebase\\JWT\\JWT\.%'
+    - '%Call to static method encode\(\) on an unknown class Firebase\\JWT\\JWT\.%'
+    - '%Call to static method parseKey\(\) on an unknown class Firebase\\JWT\\JWK\.%'
+    - '%Call to static method urlsafeB64Decode\(\) on an unknown class Firebase\\JWT\\JWT\.%'
+    - '%Call to static method urlsafeB64Encode\(\) on an unknown class Firebase\\JWT\\JWT\.%'
+    - '%Instantiated class Firebase\\JWT\\Key not found\.%'
+    - '%Instantiated class phpseclib\\Crypt\\RSA not found\.%'

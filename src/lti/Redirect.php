@@ -3,36 +3,60 @@ namespace IMSGlobal\LTI;
 
 class Redirect {
 
-    private $location;
-    private $referer_query;
-    private static $CAN_302_COOKIE = 'LTI1p3_302_Redirect';
+    private string $location;
+    private ?string $referer_query = null;
+    private static string $CAN_302_COOKIE = 'LTI1p3_302_Redirect';
 
-    public function __construct($location, $referer_query = null) {
+    /**
+     * Class constructor.
+     * @param string $location Target location for redirect.
+     * @param string|null $referer_query Query parameters to add when redirecting (OPTIONAL)
+     */
+    public function __construct(
+        string $location,
+        ?string $referer_query = null
+    ) {
         $this->location = $location;
         $this->referer_query = $referer_query;
     }
 
-    public function do_redirect() {
+    /**
+     * Perform a 302 redirect.
+     */
+    public function do_redirect(): void {
         header('Location: ' . $this->location, true, 302);
         die;
     }
 
-    public function do_hybrid_redirect(Cookie $cookie = null) {
+    /**
+     * Redirect using a 302 if possible and falling back to a Javascript
+     * redirect otherwise.
+     * @param Cookie|null $cookie Cookie to store redirect information (OPTIONAL).
+     */
+    public function do_hybrid_redirect(?Cookie $cookie = null): void {
         if ($cookie == null) {
             $cookie = new Cookie();
         }
         if (!empty($cookie->get_cookie(self::$CAN_302_COOKIE))) {
-            return $this->do_redirect();
+            $this->do_redirect();
+            return;
         }
         $cookie->set_cookie(self::$CAN_302_COOKIE, "true");
         $this->do_js_redirect();
     }
 
-    public function get_redirect_url() {
+    /**
+     * Get redirect url.
+     * @return string Redirect url.
+     */
+    public function get_redirect_url(): string {
         return $this->location;
     }
 
-    public function do_js_redirect() {
+    /**
+     * Output HTML/JS for a Javascript-based redirect.
+     */
+    public function do_js_redirect(): void {
         ?>
         <a id="try-again" target="_blank">If you are not automatically redirected, click here to continue</a>
         <script>
@@ -77,7 +101,4 @@ class Redirect {
         </script>
         <?php
     }
-
 }
-
-?>

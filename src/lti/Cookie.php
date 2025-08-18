@@ -2,7 +2,10 @@
 namespace IMSGlobal\LTI;
 
 class Cookie {
-    public function get_cookie($name) {
+    /**
+     * @return string|false
+     */
+    public function get_cookie(string $name) {
         if (isset($_COOKIE[$name])) {
             return $_COOKIE[$name];
         }
@@ -13,7 +16,10 @@ class Cookie {
         return false;
     }
 
-    public function set_cookie($name, $value, $exp = 3600, $options = []) {
+    /**
+     * @param array<mixed> $options
+     */
+    public function set_cookie(string $name, string $value, int $exp = 3600, array $options = []): self {
         $cookie_options = [
             'expires' => time() + $exp
         ];
@@ -31,4 +37,3 @@ class Cookie {
         return $this;
     }
 }
-?>

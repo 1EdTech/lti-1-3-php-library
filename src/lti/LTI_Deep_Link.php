@@ -2,22 +2,34 @@
 namespace IMSGlobal\LTI;
 
 use \Firebase\JWT\JWT;
+
 class LTI_Deep_Link {
 
-    private $registration;
-    private $deployment_id;
-    private $deep_link_settings;
+    private LTI_Registration $registration;
+    private string $deployment_id;
+    /** @var array<mixed> $deep_link_settings */
+    private array $deep_link_settings;
 
-    public function __construct($registration, $deployment_id, $deep_link_settings) {
+    /**
+     * @param array<mixed> $deep_link_settings
+     */
+    public function __construct(
+        LTI_Registration $registration,
+        string $deployment_id,
+        array $deep_link_settings
+    ) {
         $this->registration = $registration;
         $this->deployment_id = $deployment_id;
         $this->deep_link_settings = $deep_link_settings;
     }
 
-    public function get_response_jwt($resources) {
+    /**
+     * @param array<LTI_Deep_Link_Resource> $resources
+     */
+    public function get_response_jwt(array $resources, ?string $kid = null): string {
         $message_jwt = [
             "iss" => $this->registration->get_client_id(),
-            "aud" => [$this->registration->get_issuer()],
+            "aud" => $this->registration->get_issuer(),
             "exp" => time() + 600,
             "iat" => time(),
             "nonce" => 'nonce' . hash('sha256', random_bytes(64)),
@@ -27,11 +39,20 @@ class LTI_Deep_Link {
             "https://purl.imsglobal.org/spec/lti-dl/claim/content_items" => array_map(function($resource) { return $resource->to_array(); }, $resources),
             "https://purl.imsglobal.org/spec/lti-dl/claim/data" => $this->deep_link_settings['data'],
         ];
-        return JWT::encode($message_jwt, $this->registration->get_tool_private_key(), 'RS256', $this->registration->get_kid());
+
+        return JWT::encode(
+            $message_jwt,
+            $this->registration->get_tool_private_key(),
+            'RS256',
+            is_null($kid) ?  $this->registration->get_kid() : $kid
+        );
     }
 
-    public function output_response_form($resources) {
-        $jwt = $this->get_response_jwt($resources);
+    /**
+     * @param array<LTI_Deep_Link_Resource> $resources
+     */
+    public function output_response_form(array $resources, ?string $kid = null): void {
+        $jwt = $this->get_response_jwt($resources, $kid);
         ?>
         <form id="auto_submit" action="<?= $this->deep_link_settings['deep_link_return_url']; ?>" method="POST">
             <input type="hidden" name="JWT" value="<?= $jwt ?>" />
@@ -43,4 +64,3 @@ class LTI_Deep_Link {
         <?php
     }
 }
-?>

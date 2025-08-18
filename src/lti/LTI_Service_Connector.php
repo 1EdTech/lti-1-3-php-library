@@ -7,14 +7,21 @@ class LTI_Service_Connector {
 
     const NEXT_PAGE_REGEX = "/^Link:.*<([^>]*)>; ?rel=\"next\"/i";
 
-    private $registration;
-    private $access_tokens = [];
+    private LTI_Registration $registration;
+
+    /** @var array<string> $access_tokens */
+    private array $access_tokens = [];
 
     public function __construct(LTI_Registration $registration) {
         $this->registration = $registration;
     }
 
-    public function get_access_token($scopes) {
+    /**
+     * Get access token for a given set of scopes.
+     * @param array<string> $scopes Scopes to look for.
+     * @return string Access token.
+     */
+    public function get_access_token(array $scopes): string {
 
         // Don't fetch the same key more than once.
         sort($scopes);
@@ -45,21 +52,52 @@ class LTI_Service_Connector {
             'scope' => implode(' ', $scopes)
         ];
 
+        $url = $this->registration->get_auth_token_url();
+        if (strlen($url) == 0) {
+            throw new LTI_Exception("Auth token URL was empty.");
+        }
+
         // Make request to get auth token
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->registration->get_auth_token_url());
-        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($auth_request));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         $resp = curl_exec($ch);
+        if (!is_string($resp)) {
+            throw new LTI_Exception("Failed to retrieve access token.");
+        }
         $token_data = json_decode($resp, true);
         curl_close ($ch);
 
         return $this->access_tokens[$scope_key] = $token_data['access_token'];
     }
 
-    public function make_service_request($scopes, $method, $url, $body = null, $content_type = 'application/json', $accept = 'application/json') {
+    /**
+     * Make a service request.
+     * @param array<string> $scopes Scopes for the request.
+     * @param string $method HTTP Method to use.
+     * @param string $url Target URL for the request.
+     * @param mixed $body Body for the request.
+     * @param string $content_type Content type (OPTIONAL, defaults to
+     *   application/json).
+     * @param string $accept Accept type (OPTIONAL, defaults to
+     *   application/json).
+     * @return array<string, mixed> Array with 'headers' and 'body' keys.
+     */
+    public function make_service_request(
+        array $scopes,
+        string $method,
+        string $url,
+        mixed $body = null,
+        string $content_type = 'application/json',
+        string $accept = 'application/json'
+    ): array {
+        if (strlen($url) == 0) {
+            throw new LTI_Exception("Url can not be empty.");
+        }
+
         $ch = curl_init();
         $headers = [
             'Authorization: Bearer ' . $this->get_access_token($scopes),
@@ -67,18 +105,19 @@ class LTI_Service_Connector {
         ];
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, 1);
+        curl_setopt($ch, CURLOPT_HEADER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         if ($method === 'POST') {
-            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, strval($body));
             $headers[] = 'Content-Type: ' . $content_type;
         }
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         $response = curl_exec($ch);
-        if (curl_errno($ch)){
-            echo 'Request Error:' . curl_error($ch);
+        if (!is_string($response)){
+            throw new LTI_Exception('Request Error:' . curl_error($ch));
         }
+
         $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         curl_close ($ch);
 
@@ -90,4 +129,3 @@ class LTI_Service_Connector {
         ];
     }
 }
-?>

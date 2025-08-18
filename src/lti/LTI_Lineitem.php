@@ -2,15 +2,18 @@
 namespace IMSGlobal\LTI;
 
 class LTI_Lineitem {
-    private $id;
-    private $score_maximum;
-    private $label;
-    private $resource_id;
-    private $tag;
-    private $start_date_time;
-    private $end_date_time;
+    private string $id = "";
+    private string $score_maximum = "";
+    private string $label = "";
+    private string $resource_id = "";
+    private string $tag = "";
+    private string $start_date_time = "";
+    private string $end_date_time = "";
 
-    public function __construct(array $lineitem = null) {
+    /**
+     * @param array<string> $lineitem
+     */
+    public function __construct(?array $lineitem = null) {
         if (empty($lineitem)) {
             return;
         }
@@ -26,75 +29,75 @@ class LTI_Lineitem {
     /**
      * Static function to allow for method chaining without having to assign to a variable first.
      */
-    public static function new() {
+    public static function new(): self {
         return new LTI_Lineitem();
     }
 
-    public function get_id() {
+    public function get_id(): string {
         return $this->id;
     }
 
-    public function set_id($value) {
+    public function set_id(string $value): self {
         $this->id = $value;
         return $this;
     }
 
-    public function get_label() {
+    public function get_label(): string {
         return $this->label;
     }
 
-    public function set_label($value) {
+    public function set_label(string $value): self {
         $this->label = $value;
         return $this;
     }
 
-    public function get_score_maximum() {
+    public function get_score_maximum(): string {
         return $this->score_maximum;
     }
 
-    public function set_score_maximum($value) {
+    public function set_score_maximum(string $value): self {
         $this->score_maximum = $value;
         return $this;
     }
 
-    public function get_resource_id() {
+    public function get_resource_id(): string {
         return $this->resource_id;
     }
 
-    public function set_resource_id($value) {
+    public function set_resource_id(string $value): self {
         $this->resource_id = $value;
         return $this;
     }
 
-    public function get_tag() {
+    public function get_tag(): string {
         return $this->tag;
     }
 
-    public function set_tag($value) {
+    public function set_tag(string $value): self {
         $this->tag = $value;
         return $this;
     }
 
-    public function get_start_date_time() {
+    public function get_start_date_time(): string {
         return $this->start_date_time;
     }
 
-    public function set_start_date_time($value) {
+    public function set_start_date_time(string $value): self {
         $this->start_date_time = $value;
         return $this;
     }
 
-    public function get_end_date_time() {
+    public function get_end_date_time(): string {
         return $this->end_date_time;
     }
 
-    public function set_end_date_time($value) {
+    public function set_end_date_time(string $value): self {
         $this->end_date_time = $value;
         return $this;
     }
 
-    public function __toString() {
-        return json_encode(array_filter([
+    public function __toString(): string {
+        return (string)json_encode(array_filter([
             "id" => $this->id,
             "scoreMaximum" => $this->score_maximum,
             "label" => $this->label,
@@ -105,4 +108,3 @@ class LTI_Lineitem {
         ]));
     }
 }
-?>

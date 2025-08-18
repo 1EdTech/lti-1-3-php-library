@@ -3,14 +3,25 @@ namespace IMSGlobal\LTI;
 
 class LTI_Names_Roles_Provisioning_Service {
 
-    private $service_connector;
+    private LTI_Service_Connector $service_connector;
+
+    /** @var array<string> $service_data */
     private $service_data;
 
-    public function __construct(LTI_Service_Connector $service_connector, $service_data) {
+    /**
+     * @param array<string> $service_data
+     */
+    public function __construct(
+        LTI_Service_Connector $service_connector,
+        array $service_data
+    ) {
         $this->service_connector = $service_connector;
         $this->service_data = $service_data;
     }
 
+    /**
+     * @return array<string>
+     */
     public function get_members() {
 
         $members = [];
@@ -23,7 +34,7 @@ class LTI_Names_Roles_Provisioning_Service {
                 'GET',
                 $next_page,
                 null,
-                null,
+                'application/json',
                 'application/vnd.ims.lti-nrps.v2.membershipcontainer+json'
             );
 
@@ -37,8 +48,7 @@ class LTI_Names_Roles_Provisioning_Service {
                 }
             }
         }
-        return $members;
 
+        return $members;
     }
 }
-?>
