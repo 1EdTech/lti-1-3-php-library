@@ -6,6 +6,7 @@ use Exception;
 use Firebase\JWT\JWT;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use Packback\Lti1p3\Interfaces\IAccessTokenExpiryCache;
 use Packback\Lti1p3\Interfaces\ICache;
 use Packback\Lti1p3\Interfaces\ILtiRegistration;
 use Packback\Lti1p3\Interfaces\ILtiServiceConnector;
@@ -117,8 +118,7 @@ class LtiServiceConnector implements ILtiServiceConnector
 
         $tokenData = $this->getResponseBody($response);
 
-        // Cache access token
-        $this->cache->cacheAccessToken($accessTokenKey, $tokenData['access_token']);
+        $this->cacheAccessToken($accessTokenKey, $tokenData);
 
         return $tokenData['access_token'];
     }
@@ -213,6 +213,19 @@ class LtiServiceConnector implements ILtiServiceConnector
         }
 
         return $results;
+    }
+
+    private function cacheAccessToken(string $key, array $tokenData): void
+    {
+        $expiresIn = $tokenData['expires_in'] ?? null;
+
+        if ($this->cache instanceof IAccessTokenExpiryCache && is_numeric($expiresIn)) {
+            $this->cache->cacheAccessTokenWithExpiry($key, $tokenData['access_token'], (int) $expiresIn);
+
+            return;
+        }
+
+        $this->cache->cacheAccessToken($key, $tokenData['access_token']);
     }
 
     private function logRequest(

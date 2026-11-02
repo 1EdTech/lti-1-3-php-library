@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Response;
 use Mockery;
+use Packback\Lti1p3\Interfaces\IAccessTokenExpiryCache;
 use Packback\Lti1p3\Interfaces\ICache;
 use Packback\Lti1p3\Interfaces\ILtiRegistration;
 use Packback\Lti1p3\Interfaces\IServiceRequest;
@@ -123,6 +124,38 @@ class LtiServiceConnectorTest extends TestCase
         $result = $this->connector->getAccessToken($registration, ['scopeKey']);
 
         $this->assertEquals($this->token, $result);
+    }
+
+    public function test_it_caches_new_access_token_with_platform_expiry()
+    {
+        $cache = Mockery::mock(ICache::class, IAccessTokenExpiryCache::class);
+        $cache->shouldReceive('getAccessToken')->andReturn();
+        $cache->shouldReceive('cacheAccessTokenWithExpiry');
+        $this->mockTokenResponse(['access_token' => $this->token, 'expires_in' => 3600]);
+        $connector = new LtiServiceConnector($cache, $this->client);
+
+        $result = $connector->getAccessToken($this->tokenRegistration(), ['scopeKey']);
+
+        $this->assertSame($this->token, $result);
+        $cache->shouldHaveReceived('cacheAccessTokenWithExpiry')
+            ->with(Mockery::type('string'), $this->token, 3600)->once();
+        $cache->shouldNotHaveReceived('cacheAccessToken');
+    }
+
+    public function test_it_caches_new_access_token_without_expiry_when_platform_omits_it()
+    {
+        $cache = Mockery::mock(ICache::class, IAccessTokenExpiryCache::class);
+        $cache->shouldReceive('getAccessToken')->andReturn();
+        $cache->shouldReceive('cacheAccessToken');
+        $this->mockTokenResponse(['access_token' => $this->token]);
+        $connector = new LtiServiceConnector($cache, $this->client);
+
+        $result = $connector->getAccessToken($this->tokenRegistration(), ['scopeKey']);
+
+        $this->assertSame($this->token, $result);
+        $cache->shouldHaveReceived('cacheAccessToken')
+            ->with(Mockery::type('string'), $this->token)->once();
+        $cache->shouldNotHaveReceived('cacheAccessTokenWithExpiry');
     }
 
     public function test_it_makes_a_service_request()
@@ -396,6 +429,26 @@ class LtiServiceConnectorTest extends TestCase
                 'body' => $this->body,
             ])->once()
             ->andThrow($mockError);
+    }
+
+    private function tokenRegistration(): LtiRegistration
+    {
+        return new LtiRegistration([
+            'clientId' => 'client_id',
+            'issuer' => 'issuer',
+            'authServer' => 'auth_server',
+            'toolPrivateKey' => file_get_contents(__DIR__.'/data/private.key'),
+            'kid' => 'kid',
+            'authTokenUrl' => 'auth_token_url',
+        ]);
+    }
+
+    private function mockTokenResponse(array $tokenData): void
+    {
+        $this->client->shouldReceive('request')->andReturn($this->response);
+        $this->response->shouldReceive('getBody')->andReturn($this->streamInterface);
+        $this->streamInterface->shouldReceive('__toString')
+            ->andReturn(json_encode($tokenData));
     }
 
     private function mockGetAccessTokenCacheKey()
