@@ -158,6 +158,21 @@ class LtiServiceConnectorTest extends TestCase
         $cache->shouldNotHaveReceived('cacheAccessTokenWithExpiry');
     }
 
+    public function test_it_caches_new_access_token_in_a_cache_without_expiry_support()
+    {
+        $cache = Mockery::mock(ICache::class);
+        $cache->shouldReceive('getAccessToken')->andReturn();
+        $cache->shouldReceive('cacheAccessToken');
+        $this->mockTokenResponse(['access_token' => $this->token, 'expires_in' => 3600]);
+        $connector = new LtiServiceConnector($cache, $this->client);
+
+        $result = $connector->getAccessToken($this->tokenRegistration(), ['scopeKey']);
+
+        $this->assertSame($this->token, $result);
+        $cache->shouldHaveReceived('cacheAccessToken')
+            ->with(Mockery::type('string'), $this->token)->once();
+    }
+
     public function test_it_makes_a_service_request()
     {
         $expected = [
