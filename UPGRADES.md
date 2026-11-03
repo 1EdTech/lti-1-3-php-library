@@ -1,3 +1,7 @@
+## 6.4.x to 6.5: Cache access tokens for their platform lifetime
+
+No changes are required. A cache passed to `LtiServiceConnector` can now also implement `Packback\Lti1p3\Interfaces\IAccessTokenExpiryCache`. When it does and the platform's token response includes `expires_in`, the connector calls `cacheAccessTokenWithExpiry()` with that value instead of `cacheAccessToken()`, so the cache can keep the token until shortly before it expires. Caches that only implement `ICache` behave as before.
+
 ## 6.3.x to 6.4: Platform Notification Service and Asset Processor
 
 ### Summary of Changes
