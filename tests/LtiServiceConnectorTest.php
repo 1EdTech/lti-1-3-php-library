@@ -4,12 +4,15 @@ namespace Tests;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\TransferStats;
 use Mockery;
 use Packback\Lti1p3\Interfaces\IAccessTokenExpiryCache;
 use Packback\Lti1p3\Interfaces\ICache;
 use Packback\Lti1p3\Interfaces\ILtiRegistration;
 use Packback\Lti1p3\Interfaces\IServiceRequest;
+use Packback\Lti1p3\LtiException;
 use Packback\Lti1p3\LtiRegistration;
 use Packback\Lti1p3\LtiServiceConnector;
 use Packback\Lti1p3\ServiceRequest;
@@ -171,6 +174,36 @@ class LtiServiceConnectorTest extends TestCase
         $this->assertSame($this->token, $result);
         $cache->shouldHaveReceived('cacheAccessToken')
             ->with(Mockery::type('string'), $this->token)->once();
+    }
+
+    public function test_it_throws_when_the_token_endpoint_redirects_to_an_html_page()
+    {
+        $this->cache->shouldReceive('getAccessToken')->andReturn();
+        $this->mockTokenEndpointRedirectsTo(
+            'https://notice.example.edu/retired.html',
+            new Response(200, [], '<html><body>This site has been retired.</body></html>')
+        );
+
+        $this->expectException(LtiException::class);
+        $this->expectExceptionMessage(
+            "The platform's token endpoint did not return an access token (HTTP 200 from notice.example.edu)."
+        );
+
+        $this->connector->getAccessToken($this->tokenRegistration('https://lms.example.edu/token'), ['scopeKey']);
+    }
+
+    public function test_it_throws_when_the_token_response_has_no_access_token()
+    {
+        $this->cache->shouldReceive('getAccessToken')->andReturn();
+        $this->client->shouldReceive('request')
+            ->andReturn(new Response(200, [], json_encode(['error' => 'invalid_client'])));
+
+        $this->expectException(LtiException::class);
+        $this->expectExceptionMessage(
+            "The platform's token endpoint did not return an access token (HTTP 200 from lms.example.edu)."
+        );
+
+        $this->connector->getAccessToken($this->tokenRegistration('https://lms.example.edu/token'), ['scopeKey']);
     }
 
     public function test_it_makes_a_service_request()
@@ -446,7 +479,7 @@ class LtiServiceConnectorTest extends TestCase
             ->andThrow($mockError);
     }
 
-    private function tokenRegistration(): LtiRegistration
+    private function tokenRegistration(string $authTokenUrl = 'auth_token_url'): LtiRegistration
     {
         return new LtiRegistration([
             'clientId' => 'client_id',
@@ -454,8 +487,18 @@ class LtiServiceConnectorTest extends TestCase
             'authServer' => 'auth_server',
             'toolPrivateKey' => file_get_contents(__DIR__.'/data/private.key'),
             'kid' => 'kid',
-            'authTokenUrl' => 'auth_token_url',
+            'authTokenUrl' => $authTokenUrl,
         ]);
+    }
+
+    private function mockTokenEndpointRedirectsTo(string $finalUrl, Response $finalResponse): void
+    {
+        $this->client->shouldReceive('request')
+            ->andReturnUsing(function ($method, $url, $options) use ($finalUrl, $finalResponse) {
+                $options['on_stats'](new TransferStats(new Request('GET', $finalUrl), $finalResponse));
+
+                return $finalResponse;
+            });
     }
 
     private function mockTokenResponse(array $tokenData): void
